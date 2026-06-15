@@ -1,9 +1,9 @@
 ---
-sidebar_position: 5
-sidebar_label: 防抖与节流
+sidebar_position: 1
+sidebar_label: 1 防抖节流
 ---
 
-# 防抖与节流
+# 防抖节流
 
 两者都是**限制高频事件的执行次数**，区别在「怎么限」：
 

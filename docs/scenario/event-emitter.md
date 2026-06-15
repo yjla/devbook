@@ -1,9 +1,9 @@
 ---
-sidebar_position: 6
-sidebar_label: 发布订阅 EventEmitter
+sidebar_position: 2
+sidebar_label: 2 发布订阅
 ---
 
-# 发布订阅 EventEmitter
+# 发布订阅
 
 发布订阅模式：**订阅者注册事件回调，发布者触发事件时统一通知所有订阅者**。本质就是维护一张「事件名 → 回调列表」的表。
 

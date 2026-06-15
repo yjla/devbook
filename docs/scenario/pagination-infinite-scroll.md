@@ -1,6 +1,6 @@
 ---
-sidebar_position: 3
-sidebar_label: 分页与无限滚动
+sidebar_position: 5
+sidebar_label: 5 分页与无限滚动
 ---
 
 # 分页与无限滚动

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 8
-sidebar_label: 时间分片
+sidebar_position: 7
+sidebar_label: 7 时间分片
 ---
 
 # 时间分片

@@ -1,11 +1,11 @@
 ---
-sidebar_position: 1
-sidebar_label: 请求封装
+sidebar_position: 3
+sidebar_label: 3 请求封装
 ---
 
 # 请求封装
 
-一个请求库的能力，拆开看就是几个互相独立的小能力：响应缓存、请求去重、失败重试、超时控制。下面把它们一个个实现出来，最后用一个 Hook 组装，就是 mini 版 React Query。批量请求的并发控制是更通用的任务调度，单列为[并发调度器](./concurrency-scheduler.md)。
+一个请求库的能力，拆开看就是几个互相独立的小能力：响应缓存、请求去重、失败重试、超时控制。下面把它们一个个实现出来，最后用一个 Hook 组装，就是 mini 版 React Query。批量请求的并发控制是更通用的任务调度，单列为[并发调度](./concurrency-scheduler.md)。
 
 ## 响应缓存
 
