@@ -1,15 +1,13 @@
 ---
-sidebar_position: 4
-sidebar_label: Promise
+sidebar_position: 1
+sidebar_label: Promise 核心
 ---
 
-# Promise
+# Promise 核心实现
 
 Promise 的核心是一个**状态机**：从 `pending`（等待）只能单向变到 `fulfilled`（成功）或 `rejected`（失败），一旦变了就**锁死**不可逆。`then` 注册的回调要在状态确定后异步执行。
 
 抓住三个关键点就能写出来：**三状态单向流转**、**pending 时把回调存起来**、**then 返回新 Promise 以支持链式调用**。
-
-## 核心实现
 
 ```js
 class MyPromise {
@@ -84,47 +82,10 @@ MyPromise.resolve = (value) =>
 这是**精简版**，足够讲清原理。完整的 Promises/A+ 还要处理「回调返回值本身是 Promise（thenable）」的递归解析，面试能写到这一步、再口头说明这一点，基本就够了。
 :::
 
-## Promise.all
-
-**全部成功才成功**，结果按原顺序返回；**任意一个失败就立即失败**。
-
-```js
-MyPromise.all = (promises) => {
-  return new MyPromise((resolve, reject) => {
-    const results = [];
-    let count = 0;
-
-    if (promises.length === 0) return resolve([]);
-
-    promises.forEach((p, i) => {
-      MyPromise.resolve(p).then((value) => {
-        results[i] = value; // 按下标存，保证顺序
-        count++;
-        if (count === promises.length) resolve(results); // 全齐了才 resolve
-      }, reject); // 任意一个失败，整体 reject
-    });
-  });
-};
-```
-
-:::tip
-用 `count` 计数而不是 `results.length` 判断完成，因为异步结果回来的顺序不固定，提前按下标填坑会让 `length` 不准。
+:::info
+下面的 [Promise.all](./all.md)、[Promise.race](./race.md) 都复用这里的 `MyPromise` 和 `MyPromise.resolve`。
 :::
-
-## Promise.race
-
-**谁先结束（不论成功失败）就用谁**的结果。
-
-```js
-MyPromise.race = (promises) => {
-  return new MyPromise((resolve, reject) => {
-    promises.forEach((p) => {
-      MyPromise.resolve(p).then(resolve, reject); // 第一个改变状态的说了算
-    });
-  });
-};
-```
 
 ## 一句话口诀
 
-> **Promise 是单向锁死的三状态机：pending 时存回调、定状态时清空触发；then 返回新 Promise 串起链条、回调进微任务异步跑。all 看「全成才成、按序收集」，race 看「谁快用谁」。**
+> **Promise 是单向锁死的三状态机**：pending 时存回调、定状态时清空触发；`then` 返回新 Promise 串起链条、回调进微任务异步跑。

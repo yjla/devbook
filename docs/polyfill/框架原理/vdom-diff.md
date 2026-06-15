@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 2
 sidebar_label: 虚拟 DOM 与 diff
 ---
 

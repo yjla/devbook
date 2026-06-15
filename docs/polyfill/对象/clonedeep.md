@@ -1,9 +1,9 @@
 ---
-sidebar_position: 1
-sidebar_label: 深拷贝
+sidebar_position: 4
+sidebar_label: cloneDeep
 ---
 
-# 深拷贝
+# 深拷贝 cloneDeep
 
 深拷贝要解决三件事：**递归复制嵌套对象**、**处理循环引用**、**覆盖特殊类型** (Date、RegExp、Map、Set、Symbol 键)。`JSON.parse(JSON.stringify(obj))` 只够应付纯数据对象，遇到函数、`undefined`、循环引用、特殊类型就会出错，所以面试要的是手写版本。
 

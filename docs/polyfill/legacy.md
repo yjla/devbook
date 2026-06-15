@@ -1,6 +1,6 @@
 ---
-sidebar_position: 12
-sidebar_label: 代码题 (旧)
+sidebar_position: 8
+sidebar_label: 8 代码题 (旧)
 ---
 
 # 代码题 (旧)
