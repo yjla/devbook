@@ -1,0 +1,89 @@
+docs/polyfill/对象/clonedeep.md
+  s_b54c1aa84b97bd::t_082eccfcee3ee8 2-3,6
+docs/polyfill/函数/call.md
+  s_b54c1aa84b97bd::t_290cf23bc981f0 2-3,6,8,22-23,26,34
+docs/polyfill/数组/reduce.md
+  s_b54c1aa84b97bd::t_70e53806605c33 2-3,6
+docs/polyfill/promise/all.md
+  s_b54c1aa84b97bd::t_838adc22b8f381 1-35
+docs/polyfill/框架原理/reactivity.md
+  s_b54c1aa84b97bd::t_2b5fac781e635c 2
+docs/polyfill/react/usedebounce.md
+  s_b54c1aa84b97bd::t_2c017c33e39878 1-27
+docs/polyfill/函数/apply.md
+  s_b54c1aa84b97bd::t_028cf8491d45af 1-26
+docs/polyfill/函数/bind.md
+  s_b54c1aa84b97bd::t_60599a3635bca4 1-28
+docs/polyfill/数组/map.md
+  s_b54c1aa84b97bd::t_a65d8983256819 1-36
+docs/polyfill/数组/foreach.md
+  s_b54c1aa84b97bd::t_db03b13fb21aa3 1-31
+docs/polyfill/函数/_category_.json
+  s_b54c1aa84b97bd::t_8abc68c093816a 1
+docs/polyfill/对象/object-create.md
+  s_b54c1aa84b97bd::t_8af6416b118e6e 1-24
+docs/polyfill/框架原理/_category_.json
+  s_b54c1aa84b97bd::t_bf626b7a6a5f7b 1
+docs/polyfill/对象/_category_.json
+  s_b54c1aa84b97bd::t_ea3241f5d8d78d 1
+docs/polyfill/对象/new.md
+  s_b54c1aa84b97bd::t_06937b250097b1 2-3,6,8,36
+docs/polyfill/react/userequest.md
+  s_b54c1aa84b97bd::t_4629e1c2bd7ad9 1-39
+docs/polyfill/promise/promisify.md
+  s_b54c1aa84b97bd::t_a91c336a99be49 1-40
+docs/polyfill/legacy.md
+  s_b54c1aa84b97bd::t_05def3953187f6 2-3
+docs/polyfill/函数式/memoize.md
+  s_b54c1aa84b97bd::t_465b5b6c08c48d 2-3,6
+docs/polyfill/数组/uniq.md
+  s_b54c1aa84b97bd::t_d4a713b6bf9b22 1-28
+docs/polyfill/数组/_category_.json
+  s_b54c1aa84b97bd::t_fa40fc5aadb74d 1
+docs/polyfill/promise/race.md
+  s_b54c1aa84b97bd::t_0a98f21510c2a1 1-22
+docs/polyfill/promise/promise.md
+  s_b54c1aa84b97bd::t_b7d497e3d42aa9 2-3,6,85-86,91
+docs/polyfill/函数/curry.md
+  s_b54c1aa84b97bd::t_86719685f93779 2-3,6,26-28
+docs/polyfill/对象/instanceof.md
+  s_b54c1aa84b97bd::t_1c560358aeefff 1-36
+docs/polyfill/对象/继承.md
+  s_b54c1aa84b97bd::t_daea4c2274f349 2
+docs/polyfill/promise/_category_.json
+  s_b54c1aa84b97bd::t_296c76363120a2 1
+docs/polyfill/react/usestate-useeffect.md
+  s_b54c1aa84b97bd::t_753f861c325ed4 2-3,6
+docs/polyfill/react/useprevious.md
+  s_b54c1aa84b97bd::t_daa023b5ba4486 1-26
+docs/polyfill/框架原理/vdom-diff.md
+  s_b54c1aa84b97bd::t_18ae6404101da0 2
+docs/polyfill/数组/flatten.md
+  s_b54c1aa84b97bd::t_4c4e385157792f 1-43
+docs/polyfill/函数式/_category_.json
+  s_b54c1aa84b97bd::t_76f6843a61d4fc 1
+docs/polyfill/函数式/compose.md
+  s_b54c1aa84b97bd::t_76166d7548b23f 1-34
+docs/polyfill/函数式/sleep.md
+  s_b54c1aa84b97bd::t_b901e3dffeeb2b 1-27
+docs/polyfill/react/_category_.json
+  s_b54c1aa84b97bd::t_19e2b8cbb28395 1
+docs/polyfill/函数式/once.md
+  s_b54c1aa84b97bd::t_a90375ec9608ac 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "a4328d077a0c802b41b3bea318acd703f7d061a7",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
