@@ -1,0 +1,20 @@
+docusaurus.config.ts
+  s_2d4923b058598b::t_51e8b1407b251d 120
+  s_2d4923b058598b::t_e6298c1d5e711b 17,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "92a0507ede9104882f44d910ccf3a06b7b5046b4",
+  "prompts": {},
+  "sessions": {
+    "s_2d4923b058598b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "570e0e5c-a1e7-4021-b51c-c7f5fc2c12c9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
