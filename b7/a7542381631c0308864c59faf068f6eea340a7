@@ -1,0 +1,113 @@
+docs/polyfill/promise/race.md
+  s_b54c1aa84b97bd::t_5efe37a2fca2dd 8,11-12,14,17
+  s_b54c1aa84b97bd::t_b8a748a5390faa 2
+docs/scenario/request.md
+  s_b54c1aa84b97bd::t_4f568b7cdbcae7 96-98
+  s_b54c1aa84b97bd::t_7cb801787ba848 133-134,138,140,146
+  s_b54c1aa84b97bd::t_1580d94a90248a 113-115,118,120-121,125
+  s_b54c1aa84b97bd::t_53f09e0f968a23 14-15,17,22,29
+  s_b54c1aa84b97bd::t_ecd0bd3e6cf1f6 74-75,78,80,83
+  s_b54c1aa84b97bd::t_9dd51b49be19dd 47-48,50,54,57
+docs/scenario/event-emitter.md
+  s_b54c1aa84b97bd::t_0653ee52f04b34 17,19,21,25,29,36,38,43,45
+  s_b54c1aa84b97bd::t_4794a138a42f50 61,63
+docs/html/html-structure.md
+  s_b54c1aa84b97bd::t_861f15e7b911f9 2-3
+docs/javascript/ES5/事件循环.md
+  s_b54c1aa84b97bd::t_286568177ea157 232-233
+  s_b54c1aa84b97bd::t_2787d5232dd08e 7-10
+docs/javascript/ES5/闭包.md
+  s_b54c1aa84b97bd::t_56fdb7ad53d3c7 1-3,5,7,10-15,17-19,22,24,26,28-31,34,36-37,40-41,43-44,47,49,52-53,57,60-62,65-67,69,71
+docs/polyfill/函数/once.md
+  s_b54c1aa84b97bd::t_0b42e79aa9ef25 2
+docs/scenario/virtual-list.md
+  s_b54c1aa84b97bd::t_11228aef49d0ea 22,26-29,32
+  s_b54c1aa84b97bd::t_e52332f9460f2b 50
+docs/polyfill/数组/map.md
+  s_b54c1aa84b97bd::t_82bd3c357019c5 2
+docs/polyfill/promise/promisify.md
+  s_b54c1aa84b97bd::t_2d942e25f8efba 2
+docs/polyfill/函数/compose.md
+  s_b54c1aa84b97bd::t_a07c19ab49d7f0 2
+docs/polyfill/react/usestate.md
+  s_b54c1aa84b97bd::t_0bc7084cca9d71 3,6,37,42
+docs/scenario/concurrency-scheduler.md
+  s_b54c1aa84b97bd::t_224ac22330cd6e 141
+  s_b54c1aa84b97bd::t_8e959ac90a4c9b 78,80-81,83-84,88-89,103,110,113
+  s_b54c1aa84b97bd::t_1c3b40e32291aa 52-53,56
+  s_b54c1aa84b97bd::t_bb61784bb00e55 123
+  s_b54c1aa84b97bd::t_80539239888d16 14-16,20
+docs/html/src-vs-href.md
+  s_b54c1aa84b97bd::t_1f3c0b6b8b81d9 2-3
+docs/javascript/ES5/箭头函数与普通函数.md
+  s_b54c1aa84b97bd::t_d35b1c50b9983f 2,5,7,9-20,23-34,36,38-41,43-57,60-62,65-67,69-80,85
+docs/javascript/ES5/raf-与-requestidlecallback.md
+  s_b54c1aa84b97bd::t_9af6677817a8b4 1-75
+docs/scenario/time-slicing.md
+  s_b54c1aa84b97bd::t_104068c9a5af95 30-32,36
+  s_b54c1aa84b97bd::t_a2c8e169166bb3 113
+  s_b54c1aa84b97bd::t_c68e441038ad15 80-82,86
+  s_b54c1aa84b97bd::t_b64d022a750ae2 121-122
+docs/scenario/pagination-infinite-scroll.md
+  s_b54c1aa84b97bd::t_6b7ab9695721a3 72-75
+  s_b54c1aa84b97bd::t_f70de64711477d 29-31,33
+  s_b54c1aa84b97bd::t_fbb85b4c1f62d1 98-100,106
+docs/polyfill/函数/memoize.md
+  s_b54c1aa84b97bd::t_d2605943fda0b5 2
+docs/scenario/debounce-throttle.md
+  s_b54c1aa84b97bd::t_24a3f3ef9fb0ca 38-39,42
+  s_b54c1aa84b97bd::t_79097675b48290 58-118,120-121
+  s_b54c1aa84b97bd::t_5cd4d100c6f83f 119
+  s_b54c1aa84b97bd::t_3a83a4f8e95f21 19-23
+docs/polyfill/react/_category_.json
+  s_b54c1aa84b97bd::t_f4cc412075c89a 1
+docs/React/React.js/虚拟dom与diff.md
+  s_b54c1aa84b97bd::t_abb5bd2be88dcf 49
+docs/javascript/ES5/垃圾回收机制.md
+  s_b54c1aa84b97bd::t_7ee1d1e4e0cd98 1-70
+docs/javascript/ES5/async-await原理.md
+  s_b54c1aa84b97bd::t_e70beecbdbd774 2,5,7,9,11,14-17,20-23,26,28,30,33-55,60-83,85,87,91
+docs/polyfill/react/useref.md
+  s_b54c1aa84b97bd::t_f3ec156be95d34 3,6,8,11-19,23-29,34
+docs/polyfill/数组/foreach.md
+  s_b54c1aa84b97bd::t_ae41d639b686bf 2
+docs/html/inline-vs-block.md
+  s_b54c1aa84b97bd::t_77c662253dc451 2-3
+docs/scenario/onion-middleware.md
+  s_b54c1aa84b97bd::t_eff649a65413c4 47-48,54
+  s_b54c1aa84b97bd::t_09c41c33754348 22-24,27
+docs/polyfill/react/useeffect.md
+  s_b54c1aa84b97bd::t_a2b41658a1012e 3,6,8,11-13,15-18,20-23,27-31,35
+docs/polyfill/promise/all.md
+  s_b54c1aa84b97bd::t_4744438ce70ca7 2
+  s_b54c1aa84b97bd::t_703918faeba854 8,11-12,19
+  s_b54c1aa84b97bd::t_4c2c5bc3172314 26
+docs/html/defer-vs-async.md
+  s_b54c1aa84b97bd::t_64495fcc8a9bc4 2-3
+sidebars.ts
+  s_b54c1aa84b97bd::t_fe10fe6fd34312 9
+src/pages/index.tsx
+  s_b54c1aa84b97bd::t_318e76aa3ce83a 17
+docs/javascript/ES5/index.md
+  s_b54c1aa84b97bd::t_5e591a2b08da77 163
+  s_b54c1aa84b97bd::t_38db13f85af7bf 84-85
+docusaurus.config.ts
+  s_b54c1aa84b97bd::t_2990c1826c85e7 92
+  s_b54c1aa84b97bd::t_321f09313458a9 95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "b7a7542381631c0308864c59faf068f6eea340a7",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
