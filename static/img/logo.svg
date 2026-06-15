@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <!-- Book spine -->
+  <rect x="3" y="3" width="8" height="34" rx="2" fill="#2e8555"/>
+  <!-- Book pages (D curve) -->
+  <path d="M11 3 C37 3 37 37 11 37 Z" fill="#25c2a0"/>
+</svg>
