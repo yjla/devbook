@@ -1,0 +1,34 @@
+docs/scenario/debounce-throttle.md
+  s_b54c1aa84b97bd::t_894cc6091a29ea 2-3,6
+docs/scenario/event-emitter.md
+  s_b54c1aa84b97bd::t_d737b7f8e83e7c 2-3,6
+docs/scenario/request.md
+  s_b54c1aa84b97bd::t_794d571e2d9793 2-3
+  s_b54c1aa84b97bd::t_5ad7176397d8b8 8
+docs/scenario/time-slicing.md
+  s_b54c1aa84b97bd::t_a1a1d8f78165d1 2-3
+docs/scenario/pagination-infinite-scroll.md
+  s_b54c1aa84b97bd::t_9dae1e1a705983 2-3
+docs/scenario/concurrency-scheduler.md
+  s_b54c1aa84b97bd::t_85035d873621d9 2-3,6
+docs/scenario/virtual-list.md
+  s_b54c1aa84b97bd::t_f97e492ad36efc 2-3
+docs/scenario/onion-middleware.md
+  s_b54c1aa84b97bd::t_9a227aa72b6679 2-3,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "3f82b8de6b58aaa02bc05241cc2581e0b048a516",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
