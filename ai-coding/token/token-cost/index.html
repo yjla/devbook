@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="zh-Hans" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-ai-coding/token/token-cost" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Token 计量与成本控制 | DevBook</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://yjla.github.io/devbook/ai-coding/token/token-cost"><meta data-rh="true" property="og:locale" content="zh_Hans"><meta data-rh="true" name="docusaurus_locale" content="zh-Hans"><meta data-rh="true" name="docsearch:language" content="zh-Hans"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Token 计量与成本控制 | DevBook"><meta data-rh="true" name="description" content="Token 是 LLM 的计费和限制单位。理解 token 的计算方式、监控方法和节省策略，是控制 AI 项目成本的基础工程知识。"><meta data-rh="true" property="og:description" content="Token 是 LLM 的计费和限制单位。理解 token 的计算方式、监控方法和节省策略，是控制 AI 项目成本的基础工程知识。"><link data-rh="true" rel="icon" href="/devbook/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://yjla.github.io/devbook/ai-coding/token/token-cost"><link data-rh="true" rel="alternate" href="https://yjla.github.io/devbook/ai-coding/token/token-cost" hreflang="zh-Hans"><link data-rh="true" rel="alternate" href="https://yjla.github.io/devbook/ai-coding/token/token-cost" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"5 Token 工程","item":"https://yjla.github.io/devbook/category/5-token-工程"},{"@type":"ListItem","position":2,"name":"5.1 Token 计量与成本控制","item":"https://yjla.github.io/devbook/ai-coding/token/token-cost"}]}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"><link rel="stylesheet" href="/devbook/assets/css/styles.2a4bf66f.css">
+<script src="/devbook/assets/js/runtime~main.4d06a11e.js" defer="defer"></script>
+<script src="/devbook/assets/js/main.b8f7fc0a.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")),document.documentElement.setAttribute("data-theme-choice",t||"system")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/devbook/img/logo.svg"><div role="region" aria-label="跳到主要内容"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">跳到主要内容</a></div><nav aria-label="主导航" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="切换导航栏" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/devbook/"><div class="navbar__logo"><img src="/devbook/img/logo.svg" alt="DevBook" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/devbook/img/logo.svg" alt="DevBook" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">DevBook</b></a><div class="navbar__item dropdown dropdown--hoverable"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link">AI</a><ul class="dropdown__menu"><li><a class="dropdown__link" href="/devbook/ai-coding/claude-code/user-manual/">Claude Code</a></li></ul></div><div class="navbar__item dropdown dropdown--hoverable"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link">前端</a><ul class="dropdown__menu"><li><a class="dropdown__link" href="/devbook/html/">HTML</a></li><li><a class="dropdown__link" href="/devbook/css/基础/选择器与优先级">CSS</a></li><li><a class="dropdown__link" href="/devbook/javascript/ES5/">JavaScript</a></li><li><a class="dropdown__link" href="/devbook/react/React.js/">React</a></li><li><a class="dropdown__link" href="/devbook/performance/">性能优化</a></li></ul></div><div class="navbar__item dropdown dropdown--hoverable"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link">后端</a><ul class="dropdown__menu"><li><a class="dropdown__link" href="/devbook/node.js/">Node.js</a></li></ul></div><a class="navbar__item navbar__link" href="/devbook/network/网络模型/">网络</a><div class="navbar__item dropdown dropdown--hoverable"><a href="#" aria-haspopup="true" aria-expanded="false" role="button" class="navbar__link">代码题</a><ul class="dropdown__menu"><li><a class="dropdown__link" href="/devbook/algorithm/hot100-priority">算法</a></li><li><a class="dropdown__link" href="/devbook/output/">输出</a></li><li><a class="dropdown__link" href="/devbook/polyfill/deep-clone">API 实现</a></li><li><a class="dropdown__link" href="/devbook/scenario/request">场景设计</a></li></ul></div></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/yjla/devbook" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="切换浅色/暗黑模式（当前为system mode）"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="回到顶部" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="文档侧边栏" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/devbook/category/1-概览"><span title="1 概览" class="categoryLinkLabel_W154">1 概览</span></a><button aria-label="展开侧边栏分类 &#x27;1 概览&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/devbook/category/2-ai-coding-方法论"><span title="2 AI Coding 方法论" class="categoryLinkLabel_W154">2 AI Coding 方法论</span></a><button aria-label="展开侧边栏分类 &#x27;2 AI Coding 方法论&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/devbook/category/3-claude-code"><span title="3 Claude Code" class="categoryLinkLabel_W154">3 Claude Code</span></a><button aria-label="展开侧边栏分类 &#x27;3 Claude Code&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/devbook/category/4-ai-辅助编码"><span title="4 AI 辅助编码" class="categoryLinkLabel_W154">4 AI 辅助编码</span></a><button aria-label="展开侧边栏分类 &#x27;4 AI 辅助编码&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--active" href="/devbook/category/5-token-工程"><span title="5 Token 工程" class="categoryLinkLabel_W154">5 Token 工程</span></a><button aria-label="折叠侧边栏分类 &#x27;5 Token 工程&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/devbook/ai-coding/token/token-cost"><span title="5.1 Token 计量与成本控制" class="linkLabel_WmDU">5.1 Token 计量与成本控制</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist" href="/devbook/category/6-场景实战"><span title="6 场景实战" class="categoryLinkLabel_W154">6 场景实战</span></a><button aria-label="展开侧边栏分类 &#x27;6 场景实战&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="页面路径"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="主页面" class="breadcrumbs__link" href="/devbook/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/devbook/category/5-token-工程"><span>5 Token 工程</span></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">5.1 Token 计量与成本控制</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">本页总览</button></div><div class="theme-doc-markdown markdown"><header><h1>Token 计量与成本控制</h1></header>
+<p>Token 是 LLM 的计费和限制单位。理解 token 的计算方式、监控方法和节省策略，是控制 AI 项目成本的基础工程知识。</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="token-是什么">Token 是什么<a href="#token-是什么" class="hash-link" aria-label="Token 是什么的直接链接" title="Token 是什么的直接链接" translate="no">​</a></h2>
+<p>Token 不等于字，也不等于词。它是 tokenizer（分词器）将原始文本切分后的最小单元，可能是一个完整的单词、一个词根，也可能是一个汉字或几个字节。</p>
+<p>主流 LLM 使用 <strong>BPE（Byte Pair Encoding，字节对编码）</strong> 算法构建 tokenizer：</p>
+<ol>
+<li class="">从字符（或字节）级别出发，每个字符作为一个初始 token</li>
+<li class="">统计语料中出现频率最高的相邻 token 对</li>
+<li class="">将该对合并为一个新 token，加入词表</li>
+<li class="">重复步骤 2-3，直到词表达到预设大小（通常数万到十几万）</li>
+</ol>
+<p>结果是常见词（如 <code>the</code>、<code>and</code>）变成单个 token，罕见词被拆成多个子词（如 <code>unhappiness</code> → <code>un</code> + <code>happi</code> + <code>ness</code>）。</p>
+<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>Byte-level BPE</div><div class="admonitionContent_BuS1"><p>现代模型（GPT-4、Claude、LLaMA 等）普遍使用 <strong>Byte-level BPE</strong>：从 256 个 UTF-8 字节出发，而非字符。这样任意语言、任意符号（包括 emoji）都能被正确处理，不会出现「词表外词汇」。</p></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="各模型-tokenizer">各模型 tokenizer<a href="#各模型-tokenizer" class="hash-link" aria-label="各模型 tokenizer的直接链接" title="各模型 tokenizer的直接链接" translate="no">​</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>模型家族</th><th>Tokenizer</th><th>词表大小</th><th>工具</th></tr></thead><tbody><tr><td>GPT-4o / GPT-4</td><td>cl100k_base (tiktoken)</td><td>~100k</td><td><a href="https://github.com/openai/tiktoken" target="_blank" rel="noopener noreferrer" class="">tiktoken</a></td></tr><tr><td>GPT-3.5</td><td>cl100k_base (tiktoken)</td><td>~100k</td><td>tiktoken</td></tr><tr><td>Claude 全系</td><td>自有 tokenizer</td><td>~100k+</td><td>Anthropic API / SDK</td></tr><tr><td>Gemini</td><td>SentencePiece</td><td>—</td><td><code>countTokens</code> API</td></tr><tr><td>LLaMA 3</td><td>tiktoken 变体</td><td>128k</td><td>transformers</td></tr></tbody></table>
+<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>tiktoken 不能直接用于 Claude</div><div class="admonitionContent_BuS1"><p>tiktoken 的 <code>p50k_base</code> 对 Claude 的计数只能做粗估，实际计费以 Anthropic API 返回的 <code>usage</code> 字段为准。精确预估请用 Anthropic SDK 的 <code>client.messages.count_tokens()</code> 方法。</p></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="中英文-token-差异">中英文 token 差异<a href="#中英文-token-差异" class="hash-link" aria-label="中英文 token 差异的直接链接" title="中英文 token 差异的直接链接" translate="no">​</a></h3>
+<p>英文的经验值：<strong>1 token ≈ 4 字符 ≈ 0.75 个单词</strong>，即 100 个英文单词约 133 tokens。</p>
+<p>中文情况复杂，与 tokenizer 训练语料直接相关：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>语言</th><th>每词大约 tokens</th><th>说明</th></tr></thead><tbody><tr><td>英文</td><td>1–2</td><td>常用词多为 1 token</td></tr><tr><td>中文</td><td>1.5–2.5</td><td>现代 tokenizer 常见汉字 ≈ 1 token</td></tr><tr><td>阿拉伯语</td><td>~4</td><td>词形变化复杂</td></tr><tr><td>印地语</td><td>~6.4</td><td>历史训练语料较少</td></tr></tbody></table>
+<p>对 Claude 来说，官方上下文窗口的字符换算如下（来自模型文档）：</p>
+<ul>
+<li class="">Claude Sonnet 4.6（1M tokens）≈ <strong>75 万英文单词</strong> ≈ <strong>340 万 Unicode 字符</strong></li>
+<li class="">Claude Haiku 4.5（200k tokens）≈ <strong>15 万英文单词</strong> ≈ <strong>68 万 Unicode 字符</strong></li>
+</ul>
+<p>同等信息量的中文文本，消耗 tokens 通常<strong>比英文少 20–40%</strong>，因为汉字信息密度更高。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="代码-vs-自然语言的-token-密度">代码 vs 自然语言的 token 密度<a href="#代码-vs-自然语言的-token-密度" class="hash-link" aria-label="代码 vs 自然语言的 token 密度的直接链接" title="代码 vs 自然语言的 token 密度的直接链接" translate="no">​</a></h3>
+<p>代码的 token 密度因语言而异，差异显著：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>类型</th><th>约 tokens / 100 行</th><th>特点</th></tr></thead><tbody><tr><td>SQL</td><td>~1150</td><td>关键字密集</td></tr><tr><td>Python</td><td>~1000</td><td>语法简洁</td></tr><tr><td>JavaScript</td><td>~700</td><td>中等冗余</td></tr><tr><td>自然语言（英文段落）</td><td>~500–700 / 100 句</td><td>取决于句长</td></tr></tbody></table>
+<p><strong>增加 token 消耗的情况：</strong></p>
+<ul>
+<li class="">多余空格、缩进（每个空格可能独立计 token）</li>
+<li class="">Base64 / 二进制编码内容（极低效率）</li>
+<li class="">数字（<code>9.11</code> 可能被拆成 3 个 token：<code>9</code>、<code>.</code>、<code>11</code>）</li>
+<li class="">Emoji（通常 2–4 tokens 每个）</li>
+<li class="">重复文本（不被压缩）</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="预估工具">预估工具<a href="#预估工具" class="hash-link" aria-label="预估工具的直接链接" title="预估工具的直接链接" translate="no">​</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>工具</th><th>用途</th></tr></thead><tbody><tr><td><a href="https://platform.openai.com/tokenizer" target="_blank" rel="noopener noreferrer" class="">OpenAI Tokenizer</a></td><td>GPT 系列可视化分词</td></tr><tr><td><a href="https://github.com/openai/tiktoken" target="_blank" rel="noopener noreferrer" class="">tiktoken</a></td><td>Python 库，支持 GPT 系列</td></tr><tr><td>Anthropic SDK <code>count_tokens()</code></td><td>Claude 精确计数</td></tr><tr><td>Gemini <code>countTokens</code> API</td><td>Gemini 精确计数</td></tr></tbody></table>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="监控-token-用量">监控 token 用量<a href="#监控-token-用量" class="hash-link" aria-label="监控 token 用量的直接链接" title="监控 token 用量的直接链接" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="api-响应中的-usage-字段">API 响应中的 usage 字段<a href="#api-响应中的-usage-字段" class="hash-link" aria-label="API 响应中的 usage 字段的直接链接" title="API 响应中的 usage 字段的直接链接" translate="no">​</a></h3>
+<p>每次 API 调用的响应都包含 token 用量，这是成本追踪的第一手数据。</p>
+<p><strong>Anthropic Claude 响应结构：</strong></p>
+<div class="language-json codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-json codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token property" style="color:#36acaa">&quot;usage&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;input_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">50</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;cache_read_input_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">100000</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;cache_creation_input_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">0</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;output_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">503</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;cache_creation&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token property" style="color:#36acaa">&quot;ephemeral_5m_input_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">456</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token property" style="color:#36acaa">&quot;ephemeral_1h_input_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">100</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">}</span><br></span></code></pre></div></div>
+<ul>
+<li class=""><code>input_tokens</code>：最后一个缓存断点之后的普通输入 token（按原价计费）</li>
+<li class=""><code>cache_read_input_tokens</code>：从缓存读取的 token（按 0.1× 价格计费）</li>
+<li class=""><code>cache_creation_input_tokens</code>：写入缓存的 token（按 1.25× 或 2× 计费）</li>
+<li class=""><code>output_tokens</code>：模型生成的输出 token</li>
+</ul>
+<div class="theme-admonition theme-admonition-warning admonition_xJq3 alert alert--warning"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>input_tokens 的含义</div><div class="admonitionContent_BuS1"><p><code>input_tokens</code> <strong>不是</strong>本次请求的全部输入 token 数，而是最后一个 <code>cache_control</code> 断点之后的未缓存部分。总输入 = <code>cache_read_input_tokens</code> + <code>cache_creation_input_tokens</code> + <code>input_tokens</code>。</p></div></div>
+<p><strong>OpenAI 响应结构：</strong></p>
+<div class="language-json codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-json codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token property" style="color:#36acaa">&quot;usage&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;prompt_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">10</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;completion_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">4</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;total_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">14</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token property" style="color:#36acaa">&quot;prompt_tokens_details&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token property" style="color:#36acaa">&quot;cached_tokens&quot;</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">8</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">}</span><br></span></code></pre></div></div>
+<p>OpenAI 的缓存命中体现在 <code>prompt_tokens_details.cached_tokens</code>，缓存 token 享受约 50% 折扣。</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="管理后台">管理后台<a href="#管理后台" class="hash-link" aria-label="管理后台的直接链接" title="管理后台的直接链接" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Anthropic Console</strong>：<code>console.anthropic.com</code> → Usage 页面，按模型、API Key、时间段查看用量和费用</li>
+<li class=""><strong>OpenAI Platform</strong>：<code>platform.openai.com</code> → Usage，支持按模型和时间筛选，可导出 CSV</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="第三方监控工具">第三方监控工具<a href="#第三方监控工具" class="hash-link" aria-label="第三方监控工具的直接链接" title="第三方监控工具的直接链接" translate="no">​</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>工具</th><th>定位</th><th>特点</th></tr></thead><tbody><tr><td><a href="https://smith.langchain.com/" target="_blank" rel="noopener noreferrer" class="">LangSmith</a></td><td>LangChain 官方</td><td>深度集成 LangChain/LangGraph，追踪、评估、调试一体</td></tr><tr><td><a href="https://helicone.ai/" target="_blank" rel="noopener noreferrer" class="">Helicone</a></td><td>AI Gateway</td><td>单行代理接入，实时成本看板，内置缓存和限流</td></tr><tr><td><a href="https://braintrust.dev/" target="_blank" rel="noopener noreferrer" class="">Braintrust</a></td><td>评估驱动</td><td>生产追踪一键转为测试集，适合评估质量的团队</td></tr><tr><td><a href="https://langfuse.com/" target="_blank" rel="noopener noreferrer" class="">Langfuse</a></td><td>开源</td><td>可自托管，多轮对话追踪，自动 token 计数</td></tr><tr><td><a href="https://github.com/BerriAI/litellm" target="_blank" rel="noopener noreferrer" class="">LiteLLM</a></td><td>开源代理</td><td>统一多 provider，内置费用归因和预算限额</td></tr><tr><td><a href="https://www.datadoghq.com/product/llm-observability/" target="_blank" rel="noopener noreferrer" class="">Datadog LLM Observability</a></td><td>企业级</td><td>与基础设施监控联动</td></tr></tbody></table>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="节省-token-的策略">节省 token 的策略<a href="#节省-token-的策略" class="hash-link" aria-label="节省 token 的策略的直接链接" title="节省 token 的策略的直接链接" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-prompt-caching最高效">1. Prompt Caching（最高效）<a href="#1-prompt-caching最高效" class="hash-link" aria-label="1. Prompt Caching（最高效）的直接链接" title="1. Prompt Caching（最高效）的直接链接" translate="no">​</a></h3>
+<p>Anthropic 的 Prompt Caching 是目前减少重复 token 消耗最直接的手段。</p>
+<p><strong>工作原理：</strong> 在 prompt 中标记 <code>cache_control</code> 断点，API 将该断点之前的内容以哈希缓存。后续请求若前缀相同，直接读取缓存，跳过重新处理。</p>
+<p><strong>价格倍率（相对于基础输入价格）：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>类型</th><th>倍率</th><th>说明</th></tr></thead><tbody><tr><td>5 分钟缓存写入</td><td>1.25×</td><td>默认 TTL，不活跃 5 分钟后过期</td></tr><tr><td>1 小时缓存写入</td><td>2×</td><td>显式指定 <code>&quot;ttl&quot;: &quot;1h&quot;</code></td></tr><tr><td>缓存读取</td><td><strong>0.1×</strong></td><td><strong>节省 90%</strong></td></tr></tbody></table>
+<p><strong>触发缓存的最小 token 数：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>模型</th><th>最小可缓存 tokens</th></tr></thead><tbody><tr><td>Claude Opus 4.7/4.6/4.5</td><td>4096</td></tr><tr><td>Claude Sonnet 4.6</td><td>2048</td></tr><tr><td>Claude Sonnet 4.5 / Opus 4.1 / Opus 4</td><td>1024</td></tr><tr><td>Claude Haiku 4.5</td><td>4096</td></tr><tr><td>Claude Haiku 3.5</td><td>2048</td></tr></tbody></table>
+<p><strong>适合缓存的内容：</strong> 固定的 system prompt、工具定义、长文档、代码库上下文。</p>
+<p><strong>代码示例（Node.js）：</strong></p>
+<div class="language-javascript codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-javascript codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> response </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> </span><span class="token keyword control-flow" style="color:#00009f">await</span><span class="token plain"> client</span><span class="token punctuation" style="color:#393A34">.</span><span class="token property-access">messages</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">create</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token literal-property property" style="color:#36acaa">model</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;claude-sonnet-4-6&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token literal-property property" style="color:#36acaa">max_tokens</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">1024</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token literal-property property" style="color:#36acaa">system</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">[</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token literal-property property" style="color:#36acaa">type</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;text&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token literal-property property" style="color:#36acaa">text</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;你是一个代码审查助手。以下是项目规范文档：\n\n...&quot;</span><span class="token plain"> </span><span class="token comment" style="color:#999988;font-style:italic">// 长文档</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">}</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token literal-property property" style="color:#36acaa">type</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;text&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token literal-property property" style="color:#36acaa">text</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;请根据以上规范审查用户提交的代码。&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">      </span><span class="token literal-property property" style="color:#36acaa">cache_control</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"> </span><span class="token literal-property property" style="color:#36acaa">type</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;ephemeral&quot;</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain">  </span><span class="token comment" style="color:#999988;font-style:italic">// 断点标记</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token punctuation" style="color:#393A34">]</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token literal-property property" style="color:#36acaa">messages</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">[</span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"> </span><span class="token literal-property property" style="color:#36acaa">role</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;user&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> </span><span class="token literal-property property" style="color:#36acaa">content</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> userCode </span><span class="token punctuation" style="color:#393A34">}</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">}</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic">// 检查是否命中缓存</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"> usage </span><span class="token punctuation" style="color:#393A34">}</span><span class="token plain"> </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> response</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token console class-name">console</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">log</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">&#x27;缓存读取 tokens:&#x27;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> usage</span><span class="token punctuation" style="color:#393A34">.</span><span class="token property-access">cache_read_input_tokens</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token console class-name">console</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">log</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">&#x27;缓存写入 tokens:&#x27;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> usage</span><span class="token punctuation" style="color:#393A34">.</span><span class="token property-access">cache_creation_input_tokens</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token console class-name">console</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">log</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">&#x27;普通输入 tokens:&#x27;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> usage</span><span class="token punctuation" style="color:#393A34">.</span><span class="token property-access">input_tokens</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<div class="theme-admonition theme-admonition-tip admonition_xJq3 alert alert--success"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 12 16"><path fill-rule="evenodd" d="M6.5 0C3.48 0 1 2.19 1 5c0 .92.55 2.25 1 3 1.34 2.25 1.78 2.78 2 4v1h5v-1c.22-1.22.66-1.75 2-4 .45-.75 1-2.08 1-3 0-2.81-2.48-5-5.5-5zm3.64 7.48c-.25.44-.47.8-.67 1.11-.86 1.41-1.25 2.06-1.45 3.23-.02.05-.02.11-.02.17H5c0-.06 0-.13-.02-.17-.2-1.17-.59-1.83-1.45-3.23-.2-.31-.42-.67-.67-1.11C2.44 6.78 2 5.65 2 5c0-2.2 2.02-4 4.5-4 1.22 0 2.36.42 3.22 1.19C10.55 2.94 11 3.94 11 5c0 .66-.44 1.78-.86 2.48zM4 14h5c-.23 1.14-1.3 2-2.5 2s-2.27-.86-2.5-2z"></path></svg></span>判断缓存是否生效</div><div class="admonitionContent_BuS1"><p>如果 <code>cache_read_input_tokens</code> 和 <code>cache_creation_input_tokens</code> 均为 0，说明 prompt 未达到最小长度阈值，缓存未生效。</p></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-prompt-压缩与精简">2. Prompt 压缩与精简<a href="#2-prompt-压缩与精简" class="hash-link" aria-label="2. Prompt 压缩与精简的直接链接" title="2. Prompt 压缩与精简的直接链接" translate="no">​</a></h3>
+<p><strong>直接删减：</strong></p>
+<ul>
+<li class="">去掉礼貌性开场（&quot;你好，请帮我...&quot;）</li>
+<li class="">用列表代替长段落描述</li>
+<li class="">删除重复说明同一件事的内容</li>
+<li class="">用代码/伪代码代替自然语言描述逻辑</li>
+</ul>
+<p><strong>结构化输出约定：</strong> 在 prompt 中指定输出格式，避免模型生成冗余的解释性文字。</p>
+<p><strong>LLMLingua（自动压缩）：</strong> Microsoft Research 开发的开源框架，用小模型（GPT-2 / LLaMA-7B 规模）识别并删除 prompt 中的非关键 token，可实现 <strong>最高 20× 压缩</strong>，准确率损失极小。适合 RAG 场景中对检索到的文档进行压缩后再送入大模型。</p>
+<ul>
+<li class="">GitHub: <a href="https://github.com/microsoft/LLMLingua" target="_blank" rel="noopener noreferrer" class="">microsoft/LLMLingua</a></li>
+<li class="">已集成至 LlamaIndex</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-上下文窗口管理">3. 上下文窗口管理<a href="#3-上下文窗口管理" class="hash-link" aria-label="3. 上下文窗口管理的直接链接" title="3. 上下文窗口管理的直接链接" translate="no">​</a></h3>
+<p>多轮对话随轮数增长，历史消息会持续消耗 context window。常见策略：</p>
+<p><strong>截断（Truncation）：</strong> 超出上限时从最旧的消息开始丢弃。实现简单，但会丢失早期关键信息。</p>
+<p><strong>滚动窗口（Sliding Window）：</strong> 保留最近 N 轮对话，舍弃更早的内容。适合对话连贯性要求高但历史依赖不深的场景。</p>
+<p><strong>摘要压缩（Summarization）：</strong> 将超出阈值的旧消息用 LLM 压缩成摘要，再拼入上下文。保留语义，但引入额外 API 调用。</p>
+<p><strong>混合策略（Summary Buffer）：</strong> 最近 K 轮保留原文，更早的内容替换为滚动摘要，兼顾效率和连贯性。</p>
+<p><strong>RAG（检索增强）：</strong> 将知识库外置，按需检索相关片段送入 context，而不是把整个知识库塞入 prompt。适合大规模文档问答。</p>
+<div class="language-javascript codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-javascript codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic">// 简单的摘要压缩示例</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token keyword" style="color:#00009f">async</span><span class="token plain"> </span><span class="token keyword" style="color:#00009f">function</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">compressHistory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token parameter">messages</span><span class="token parameter punctuation" style="color:#393A34">,</span><span class="token parameter"> threshold </span><span class="token parameter operator" style="color:#393A34">=</span><span class="token parameter"> </span><span class="token parameter number" style="color:#36acaa">4000</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> tokenCount </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">estimateTokens</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">messages</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword control-flow" style="color:#00009f">if</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">tokenCount </span><span class="token operator" style="color:#393A34">&lt;</span><span class="token plain"> threshold</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"> </span><span class="token keyword control-flow" style="color:#00009f">return</span><span class="token plain"> messages</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> oldMessages </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> messages</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">slice</span><span class="token punctuation" style="color:#393A34">(</span><span class="token number" style="color:#36acaa">0</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> </span><span class="token operator" style="color:#393A34">-</span><span class="token number" style="color:#36acaa">4</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain">  </span><span class="token comment" style="color:#999988;font-style:italic">// 保留最近 2 轮</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> recentMessages </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> messages</span><span class="token punctuation" style="color:#393A34">.</span><span class="token method function property-access" style="color:#d73a49">slice</span><span class="token punctuation" style="color:#393A34">(</span><span class="token operator" style="color:#393A34">-</span><span class="token number" style="color:#36acaa">4</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword" style="color:#00009f">const</span><span class="token plain"> summary </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> </span><span class="token keyword control-flow" style="color:#00009f">await</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">summarize</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">oldMessages</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain">  </span><span class="token comment" style="color:#999988;font-style:italic">// 调用 LLM 压缩</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token keyword control-flow" style="color:#00009f">return</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">[</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">{</span><span class="token plain"> </span><span class="token literal-property property" style="color:#36acaa">role</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;user&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> </span><span class="token literal-property property" style="color:#36acaa">content</span><span class="token operator" style="color:#393A34">:</span><span class="token plain"> </span><span class="token template-string template-punctuation string" style="color:#e3116c">`</span><span class="token template-string string" style="color:#e3116c">[历史摘要] </span><span class="token template-string interpolation interpolation-punctuation punctuation" style="color:#393A34">${</span><span class="token template-string interpolation">summary</span><span class="token template-string interpolation interpolation-punctuation punctuation" style="color:#393A34">}</span><span class="token template-string template-punctuation string" style="color:#e3116c">`</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">}</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token spread operator" style="color:#393A34">...</span><span class="token plain">recentMessages</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  </span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">}</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-控制输出长度">4. 控制输出长度<a href="#4-控制输出长度" class="hash-link" aria-label="4. 控制输出长度的直接链接" title="4. 控制输出长度的直接链接" translate="no">​</a></h3>
+<p>输出 token 的价格通常是输入的 3–5 倍，控制输出是直接降本的手段：</p>
+<ul>
+<li class="">在 prompt 中明确说明期望的输出长度或格式（&quot;用一句话回答&quot;、&quot;只输出 JSON，不要解释&quot;）</li>
+<li class="">设置 <code>max_tokens</code> 参数作为硬上限</li>
+<li class="">避免让模型重复输入内容（&quot;请先复述问题，然后...&quot;）</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-模型选择">5. 模型选择<a href="#5-模型选择" class="hash-link" aria-label="5. 模型选择的直接链接" title="5. 模型选择的直接链接" translate="no">​</a></h3>
+<p>不同规模的模型价格差异显著，简单任务用轻量模型是最粗暴的降本方式：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>模型</th><th>输入价格</th><th>输出价格</th><th>适用场景</th></tr></thead><tbody><tr><td>Claude Haiku 4.5</td><td>$1 / MTok</td><td>$5 / MTok</td><td>分类、抽取、简单 QA</td></tr><tr><td>Claude Sonnet 4.6</td><td>$3 / MTok</td><td>$15 / MTok</td><td>通用代码、分析任务</td></tr><tr><td>Claude Opus 4.7</td><td>$5 / MTok</td><td>$25 / MTok</td><td>复杂推理、Agentic 编码</td></tr></tbody></table>
+<p>同时，所有模型支持 <strong>Batch API</strong>（Message Batches API），异步批量处理享受 <strong>5折优惠</strong>，适合不要求实时响应的离线任务。</p>
+<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>旧 Opus 定价</div><div class="admonitionContent_BuS1"><p>Claude Opus 4.1 及更早版本定价为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>15</mn><mi mathvariant="normal">/</mi></mrow><annotation encoding="application/x-tex">15 / </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em"></span><span class="mord">15/</span></span></span></span>75 MTok，是当前 Opus 4.7 的 3 倍。注意不要用旧定价做估算。</p></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="快速参考">快速参考<a href="#快速参考" class="hash-link" aria-label="快速参考的直接链接" title="快速参考的直接链接" translate="no">​</a></h2>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">英文经验值：1 token ≈ 4 字符 ≈ 0.75 词</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">中文经验值：1 汉字 ≈ 1–1.5 tokens（现代 tokenizer）</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">降本优先级：</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">1. Prompt Caching（缓存读取节省 90%）</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">2. 模型降级（Haiku vs Opus 差 5×）</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">3. Batch API（5 折）</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">4. 压缩 context（减少输入量）</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">5. 控制输出长度（输出比输入贵 3–5×）</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="参考资料">参考资料<a href="#参考资料" class="hash-link" aria-label="参考资料的直接链接" title="参考资料的直接链接" translate="no">​</a></h2>
+<ul>
+<li class="">Anthropic 官方文档 - Prompt Caching: <a href="https://platform.claude.com/docs/en/docs/build-with-claude/prompt-caching" target="_blank" rel="noopener noreferrer" class="">https://platform.claude.com/docs/en/docs/build-with-claude/prompt-caching</a></li>
+<li class="">Anthropic 模型列表与定价: <a href="https://platform.claude.com/docs/en/about-claude/models/overview" target="_blank" rel="noopener noreferrer" class="">https://platform.claude.com/docs/en/about-claude/models/overview</a></li>
+<li class="">OpenAI tiktoken: <a href="https://github.com/openai/tiktoken" target="_blank" rel="noopener noreferrer" class="">https://github.com/openai/tiktoken</a></li>
+<li class="">Microsoft LLMLingua: <a href="https://github.com/microsoft/LLMLingua" target="_blank" rel="noopener noreferrer" class="">https://github.com/microsoft/LLMLingua</a></li>
+<li class="">Helicone: <a href="https://helicone.ai/" target="_blank" rel="noopener noreferrer" class="">https://helicone.ai/</a></li>
+<li class="">LangSmith: <a href="https://smith.langchain.com/" target="_blank" rel="noopener noreferrer" class="">https://smith.langchain.com/</a></li>
+<li class="">Langfuse: <a href="https://langfuse.com/" target="_blank" rel="noopener noreferrer" class="">https://langfuse.com/</a></li>
+</ul></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="文件选项卡"><a class="pagination-nav__link pagination-nav__link--prev" href="/devbook/category/5-token-工程"><div class="pagination-nav__sublabel">上一页</div><div class="pagination-nav__label">5 Token 工程</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/devbook/category/6-场景实战"><div class="pagination-nav__sublabel">下一页</div><div class="pagination-nav__label">6 场景实战</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#token-是什么" class="table-of-contents__link toc-highlight">Token 是什么</a><ul><li><a href="#各模型-tokenizer" class="table-of-contents__link toc-highlight">各模型 tokenizer</a></li><li><a href="#中英文-token-差异" class="table-of-contents__link toc-highlight">中英文 token 差异</a></li><li><a href="#代码-vs-自然语言的-token-密度" class="table-of-contents__link toc-highlight">代码 vs 自然语言的 token 密度</a></li><li><a href="#预估工具" class="table-of-contents__link toc-highlight">预估工具</a></li></ul></li><li><a href="#监控-token-用量" class="table-of-contents__link toc-highlight">监控 token 用量</a><ul><li><a href="#api-响应中的-usage-字段" class="table-of-contents__link toc-highlight">API 响应中的 usage 字段</a></li><li><a href="#管理后台" class="table-of-contents__link toc-highlight">管理后台</a></li><li><a href="#第三方监控工具" class="table-of-contents__link toc-highlight">第三方监控工具</a></li></ul></li><li><a href="#节省-token-的策略" class="table-of-contents__link toc-highlight">节省 token 的策略</a><ul><li><a href="#1-prompt-caching最高效" class="table-of-contents__link toc-highlight">1. Prompt Caching（最高效）</a></li><li><a href="#2-prompt-压缩与精简" class="table-of-contents__link toc-highlight">2. Prompt 压缩与精简</a></li><li><a href="#3-上下文窗口管理" class="table-of-contents__link toc-highlight">3. 上下文窗口管理</a></li><li><a href="#4-控制输出长度" class="table-of-contents__link toc-highlight">4. 控制输出长度</a></li><li><a href="#5-模型选择" class="table-of-contents__link toc-highlight">5. 模型选择</a></li></ul></li><li><a href="#快速参考" class="table-of-contents__link toc-highlight">快速参考</a></li><li><a href="#参考资料" class="table-of-contents__link toc-highlight">参考资料</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 DevBook</div></div></div></footer></div>
+</body>
+</html>
