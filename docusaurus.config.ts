@@ -89,10 +89,10 @@ const config: Config = {
           label: '前端',
           position: 'left',
           items: [
-            {label: 'HTML', to: '/html/'},
+            {label: 'HTML', to: '/html/html-structure'},
             {label: 'CSS', to: '/css/基础/选择器与优先级'},
             {label: 'JavaScript', to: '/javascript/ES5/'},
-            {label: 'React', to: '/react/React.js/'},
+            {label: 'React', to: '/React/React.js/'},
             {label: '性能优化', to: '/performance/'},
           ],
         },

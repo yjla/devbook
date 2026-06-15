@@ -11,32 +11,22 @@ sidebar_label: 3 请求封装
 
 按 `key` 把响应存进一张表，下次同 key 直接返回缓存，不再发请求。`key` 和 `expireTime` 都是可选参数：`key` 不传就用 `url` 和 `params` 拼成的字符串兜底；`expireTime` 不传则永久有效。
 
-```ts
-interface CacheEntry<T> {
-  data: T;
-  expireAt: number; // 到期时刻的时间戳，0 表示永久有效
-}
+```js
+const cache = new Map(); // key → { data, expireAt }
 
-const cache = new Map<string, CacheEntry<unknown>>(); // key → { data, expireAt }
-
-function getCache<T>(
-  url: string,
-  params: unknown,
-  key?: string,
-  expireTime?: number,
-): Promise<T> {
+function getCache(url, params, key, expireTime) {
   // 没传 key 就用 url + 序列化的 params 兜底，key 只是唯一标识
   const cacheKey = key ?? url + JSON.stringify(params);
 
   // 有缓存，且没设过期或还没到期，直接返回，根本不发请求
-  const cached = cache.get(cacheKey) as CacheEntry<T> | undefined;
+  const cached = cache.get(cacheKey);
   if (cached && (!cached.expireAt || cached.expireAt > Date.now())) {
     return Promise.resolve(cached.data);
   }
 
   // 没缓存或已过期，发请求，成功后存进缓存
   return fetch(url, { method: 'POST', body: JSON.stringify(params) })
-    .then((res) => res.json() as Promise<T>)
+    .then((res) => res.json())
     .then((data) => {
       // 设了过期时间就记下到期时刻，没设则用 0 表示永久有效
       const expireAt = expireTime ? Date.now() + expireTime : 0;
@@ -54,17 +44,17 @@ function getCache<T>(
 
 缓存防「以后」，去重防「**此刻**」：同一份数据被多处**同时**请求，只发一次真实请求，大家共享同一个 Promise。
 
-```ts
-const pendingFetch = new Map<string, Promise<unknown>>(); // key → 正在飞行的 Promise
+```js
+const pendingFetch = new Map(); // key → 正在飞行的 Promise
 
-function dedupe<T>(url: string, params: unknown): Promise<T> {
+function dedupe(url, params) {
   const key = url + JSON.stringify(params); // url + params 当唯一标识
 
   // 已有同 key 请求在飞，直接复用它的 Promise
-  if (pendingFetch.has(key)) return pendingFetch.get(key) as Promise<T>;
+  if (pendingFetch.has(key)) return pendingFetch.get(key);
 
   const promise = fetch(url, { method: 'POST', body: JSON.stringify(params) })
-    .then((res) => res.json() as Promise<T>)
+    .then((res) => res.json())
     .finally(() => {
       pendingFetch.delete(key); // 请求结束（成功或失败），移出飞行表
     });
@@ -81,21 +71,16 @@ function dedupe<T>(url: string, params: unknown): Promise<T> {
 
 失败后隔一会儿再试，重试若干次，全失败才抛出错误。用**递归 + 剩余次数**控制。
 
-```ts
-const wait = (ms: number): Promise<void> =>
+```js
+const wait = (ms) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-function retry<T>(
-  url: string,
-  params: unknown,
-  times = 3,
-  delay = 0,
-): Promise<T> {
+function retry(url, params, times = 3, delay = 0) {
   return fetch(url, { method: 'POST', body: JSON.stringify(params) })
-    .then((res) => res.json() as Promise<T>)
+    .then((res) => res.json())
     .catch((err) => {
       if (times <= 0) throw err; // 次数用完，彻底失败
-      return wait(delay).then(() => retry<T>(url, params, times - 1, delay));
+      return wait(delay).then(() => retry(url, params, times - 1, delay));
     });
 }
 ```
@@ -108,9 +93,9 @@ function retry<T>(
 
 请求不能无限等。用 `Promise.race` 让「真实请求」和「定时器」赛跑，谁先结束用谁——定时器先 reject 就算超时。
 
-```ts
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  const timeout = new Promise<never>((_, reject) => {
+```js
+function withTimeout(promise, ms) {
+  const timeout = new Promise((_, reject) => {
     setTimeout(() => reject(new Error('请求超时')), ms);
   });
   return Promise.race([promise, timeout]); // 谁先结束用谁
@@ -125,21 +110,19 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 先建一个**脱离 React 的全局 store**：一张缓存表 + 一张订阅表（key → 用到该 key 的回调集合）。
 
-```ts
-type Listener = () => void;
-
-const cache = new Map<string, unknown>(); // key → 数据
-const listeners = new Map<string, Set<Listener>>(); // key → Set<回调>，谁在用这个 key
+```js
+const cache = new Map(); // key → 数据
+const listeners = new Map(); // key → Set<回调>，谁在用这个 key
 
 // 订阅某个 key，返回退订函数
-function subscribe(key: string, callback: Listener): () => void {
+function subscribe(key, callback) {
   if (!listeners.has(key)) listeners.set(key, new Set());
-  listeners.get(key)!.add(callback);
-  return () => listeners.get(key)!.delete(callback);
+  listeners.get(key).add(callback);
+  return () => listeners.get(key).delete(callback);
 }
 
 // 写缓存 + 通知所有订阅了该 key 的组件
-function setCache<T>(key: string, data: T): void {
+function setCache(key, data) {
   cache.set(key, data);
   listeners.get(key)?.forEach((notify) => notify());
 }
@@ -147,20 +130,20 @@ function setCache<T>(key: string, data: T): void {
 
 Hook 用 `useSyncExternalStore` 订阅这个外部 store——它是 React 官方为「订阅组件外状态」提供的 API，缓存变了就让用到它的组件重渲染：
 
-```ts
-function useQuery<T>(url: string, params: unknown): T | undefined {
+```js
+function useQuery(url, params) {
   const key = url + JSON.stringify(params);
 
   // 订阅全局缓存里这个 key：变了就重渲染，读到的是同一份快照
-  const data = useSyncExternalStore<T | undefined>(
+  const data = useSyncExternalStore(
     (notify) => subscribe(key, notify), // 怎么订阅
-    () => cache.get(key) as T | undefined, // 怎么读当前值
+    () => cache.get(key), // 怎么读当前值
   );
 
   useEffect(() => {
     if (cache.has(key)) return; // 已有缓存，直接复用，不再发请求
     fetch(url, { method: 'POST', body: JSON.stringify(params) })
-      .then((res) => res.json() as Promise<T>)
+      .then((res) => res.json())
       .then((res) => setCache(key, res)); // 写进全局缓存，自动通知所有订阅者
   }, [key]);
 

@@ -16,14 +16,11 @@ sidebar_label: 1 防抖节流
 
 核心是一个 `timer`：每次触发都先清掉上一个定时器，重新计时，只有「安静」够久才真正执行。
 
-```ts
-function debounce<T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number,
-): (...args: Parameters<T>) => void {
-  let timer: ReturnType<typeof setTimeout> | null = null;
+```js
+function debounce(fn, delay) {
+  let timer = null;
 
-  return function (this: unknown, ...args: Parameters<T>): void {
+  return function (...args) {
     if (timer) clearTimeout(timer); // 又触发了，取消上一次的等待
     timer = setTimeout(() => {
       fn.apply(this, args); // delay 内没再触发，才执行
@@ -38,14 +35,11 @@ function debounce<T extends (...args: any[]) => any>(
 
 核心是记一个「上次执行时间」，没到间隔就直接跳过。
 
-```ts
-function throttle<T extends (...args: any[]) => any>(
-  fn: T,
-  interval: number,
-): (...args: Parameters<T>) => void {
+```js
+function throttle(fn, interval) {
   let last = 0;
 
-  return function (this: unknown, ...args: Parameters<T>): void {
+  return function (...args) {
     const now = Date.now();
     if (now - last >= interval) {
       last = now;
@@ -59,6 +53,70 @@ function throttle<T extends (...args: any[]) => any>(
 
 :::tip
 节流还有「定时器版」（用 `setTimeout`，在间隔结束时执行最后一次）。时间戳版「先执行、间隔末尾不补」，定时器版「延迟执行、能补最后一次」。面试讲清两者差异即可，时间戳版更简单好记。
+:::
+
+## Hook 写法
+
+在 React 里直接用上面的闭包版会有两个坑：每次渲染都会**重新生成**一个新的防抖函数，导致 `timer` 丢失、防抖失效；闭包还会**捕获到旧的 props / state**。所以要用 `useRef` 把定时器和最新的 `fn` 存住，用 `useCallback` 把返回的函数固定下来。
+
+```js
+import { useRef, useEffect, useCallback } from 'react';
+
+// 防抖一个函数（用于事件回调，如 onChange、onScroll）
+function useDebounceFn(fn, delay) {
+  const fnRef = useRef(fn);
+  fnRef.current = fn; // 每次渲染同步最新的 fn，避免闭包拿到旧的 state
+
+  const timerRef = useRef(null);
+
+  // 组件卸载时清掉残留定时器，防止在已卸载组件上执行
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  return useCallback(
+    (...args) => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => fnRef.current(...args), delay);
+    },
+    [delay], // 只要 delay 不变，返回的函数引用就稳定
+  );
+}
+```
+
+```js
+// 节流一个函数（用于滚动、拖拽等持续触发的回调）
+function useThrottleFn(fn, interval) {
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
+  const lastRef = useRef(0);
+
+  return useCallback(
+    (...args) => {
+      const now = Date.now();
+      if (now - lastRef.current >= interval) {
+        lastRef.current = now;
+        fnRef.current(...args);
+      }
+    },
+    [interval],
+  );
+}
+```
+
+用法和普通函数一样，但拿到的是一个**跨渲染稳定**的回调：
+
+```jsx
+function SearchBox() {
+  const onSearch = useDebounceFn((keyword) => {
+    fetch(`/api/search?q=${keyword}`);
+  }, 300);
+
+  return <input onChange={(e) => onSearch(e.target.value)} />;
+}
+```
+
+:::tip
+如果要防抖的是一个**值**（而不是回调），可以写一个 `useDebounce(value, delay)`：把值放进 `useState`，在 `useEffect` 里用清理函数清掉上一轮定时器，连续 `delay` 不变才更新。原理同上。
 :::
 
 ## 一句话口诀

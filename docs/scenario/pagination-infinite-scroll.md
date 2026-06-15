@@ -26,13 +26,11 @@ flowchart LR
 
 最朴素的做法：把**页码**当作数据的标识，页码变了就是一份新数据，各页各自缓存、各自请求。
 
-```ts
-type FetchPage<T> = (page: number) => Promise<T>;
-
-function usePaginatedList<T>(page: number, fetchPage: FetchPage<T>) {
-  const [data, setData] = useState<T>();
+```js
+function usePaginatedList(page, fetchPage) {
+  const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
-  const lastData = useRef<T>(); // 记住上一页，翻页时当占位
+  const lastData = useRef(); // 记住上一页，翻页时当占位
 
   useEffect(() => {
     let active = true;
@@ -71,17 +69,10 @@ function usePaginatedList<T>(page: number, fetchPage: FetchPage<T>) {
 
 无限滚动不能再「各页各存」了——要把**所有已加载的页累积进一个数组**，同时记住「下一页从哪取」。
 
-```ts
-interface PageResult<T> {
-  list: T[];
-  nextCursor: string | null; // 没有下一页时为 null
-}
-
-type FetchPage<T> = (cursor: string | null) => Promise<PageResult<T>>;
-
-function useInfiniteList<T>(fetchPage: FetchPage<T>) {
-  const [items, setItems] = useState<T[]>([]); // 累积的所有数据
-  const [cursor, setCursor] = useState<string | null>(null); // 下一页游标，null = 从头取
+```js
+function useInfiniteList(fetchPage) {
+  const [items, setItems] = useState([]); // 累积的所有数据
+  const [cursor, setCursor] = useState(null); // 下一页游标，null = 从头取
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -104,15 +95,15 @@ function useInfiniteList<T>(fetchPage: FetchPage<T>) {
 
 在列表底部放一个「哨兵」空元素，用 `IntersectionObserver` 监听它是否进入视口——进了就说明用户滚到底了，加载下一页。
 
-```ts
-function useLoadMoreOnView(loadMore: () => void) {
-  const ref = useRef<HTMLDivElement>(null);
+```js
+function useLoadMoreOnView(loadMore) {
+  const ref = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const io = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+    const io = new IntersectionObserver((entries) => {
       const [entry] = entries;
       if (entry.isIntersecting) loadMore(); // 哨兵露头 → 加载下一页
     });

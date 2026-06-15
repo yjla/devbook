@@ -19,19 +19,12 @@ graph LR
 
 实现洋葱模型的关键是一个 `compose` 函数，把中间件数组组合成一条可串行 `await` 的链。核心技巧：**把「调用下一个中间件」这件事包成 `next` 函数，传给当前中间件**。
 
-```ts
-interface Context {
-  [key: string]: any;
-}
-
-type Next = () => Promise<void>;
-type Middleware = (ctx: Context, next: Next) => Promise<void> | void;
-
-function compose(middlewares: Middleware[]): (ctx: Context) => Promise<void> {
-  return function (ctx: Context): Promise<void> {
+```js
+function compose(middlewares) {
+  return function (ctx) {
     let index = -1; // 记录执行到第几个，防止 next 被重复调用
 
-    function dispatch(i: number): Promise<void> {
+    function dispatch(i) {
       // 同一个中间件里 next() 调了两次，i 不会前进，报错
       if (i <= index) return Promise.reject(new Error('next() called multiple times'));
       index = i;
@@ -51,14 +44,14 @@ function compose(middlewares: Middleware[]): (ctx: Context) => Promise<void> {
 
 ## 跑一遍看顺序
 
-```ts
-const mw1: Middleware = async (ctx, next) => {
+```js
+const mw1 = async (ctx, next) => {
   console.log('1 进');
   await next(); // 进入下一层，等它全部执行完
   console.log('1 出');
 };
 
-const mw2: Middleware = async (ctx, next) => {
+const mw2 = async (ctx, next) => {
   console.log('2 进');
   await next();
   console.log('2 出');

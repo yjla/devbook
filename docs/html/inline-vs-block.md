@@ -1,6 +1,6 @@
 ---
-sidebar_position: 3
-sidebar_label: 行内元素与块级元素
+sidebar_position: 2
+sidebar_label: 2 行内元素与块级元素
 ---
 
 # 行内元素与块级元素

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 5
-sidebar_label: defer 与 async
+sidebar_position: 4
+sidebar_label: 4 defer 与 async
 ---
 
 # `defer` 与 `async`

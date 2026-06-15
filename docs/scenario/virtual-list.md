@@ -19,26 +19,17 @@ sidebar_label: 6 虚拟列表
 
 ## 定高实现
 
-```tsx
+```jsx
 const ROW_HEIGHT = 40; // 每行固定高度
 const OVERSCAN = 3; // 上下各多渲染几行做缓冲
 
-interface RowItem {
-  id: string | number;
-  text: string;
-}
-
-interface VirtualListProps {
-  items: RowItem[];
-}
-
-function VirtualList({ items }: VirtualListProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollTop, setScrollTop] = useState<number>(0);
-  const [viewportHeight, setViewportHeight] = useState<number>(0);
+function VirtualList({ items }) {
+  const containerRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   useEffect(() => {
-    setViewportHeight(containerRef.current!.clientHeight); // 容器可视高度
+    setViewportHeight(containerRef.current.clientHeight); // 容器可视高度
   }, []);
 
   const total = items.length;
@@ -56,7 +47,7 @@ function VirtualList({ items }: VirtualListProps) {
   return (
     <div
       ref={containerRef}
-      onScroll={(e: React.UIEvent<HTMLDivElement>) => setScrollTop(e.currentTarget.scrollTop)}
+      onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
       style={{ height: 400, overflowY: 'auto' }}
     >
       {/* 占位层：撑出和「全部渲染」一样长的滚动条 */}

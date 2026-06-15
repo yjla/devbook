@@ -81,8 +81,8 @@
 4. [for和forEach的区别？](https://juejin.cn/post/7018097650687803422) 跳过空位
 5. 判断空数组的方式有哪些？
 6. 判断数组是否包含某个值的方式有哪些
-7. [常见的类数组对象？](./数组/类数组对象)
-8. [如何将类数组对象转换成数组？](./数组/类数组对象)
+7. 常见的类数组对象？
+8. 如何将类数组对象转换成数组？
 9. [indexOf遵循哪种相等规则？](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf#%E6%8F%8F%E8%BF%B0)
 10. 数组去重的方式有哪些？
 11. 空位和undefined的区别？
@@ -160,7 +160,7 @@
 ## 异步
 
 1. [为什么 JavaScript 是单线程的？](https://wangdoc.com/javascript/async/general.html#%E5%8D%95%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B)
-2. [如何理解异步非阻塞？](./异步非阻塞)
+2. [如何理解异步非阻塞？](./事件循环)
 3. [同步和异步的区别？](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Asynchronous/Introducing#%E5%BC%82%E6%AD%A5javascript)
 4. [什么是回调？](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Asynchronous/Introducing#%E5%BC%82%E6%AD%A5callbacks)
 5. [什么是回调地狱？](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Asynchronous/Promises#%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E7%9A%84%E9%BA%BB%E7%83%A6)

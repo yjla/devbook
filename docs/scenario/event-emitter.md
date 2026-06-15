@@ -14,37 +14,35 @@ sidebar_label: 2 发布订阅
 - `off`：取消订阅，从列表里移除指定回调。
 - `once`：只订阅一次，触发后自动解绑。
 
-```ts
-type Listener = (...args: any[]) => void;
-
+```js
 class EventEmitter {
-  private events = new Map<string, Listener[]>(); // 事件名 → 回调数组
+  events = new Map(); // 事件名 → 回调数组
 
-  on(name: string, fn: Listener): this {
+  on(name, fn) {
     if (!this.events.has(name)) {
       this.events.set(name, []);
     }
-    this.events.get(name)!.push(fn);
+    this.events.get(name).push(fn);
     return this; // 返回 this 支持链式调用
   }
 
-  emit(name: string, ...args: any[]): this {
+  emit(name, ...args) {
     const callbacks = this.events.get(name) || [];
     // 复制一份再遍历，避免回调里 off 自己导致遍历错乱
     [...callbacks].forEach((fn) => fn(...args));
     return this;
   }
 
-  off(name: string, fn: Listener): this {
+  off(name, fn) {
     if (!this.events.has(name)) return this;
-    const filtered = this.events.get(name)!.filter((f) => f !== fn);
+    const filtered = this.events.get(name).filter((f) => f !== fn);
     this.events.set(name, filtered);
     return this;
   }
 
-  once(name: string, fn: Listener): this {
+  once(name, fn) {
     // 包一层：执行原回调后立刻解绑
-    const wrapper: Listener = (...args) => {
+    const wrapper = (...args) => {
       fn(...args);
       this.off(name, wrapper);
     };
@@ -60,9 +58,9 @@ class EventEmitter {
 
 使用：
 
-```ts
+```js
 const bus = new EventEmitter();
-const onMsg = (data: string) => console.log('收到', data);
+const onMsg = (data) => console.log('收到', data);
 
 bus.on('msg', onMsg);
 bus.emit('msg', 'hello'); // 收到 hello

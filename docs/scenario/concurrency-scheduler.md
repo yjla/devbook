@@ -11,18 +11,13 @@ sidebar_label: 4 并发调度
 
 任务开工前就定死了一个数组，跑起来不再增减。思路是「开 `limit` 个 worker 并行消费**同一个任务队列**，谁先空闲谁取下一个」。单个任务失败不中断其余，结果按原顺序返回（`Promise.allSettled` 语义）。
 
-```ts
-type Task<T = unknown> = () => Promise<T>;
-
-async function asyncPool<T>(
-  tasks: Task<T>[],
-  limit: number,
-): Promise<PromiseSettledResult<T>[]> {
-  const results = new Array<PromiseSettledResult<T>>(tasks.length);
+```js
+async function asyncPool(tasks, limit) {
+  const results = new Array(tasks.length);
   let nextIndex = 0;
 
   // 单个 worker：不断从队列取任务执行，直到取完
-  async function worker(): Promise<void> {
+  async function worker() {
     while (nextIndex < tasks.length) {
       const current = nextIndex++; // 锁定当前下标，保证结果按原顺序写回
       try {
@@ -54,11 +49,11 @@ async function asyncPool<T>(
 
 验证：
 
-```ts
-const sleep = <T>(ms: number, val: T): Promise<T> =>
+```js
+const sleep = (ms, val) =>
   new Promise((resolve) => setTimeout(() => resolve(val), ms));
 
-const tasks: Task<string>[] = [
+const tasks = [
   () => sleep(1000, 'a'),
   () => sleep(500, 'b'),
   () => sleep(300, 'c'),
@@ -80,19 +75,18 @@ asyncPool(tasks, 2).then(console.log);
 
 `asyncPool` 按 `nextIndex++` **下标**取任务，前提是 `tasks` 开工前就定死了，跑起来不能再加。改成**检查队列**——worker 每次从队列头 `shift()` 一个，队列随时能 `push()` 新任务进去，就支持「边跑边加」：
 
-```ts
+```js
 class TaskPool {
-  private limit: number; // 最大并发数
-  private queue: Array<() => Promise<void>> = []; // 待执行的 job（已包好 resolve/reject）
-  private running = 0; // 当前在跑的 worker 数
+  queue = []; // 待执行的 job（已包好 resolve/reject）
+  running = 0; // 当前在跑的 worker 数
 
-  constructor(limit: number) {
-    this.limit = limit;
+  constructor(limit) {
+    this.limit = limit; // 最大并发数
   }
 
   // 加任务，返回这个任务专属的 Promise——谁加谁 await 自己的结果
-  add<T>(task: Task<T>): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
+  add(task) {
+    return new Promise((resolve, reject) => {
       // 把 task 连同它的 resolve/reject 包成一个 job 入队
       this.queue.push(async () => {
         try {
@@ -106,17 +100,17 @@ class TaskPool {
   }
 
   // 有空槽位且队列里有货，就拉起新 worker 补上
-  private schedule(): void {
+  schedule() {
     while (this.running < this.limit && this.queue.length) {
       this.running++;
       this.worker();
     }
   }
 
-  private async worker(): Promise<void> {
+  async worker() {
     // 不再看下标，而是不断从队列头取 job，直到队列空
     while (this.queue.length) {
-      const job = this.queue.shift()!;
+      const job = this.queue.shift();
       await job(); // job 内部已 try/catch，结果各自透传，绝不抛到这里
     }
     this.running--; // 队列空了，这个 worker 退场，腾出一个槽位
@@ -126,7 +120,7 @@ class TaskPool {
 
 用起来，任何时刻都能继续加，哪怕前面的还没跑完；`add` 会返回该任务专属的 Promise，谁加谁 `await` 自己的结果：
 
-```ts
+```js
 const pool = new TaskPool(2); // 最多 2 个并发
 
 // 谁加的任务，谁拿自己的结果
@@ -144,7 +138,7 @@ console.log('d 完成', d);
 
 想等「这一批」全部完成，就把这些 `add()` 的返回值收进数组一起 `Promise.all`：
 
-```ts
+```js
 const results = await Promise.all([
   pool.add(() => fetch('/a').then((r) => r.json())),
   pool.add(() => fetch('/b').then((r) => r.json())),

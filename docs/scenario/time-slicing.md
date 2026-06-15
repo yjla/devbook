@@ -27,13 +27,13 @@ flowchart LR
 
 ## 实现
 
-```ts
-function sumToN(n: number): Promise<number> {
-  return new Promise<number>((resolve) => {
+```js
+function sumToN(n) {
+  return new Promise((resolve) => {
     let sum = 0;
     let i = 1;
 
-    function chunk(): void {
+    function chunk() {
       const start = performance.now();
       // 在 15ms 的时间片内尽量多算，一旦超时立刻跳出
       while (i <= n && performance.now() - start < 15) {
@@ -77,13 +77,13 @@ sumToN(100_000_000).then(console.log); // 5000000050000000
 
 `requestIdleCallback` 的回调自带一个 `deadline` 参数,`deadline.timeRemaining()` 返回**本次空闲期还剩多少毫秒**。直接拿它当循环条件,就不用自己记 `start` 了,而且更贴合"浏览器到底有多少空闲"的真实情况:
 
-```ts
-function sumToN(n: number): Promise<number> {
-  return new Promise<number>((resolve) => {
+```js
+function sumToN(n) {
+  return new Promise((resolve) => {
     let sum = 0;
     let i = 1;
 
-    function chunk(deadline: IdleDeadline): void {
+    function chunk(deadline) {
       // 只要这一帧还有空闲时间就继续算
       while (i <= n && deadline.timeRemaining() > 0) {
         sum += i;
@@ -110,7 +110,7 @@ function sumToN(n: number): Promise<number> {
 
 `requestIdleCallback` 只在浏览器**空闲**时触发。如果页面持续繁忙(频繁动画、大量交互),它可能迟迟不被调用,计算被无限拖延。加 `timeout` 选项,保证最长等待后强制执行:
 
-```ts
+```js
 requestIdleCallback(chunk, { timeout: 100 }); // 最多等 100ms 必定执行
 ```
 
@@ -118,10 +118,8 @@ requestIdleCallback(chunk, { timeout: 100 }); // 最多等 100ms 必定执行
 
 Safari 长期不支持 `requestIdleCallback`。封装一个调度器,缺失时降级到 `setTimeout`:
 
-```ts
-type ScheduleCallback = (cb: () => void) => void;
-
-const schedule: ScheduleCallback =
+```js
+const schedule =
   typeof requestIdleCallback !== 'undefined'
     ? (cb) => {
         requestIdleCallback(() => cb());
