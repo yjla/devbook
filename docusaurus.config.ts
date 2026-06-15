@@ -14,10 +14,10 @@ const config: Config = {
   },
 
   url: 'https://yjla.github.io',
-  baseUrl: '/notes/',
+  baseUrl: '/devbook/',
 
   organizationName: 'yjla',
-  projectName: 'notes',
+  projectName: 'devbook',
 
   onBrokenLinks: 'warn',
   onDuplicateRoutes: 'ignore',
@@ -117,7 +117,7 @@ const config: Config = {
           ],
         },
         {
-          href: 'https://github.com/yjla/notes',
+          href: 'https://github.com/yjla/devbook',
           label: 'GitHub',
           position: 'right',
         },
