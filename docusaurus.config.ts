@@ -111,7 +111,6 @@ const config: Config = {
           position: 'left',
           items: [
             {type: 'docSidebar', sidebarId: 'algorithm', label: '算法'},
-            {type: 'docSidebar', sidebarId: 'output', label: '输出'},
             {type: 'docSidebar', sidebarId: 'polyfill', label: 'API 实现'},
             {type: 'docSidebar', sidebarId: 'scenario', label: '场景设计'},
           ],
