@@ -1,0 +1,19 @@
+docs/javascript/模块化.md
+  s_b54c1aa84b97bd::t_42a95bea7651e8 1-126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "e40f3ee73a5b7de259f5ac68d2ab966df42e8977",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
