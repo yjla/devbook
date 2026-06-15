@@ -1,0 +1,21 @@
+docs/javascript/ES5/this指向.md
+  s_b54c1aa84b97bd::t_094324637be91d 31-134
+docs/javascript/ES5/事件循环.md
+  s_b54c1aa84b97bd::t_8f6527fc6b4e94 25-221,227-228
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "c154ca83852535d73cc749c8f49299eb7c49075c",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
