@@ -1,0 +1,22 @@
+docs/scenario/time-slicing.md
+  s_b54c1aa84b97bd::t_24abf35a0efcbd 14-15
+  s_b54c1aa84b97bd::t_345766a1f27515 152-154
+  s_b54c1aa84b97bd::t_1946f6ae119959 26,28-32,37-38,40-47,50-52,58-59,64,66,68-76,78-79,81,84-89,91-92,94,96-101,103-109
+  s_b54c1aa84b97bd::t_cd743b10798467 129-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "bb83a80382df9ab49cb3994aa4ac61b24aaab244",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
