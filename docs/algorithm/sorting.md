@@ -5,2245 +5,772 @@ sidebar_label: 排序
 
 # 排序
 
-:::warning
-2022 年面试备战时期的旧笔记，内容待逐步重构或归档，新整理的内容见本分类下各篇文章。
+排序就是把一组数据按某个规则（升序或降序）重新排列。下面这张表是全文索引，先看结论：
+
+| 排序 | 平均时间 | 最坏时间 | 空间 | 稳定 | 一句话记忆 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 冒泡排序 | O(n²) | O(n²) | O(1) | 稳定 | 大泡泡一路冒到顶 |
+| 选择排序 | O(n²) | O(n²) | O(1) | 不稳定 | 每轮选最小的拎出来 |
+| 插入排序 | O(n²) | O(n²) | O(1) | 稳定 | 理扑克牌往左插 |
+| 希尔排序 | O(n^1.3) | O(n²) | O(1) | 不稳定 | 跳着比的插入排序 |
+| 归并排序 | O(n log n) | O(n log n) | O(n) | 稳定 | 先拆散再两两合并 |
+| 快速排序 | O(n log n) | O(n²) | O(log n) | 不稳定 | 选个基准分两堆 |
+| 计数排序 | O(n+k) | O(n+k) | O(k) | 稳定 | 给每个数记次数 |
+| 基数排序 | O(d(n+k)) | O(d(n+k)) | O(n+k) | 稳定 | 按个位十位百位轮着排 |
+| 桶排序 | O(n+k) | O(n²) | O(n+k) | 稳定 | 分桶各自排再倒出来 |
+
+:::info
+**稳定排序** 指值相同的元素，排完后相对顺序不变。比如先按价格排、再按销量排，稳定排序能保证销量相同的商品仍按价格有序。
 :::
 
+判断方法（俗称「比较类 vs 非比较类」）：
 
+```mermaid
+graph TD
+    A[排序算法] --> B[比较类<br/>靠两两比大小]
+    A --> C[非比较类<br/>不比大小, 靠数值本身定位]
+    B --> B1[冒泡 / 选择 / 插入 / 希尔]
+    B --> B2[归并 / 快速]
+    C --> C1[计数 / 基数 / 桶]
+```
 
-[前端该如何准备数据结构和算法？ - 掘金](https://juejin.cn/post/6844903919722692621)
-
-
-
-## 排序
-
-[八大基础排序总结 - 掘金](https://juejin.cn/post/6844903583301763085)
+比较类排序有 O(n log n) 的理论下限，想突破就得用非比较类（计数、基数、桶），但它们对数据有额外要求（整数、范围有限、分布均匀等）。
 
 ## 冒泡排序
 
-冒泡排序是一种算法，用于比较相邻元素，并在相邻元素未按预期顺序交换时交换它们的位置。顺序可以是升序或降序。
+**结论**：相邻两个两两比较，谁大谁往后挪，每一轮都会把当前最大的那个「冒」到末尾。
 
-Bubble sort is an algorithm that compares the adjacent elements and swaps their positions if they are not in the intended order. The order can be ascending or descending.
+> **形象类比**：像水里的气泡，越大的气泡浮力越强，一路往上冒到水面。每跑完一趟，最大的那个数就到了最右边的「水面」位置。
 
+### 思路拆解
 
+1. 从头开始，比较相邻两个数，左边比右边大就交换。
+2. 一趟走完，最大的数被推到了最右边。
+3. 下一趟不用再碰最右边那个已归位的数，比较范围缩小一格。
+4. 重复，直到没有任何交换发生（说明已经有序）。
 
-### 如何执行
-
-1. 从第一个索引开始，比较第一个和第二个元素，如果第一个元素大于第二个元素，则将它们交换。
-
-   Starting from the first index, compare the first and the second elements. If the first element is greater than the second element, they are swapped.
-
-   现在，比较第二个和第三个元素。如果它们不正常，请交换它们。
-
-   Now, compare the second and the third elements. Swap them if they are not in order.
-
-   上面的过程一直持续到最后一个元素。
-
-   The above process goes on until the last element.
-
-![Bubble Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bubble-sort-0.png)
-
-
-
-2. 其余迭代将继续相同的过程。每次迭代后，未排序元素中的最大元素将放置在末尾。
-
-   The same process goes on for the remaining iterations. After each iteration, the largest element among the unsorted elements is placed at the end.
-
-   在每次迭代中，都会进行比较直到最后一个未排序的元素。
-
-   In each iteration, the comparison takes place up to the last unsorted element.
-
-   当所有未排序的元素都放置在其正确位置时，对数组进行排序。
-
-   The array is sorted when all the unsorted elements are placed at their correct positions.
-
-![Bubble Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bubble-sort-1.png)
-
-![Bubble Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bubble-sort-2.png)
-
-![Bubble Sort steps](https://cdn.programiz.com/sites/tutorial2program/files/Bubble-sort-3.png)
-
-
-
-------
+```mermaid
+graph LR
+    A["5 1 4 2 8"] -->|第1趟| B["1 4 2 5 8"]
+    B -->|第2趟| C["1 2 4 5 8"]
+    C -->|第3趟| D["1 2 4 5 8 已有序"]
+```
 
 ### 代码实现
 
-**Pseudocode**
+```javascript
+function bubbleSort(arr) {
+  const n = arr.length;
 
-```
-bubbleSort(array)
-  for i <- 1 to indexOfLastUnsortedElement-1
-    if leftElement > rightElement
-      swap leftElement and rightElement
-end bubbleSort
-```
+  // 第一步：外层控制「趟数」，一共最多走 n-1 趟
+  for (let i = 0; i < n - 1; i++) {
+    // 加一个标志位，记录这一趟有没有发生交换
+    let swapped = false;
 
-
-
-**Python**
-
-```python
-# Bubble sort in Python
-
-
-def bubbleSort(array):
-    
-    # run loops two times: one for walking throught the array 
-    # and the other for comparison
-    for i in range(len(array)):
-        for j in range(0, len(array) - i - 1):
-
-            # To sort in descending order, change > to < in this line.
-            if array[j] > array[j + 1]:
-                
-                # swap if greater is at the rear position
-                (array[j], array[j + 1]) = (array[j + 1], array[j])
-
-
-data = [-2, 45, 0, 11, -9]
-bubbleSort(data)
-print('Sorted Array in Asc ending Order:')
-print(data)
-```
-
-
-
-**Java**
-
-```java
-// Bubble sort in Java
-
-import java.util.Arrays;
-
-class BubbleSort {
-  void bubbleSort(int array[]) {
-    int size = array.length;
-    
-    // run loops two times: one for walking throught the array
-    // and the other for comparison
-    for (int i = 0; i < size - 1; i++)
-      for (int j = 0; j < size - i - 1; j++)
-
-        // To sort in descending order, change > to < in this line.
-        if (array[j] > array[j + 1]) {
-
-          // swap if greater is at the rear position
-          int temp = array[j];
-          array[j] = array[j + 1];
-          array[j + 1] = temp;
-        }
-  }
-
-  // driver code
-  public static void main(String args[]) {
-    int[] data = { -2, 45, 0, 11, -9 };
-    BubbleSort bs = new BubbleSort();
-    bs.bubbleSort(data);
-    System.out.println("Sorted Array in Ascending Order:");
-    System.out.println(Arrays.toString(data));
-  }
-}
-```
-
-
-
-**C**
-
-```c
-// Bubble sort in C
-
-#include <stdio.h>
-
-void bubbleSort(int array[], int size) {
-
-  // run loops two times: one for walking throught the array
-  // and the other for comparison
-  for (int step = 0; step < size - 1; ++step) {
-    for (int i = 0; i < size - step - 1; ++i) {
-      
-      // To sort in descending order, change">" to "<".
-      if (array[i] > array[i + 1]) {
-        
-        // swap if greater is at the rear position
-        int temp = array[i];
-        array[i] = array[i + 1];
-        array[i + 1] = temp;
+    // 第二步：内层做相邻比较
+    // 末尾的 i 个数已经归位, 所以 j 只走到 n-1-i
+    for (let j = 0; j < n - 1 - i; j++) {
+      // 第三步：左边比右边大就交换, 让大的往后走
+      if (arr[j] > arr[j + 1]) {
+        const temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
+        swapped = true;
       }
     }
+
+    // 第四步：如果一整趟都没交换, 说明已经有序, 提前结束
+    if (!swapped) {
+      break;
+    }
   }
+
+  return arr;
 }
 
-// function to print the array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i) {
-    printf("%d  ", array[i]);
-  }
-  printf("\n");
-}
-
-// driver code
-int main() {
-  int data[] = {-2, 45, 0, 11, -9};
-  int size = sizeof(data) / sizeof(data[0]);
-  bubbleSort(data, size);
-  printf("Sorted Array in Ascending Order:\n");
-  printArray(data, size);
-}
+bubbleSort([5, 1, 4, 2, 8]); // [1, 2, 4, 5, 8]
 ```
 
-
-
-------
+:::tip
+`swapped` 标志位是冒泡排序最值得记住的优化：对一个已经有序的数组，第一趟就不会发生交换，直接 `break`，时间复杂度从 O(n²) 降到 O(n)。
+:::
 
 ### 复杂度
 
-该算法使用了两层循环。
+| 情况 | 时间复杂度 | 说明 |
+| :--- | :--- | :--- |
+| 最坏 | O(n²) | 完全逆序, 每对都要交换 |
+| 最优 | O(n) | 已有序, 一趟无交换即退出 |
+| 平均 | O(n²) | 乱序 |
 
-Two loops are implemented in the algorithm.
+空间复杂度 O(1)，稳定排序（相等元素不交换，相对顺序不变）。
 
-| Cycle   | Number of Comparisons |
-| :------ | :-------------------- |
-| 1st     | (n-1)                 |
-| 2nd     | (n-2)                 |
-| 3rd     | (n-3)                 |
-| ....... | ......                |
-| last    | 1                     |
+## 选择排序
 
+**结论**：每一轮从未排序区里挑出最小的，放到已排序区的末尾。
 
+> **形象类比**：像选秀海选，每一轮都把剩下选手里最矮的那个拎出来排到队伍最前，下一轮再从剩下的人里挑最矮的，直到所有人按身高站好。
 
-时间复杂度：
+### 思路拆解
 
-- 最坏情况：O(n^2^)
+选择排序和冒泡排序都是 O(n²)，区别在于：冒泡是「边比边换」，选择是「找到最小才换一次」，交换次数最多只有 n-1 次。
 
-  如果我们要以升序排序，而数组是以降序排列，那么就会发生最坏情况。
+1. 把数组分成「已排序区」（左）和「未排序区」（右），一开始已排序区为空。
+2. 在未排序区里找到最小值的下标。
+3. 把这个最小值和未排序区的第一个位置交换。
+4. 已排序区扩大一格，重复。
 
-  If we want to sort in ascending order and the array is in descending order then, the worst case occurs.
-
-- 最优情况：`O(n)`
-
-  如果我们要以升序排序，而数组是以降序排列，那么就会发生最坏情况。
-
-  If the array is already sorted, then there is no need for sorting.
-
-- 平均情况：O(n^2^)
-
-  当数组的元素处于混乱顺序（既不升也不降）时，会发生这种情况。
-
-  It occurs when the elements of the array are in jumbled order (neither ascending nor descending).
-
-空间复杂度：`O(1)`
-
-
-
-### 应用场景
-
-- 对代码的复杂度没有要求。
-
-  The complexity of the code does not matter.
-
-- 更偏向于短代码。
-
-  A short code is preferred.
-
-
-
-## 计数排序
-
-计数排序是一种排序算法，它通过计算数组中每个唯一元素的出现次数来对数组的元素进行排序。将计数存储在辅助数组中，并通过将计数映射为辅助数组的索引来完成排序。
-
-Counting sort is a sorting algorithm that sorts the elements of an array by counting the number of occurrences of each unique element in the array. The count is stored in an auxiliary array and the sorting is done by mapping the count as an index of the auxiliary array.
-
-
-
-### 如何执行
-
-1. 从给定数组中找出最大元素。
-
-   Find out the maximum element from the given array.
-
-![Counting Sort steps](https://cdn.programiz.com/sites/tutorial2program/files/Counting-sort-0_0.png)
-
-
-
-2. 初始化一个长度为`max+1`的所有元素为0的数组。此数组用于存储数组中元素的数量。
-
-   Initialize an array of length `max+1` with all elements 0. This array is used for storing the count of the elements in the array.
-
-![Counting Sort Step](https://cdn.programiz.com/sites/tutorial2program/files/Counting-sort-1.png)
-
-
-
-3. 将每个元素的计数存储在count数组中它们各自的索引处。例如：如果元素3的计数为2，则将2存储在元素的第3个位置计数数组。如果数组中不存在元素“ 5”，则在第5个位置存储0。
-
-   Store the count of each element at their respective index in count array. For example: if the count of element 3 is 2 then, 2 is stored in the 3rd position of count array. If element "5" is not present in the array, then 0 is stored in 5th position.
-
-![Counting Sort Step](https://cdn.programiz.com/sites/tutorial2program/files/Counting-sort-2.png)
-
-
-
-4. 存储计数数组元素的累积和。它有助于将元素放入已排序数组的正确索引中。
-
-   Store cumulative sum of the elements of the count array. It helps in placing the elements into the correct index of the sorted array.
-
-![Counting Sort Step](https://cdn.programiz.com/sites/tutorial2program/files/Counting-sort-3.png)
-
-
-
-5. 在count数组中找到原始数组的每个元素的索引。这给出了累计计数。将元素放置在计算出的索引处，如下图所示。
-
-   Find the index of each element of the original array in the count array. This gives the cumulative count. Place the element at the index calculated as shown in figure below.
-
-![Counting Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Counting-sort-4_1.png)
-
-
-
-6. 将每个元素放置在正确位置后，将其数量减少一。
-
-   After placing each element at its correct position, decrease its count by one.
-
-
-
-------
+```mermaid
+graph LR
+    A["64 25 12 22 11"] -->|选出11| B["11 | 25 12 22 64"]
+    B -->|选出12| C["11 12 | 25 22 64"]
+    C -->|选出22| D["11 12 22 | 25 64"]
+    D -->|选出25| E["11 12 22 25 64"]
+```
 
 ### 代码实现
 
-**Pseudocode**
-
-```
-countingSort(array, size)
-  max <- find largest element in array
-  initialize count array with all zeros
-  for j <- 0 to size
-    find the total count of each unique element and 
-    store the count at jth index in count array
-  for i <- 1 to max
-    find the cumulative sum and store it in count array itself
-  for j <- size down to 1
-    restore the elements to array
-    decrease count of each element restored by 1
-```
-
-
-
-**Python**
-
-```python
-# Counting sort in Python programming
-
-
-def countingSort(array):
-    size = len(array)
-    output = [0] * size
-
-    # Initialize count array
-    count = [0] * 10
-
-    # Store the count of each elements in count array
-    for i in range(0, size):
-        count[array[i]] += 1
-
-    # Store the cummulative count
-    for i in range(1, 10):
-        count[i] += count[i - 1]
-
-    # Find the index of each element of the original array in count array
-    # place the elements in output array
-    i = size - 1
-    while i >= 0:
-        output[count[array[i]] - 1] = array[i]
-        count[array[i]] -= 1
-        i -= 1
-
-    # Copy the sorted elements into original array
-    for i in range(0, size):
-        array[i] = output[i]
-
-
-data = [4, 2, 2, 8, 3, 3, 1]
-countingSort(data)
-print("Sorted Array in Ascending Order: ")
-print(data)
-```
-
-
-
-**Java**
-
-```java
-// Counting sort in Java programming
-
-import java.util.Arrays;
-
-class CountingSort {
-  void countSort(int array[], int size) {
-    int[] output = new int[size + 1];
-
-    // Find the largest element of the array
-    int max = array[0];
-    for (int i = 1; i < size; i++) {
-      if (array[i] > max)
-        max = array[i];
-    }
-    int[] count = new int[max + 1];
-
-    // Initialize count array with all zeros.
-    for (int i = 0; i < max; ++i) {
-      count[i] = 0;
-    }
-
-    // Store the count of each element
-    for (int i = 0; i < size; i++) {
-      count[array[i]]++;
-    }
-
-    // Store the cummulative count of each array
-    for (int i = 1; i <= max; i++) {
-      count[i] += count[i - 1];
-    }
-
-    // Find the index of each element of the original array in count array, and
-    // place the elements in output array
-    for (int i = size - 1; i >= 0; i--) {
-      output[count[array[i]] - 1] = array[i];
-      count[array[i]]--;
-    }
-
-    // Copy the sorted elements into original array
-    for (int i = 0; i < size; i++) {
-      array[i] = output[i];
-    }
-  }
-
-  // Driver code
-  public static void main(String args[]) {
-    int[] data = { 4, 2, 2, 8, 3, 3, 1 };
-    int size = data.length;
-    CountingSort cs = new CountingSort();
-    cs.countSort(data, size);
-    System.out.println("Sorted Array in Ascending Order: ");
-    System.out.println(Arrays.toString(data));
-  }
-}
-```
-
-
-
-**C**
-
-```c
-// Counting sort in C programming
-
-#include <stdio.h>
-
-void countingSort(int array[], int size) {
-  int output[10];
-
-  // Find the largest element of the array
-  int max = array[0];
-  for (int i = 1; i < size; i++) {
-    if (array[i] > max)
-      max = array[i];
-  }
-
-  // The size of count must be at least (max+1) but
-  // we cannot declare it as int count(max+1) in C as
-  // it does not support dynamic memory allocation.
-  // So, its size is provided statically.
-  int count[10];
-
-  // Initialize count array with all zeros.
-  for (int i = 0; i <= max; ++i) {
-    count[i] = 0;
-  }
-
-  // Store the count of each element
-  for (int i = 0; i < size; i++) {
-    count[array[i]]++;
-  }
-
-  // Store the cummulative count of each array
-  for (int i = 1; i <= max; i++) {
-    count[i] += count[i - 1];
-  }
-
-  // Find the index of each element of the original array in count array, and
-  // place the elements in output array
-  for (int i = size - 1; i >= 0; i--) {
-    output[count[array[i]] - 1] = array[i];
-    count[array[i]]--;
-  }
-
-  // Copy the sorted elements into original array
-  for (int i = 0; i < size; i++) {
-    array[i] = output[i];
-  }
-}
-
-// Function to print an array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i) {
-    printf("%d  ", array[i]);
-  }
-  printf("\n");
-}
-
-// Driver code
-int main() {
-  int array[] = {4, 2, 2, 8, 3, 3, 1};
-  int n = sizeof(array) / sizeof(array[0]);
-  countingSort(array, n);
-  printArray(array, n);
-}
-```
-
-
-
-### 复杂度
-
-主要有四层循环。
-
-| for-loop | time of counting |
-| :------- | :--------------- |
-| 1st      | O(max)           |
-| 2nd      | O(size)          |
-| 3rd      | O(max)           |
-| 4th      | O(size)          |
-
-
-
-时间复杂度：
-
-Overall complexity = `O(max)+O(size)+O(max)+O(size)` = `O(max+size)`
-
-- 最坏情况：`O(n+k)`
-- 最优情况：`O(n+k)`
-- 平均情况：`O(n+k)`
-
-在上述所有情况下，复杂度都是相同的，因为无论元素如何放置在数组中，算法都会经历`n+k`时间。
-
-In all the above cases, the complexity is the same because no matter how the elements are placed in the array, the algorithm goes through `n+k` times.
-
-没有任何元素之间的比较，因此它比基于比较的排序技术要好。但是，如果整数很大，那是不好的，因为应该制作该大小的数组。
-
-There is no comparison between any elements, so it is better than comparison based sorting techniques. But, it is bad if the integers are very large because the array of that size should be made.
-
-空间复杂度：`O(max)`
-
-
-
-### 应用场景
-
-- 有多个较小的整数。
-
-  There are smaller integers with multiple counts.
-
-- 线性复杂度是必要的。
-
-  Linear complexity is the need.
-
-
-
-## 基数排序
-
-
-
-Radix sort is a sorting technique that sorts the elements by first grouping the individual digits of the same **place value**. Then, sort the elements according to their increasing/decreasing order.
-
-基数排序是一种排序技术，它通过首先将相同**位置值**的各个数字分组来对元素进行排序。然后，根据元素的升序/降序对它们进行排序。
-
-Suppose, we have an array of 8 elements. First, we will sort elements based on the value of the unit place. Then, we will sort elements based on the value of the tenth place. This process goes on until the last significant place.
-
-假设我们有8个元素组成的数组。首先，我们将基于单位位置的值对元素进行排序。然后，我们将根据第十位的值对元素进行排序。这个过程一直持续到最后一个重要位置。
-
-![Radix Sort Working](https://cdn.programiz.com/sites/tutorial2program/files/Radix-sort-0_0.png)
-
-### 如何执行
-
-1. 找到数组中最大的元素`max`。在这个数组中`[121, 432, 564, 23, 1, 45, 788]`，我们有最大的数字788。它有3个数字。因此，循环应上升到数百位（3次）。
-
-   Find the largest element in the array `max`. Let `X` be the number of digits in `max`. In this array `[121, 432, 564, 23, 1, 45, 788]`, we have the largest number 788. It has 3 digits. Therefore, the loop should go up to hundreds place (3 times).
-
-2. 使用任何稳定的排序技术对每个重要位置的数字进行排序。
-
-   Use any stable sorting technique to sort the digits at each significant place. We have used counting sort for this.
-
-   根据单位位数对元素进行排序。
-
-   Sort the elements based on the unit place digits.
-
-![Radix Sort working with Counting Sort as intermediate step](https://cdn.programiz.com/sites/tutorial2program/files/Radix-sort-one.png)
-
-3. 现在，基于十位数字对元素进行排序
-
-   Now, sort the elements based on digits at tens place.
-
-![Radix Sort Step](https://cdn.programiz.com/sites/tutorial2program/files/Radix-sort-ten.png)
-
-4. 最后，根据数百位数字对元素进行排序。
-
-   Finally, sort the elements based on the digits at hundreds place.
-
-![Selection Sort Step](https://cdn.programiz.com/sites/tutorial2program/files/Radix-sort-hundred.png)
-
-### 代码实现
-
-**Pseudocode**
-
-```
-radixSort(array)
-  d <- maximum number of digits in the largest element
-  create d buckets of size 0-9
-  for i <- 0 to d
-    sort the elements according to ith place digits using countingSort
-
-countingSort(array, d)
-  max <- find largest element among dth place elements
-  initialize count array with all zeros
-  for j <- 0 to size
-    find the total count of each unique digit in dth place of elements and
-    store the count at jth index in count array
-  for i <- 1 to max
-    find the cumulative sum and store it in count array itself
-  for j <- size down to 1
-    restore the elements to array
-    decrease count of each element restored by 1
-```
-
-
-
-**Python**
-
-```python
-# Radix sort in Python
-
-
-# Using counting sort to sort the elements in the basis of significant places
-def countingSort(array, place):
-    size = len(array)
-    output = [0] * size
-    count = [0] * 10
-
-    # Calculate count of elements
-    for i in range(0, size):
-        index = array[i] // place
-        count[index % 10] += 1
-
-    # Calculate cummulative count
-    for i in range(1, 10):
-        count[i] += count[i - 1]
-
-    # Place the elements in sorted order
-    i = size - 1
-    while i >= 0:
-        index = array[i] // place
-        output[count[index % 10] - 1] = array[i]
-        count[index % 10] -= 1
-        i -= 1
-
-    for i in range(0, size):
-        array[i] = output[i]
-
-
-# Main function to implement radix sort
-def radixSort(array):
-    # Get maximum element
-    max_element = max(array)
-
-    # Apply counting sort to sort elements based on place value.
-    place = 1
-    while max_element // place > 0:
-        countingSort(array, place)
-        place *= 10
-
-
-data = [121, 432, 564, 23, 1, 45, 788]
-radixSort(data)
-print(data)
-```
-
-
-
-**Java**
-
-```java
-// Radix Sort in Java Programming
-
-import java.util.Arrays;
-
-class RadixSort {
-
-  // Using counting sort to sort the elements in the basis of significant places
-  void countingSort(int array[], int size, int place) {
-    int[] output = new int[size + 1];
-    int max = array[0];
-    for (int i = 1; i < size; i++) {
-      if (array[i] > max)
-        max = array[i];
-    }
-    int[] count = new int[max + 1];
-
-    for (int i = 0; i < max; ++i)
-      count[i] = 0;
-
-    // Calculate count of elements
-    for (int i = 0; i < size; i++)
-      count[(array[i] / place) % 10]++;
-
-    // Calculate cummulative count
-    for (int i = 1; i < 10; i++)
-      count[i] += count[i - 1];
-
-    // Place the elements in sorted order
-    for (int i = size - 1; i >= 0; i--) {
-      output[count[(array[i] / place) % 10] - 1] = array[i];
-      count[(array[i] / place) % 10]--;
-    }
-
-    for (int i = 0; i < size; i++)
-      array[i] = output[i];
-  }
-
-  // Function to get the largest element from an array
-  int getMax(int array[], int n) {
-    int max = array[0];
-    for (int i = 1; i < n; i++)
-      if (array[i] > max)
-        max = array[i];
-    return max;
-  }
-
-  // Main function to implement radix sort
-  void radixSort(int array[], int size) {
-    // Get maximum element
-    int max = getMax(array, size);
-
-    // Apply counting sort to sort elements based on place value.
-    for (int place = 1; max / place > 0; place *= 10)
-      countingSort(array, size, place);
-  }
-
-  // Driver code
-  public static void main(String args[]) {
-    int[] data = { 121, 432, 564, 23, 1, 45, 788 };
-    int size = data.length;
-    RadixSort rs = new RadixSort();
-    rs.radixSort(data, size);
-    System.out.println("Sorted Array in Ascending Order: ");
-    System.out.println(Arrays.toString(data));
-  }
-}
-```
-
-
-
-**C**
-
-```c
-// Radix Sort in C Programming
-
-#include <stdio.h>
-
-// Function to get the largest element from an array
-int getMax(int array[], int n) {
-  int max = array[0];
-  for (int i = 1; i < n; i++)
-    if (array[i] > max)
-      max = array[i];
-  return max;
-}
-
-// Using counting sort to sort the elements in the basis of significant places
-void countingSort(int array[], int size, int place) {
-  int output[size + 1];
-  int max = (array[0] / place) % 10;
-
-  for (int i = 1; i < size; i++) {
-    if (((array[i] / place) % 10) > max)
-      max = array[i];
-  }
-  int count[max + 1];
-
-  for (int i = 0; i < max; ++i)
-    count[i] = 0;
-
-  // Calculate count of elements
-  for (int i = 0; i < size; i++)
-    count[(array[i] / place) % 10]++;
-    
-  // Calculate cummulative count
-  for (int i = 1; i < 10; i++)
-    count[i] += count[i - 1];
-
-  // Place the elements in sorted order
-  for (int i = size - 1; i >= 0; i--) {
-    output[count[(array[i] / place) % 10] - 1] = array[i];
-    count[(array[i] / place) % 10]--;
-  }
-
-  for (int i = 0; i < size; i++)
-    array[i] = output[i];
-}
-
-// Main function to implement radix sort
-void radixsort(int array[], int size) {
-  // Get maximum element
-  int max = getMax(array, size);
-
-  // Apply counting sort to sort elements based on place value.
-  for (int place = 1; max / place > 0; place *= 10)
-    countingSort(array, size, place);
-}
-
-// Print an array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i) {
-    printf("%d  ", array[i]);
-  }
-  printf("\n");
-}
-
-// Driver code
-int main() {
-  int array[] = {121, 432, 564, 23, 1, 45, 788};
-  int n = sizeof(array) / sizeof(array[0]);
-  radixsort(array, n);
-  printArray(array, n);
-}
-```
-
-
-
-### 复杂度
-
-由于基数排序是一种非比较算法，因此它比比较排序算法具有优势。
-
-Since radix sort is a non-comparative algorithm, it has advantages over comparative sorting algorithms.
-
-对于使用计数排序作为中间稳定排序的基数排序，时间复杂度为`O(d(n+k))`。
-
-For the radix sort that uses counting sort as an intermediate stable sort, the time complexity is `O(d(n+k))`.
-
-在这里，`d`是数字周期，`O(n+k)`是计数排序的时间复杂度。
-
-Here, `d` is the number cycle and `O(n+k)` is the time complexity of counting sort.
-
-因此，基数排序具有线性时间复杂度，这比`O(nlog n)`比较排序算法要好。
-
-Thus, radix sort has linear time complexity which is better than `O(nlog n)` of comparative sorting algorithms.
-
-如果我们使用非常大的数字或其他基数（例如32位和64位数字），则它可以在线性时间内执行，但是中间排序会占用很大的空间。
-
-If we take very large digit numbers or the number of other bases like 32-bit and 64-bit numbers then it can perform in linear time however the intermediate sort takes large space.
-
-这使得基数排序空间效率低下。这就是为什么在软件库中不使用这种排序的原因。
-
-This makes radix sort space inefficient. This is the reason why this sort is not used in software libraries.
-
-
-
-### 应用场景
-
-- 制作后缀数组时使用DC3算法
-
-  DC3 algorithm while making a suffix array.
-
-- 大范围数字的地方
-
-  places where there are numbers in large ranges.
-
-
-
-## 桶排序
-
-
-
-桶排序是一种排序技术，它通过首先将元素分为几组称为**桶**的元素来对元素进行排序。使用适当的排序算法中的任何一个或递归调用相同的算法对每个**存储桶**中的元素进行排序。
-
-Bucket Sort is a sorting technique that sorts the elements by first dividing the elements into several groups called **buckets**. The elements inside each **bucket** are sorted using any of the suitable sorting algorithms or recursively calling the same algorithm.
-
-创建了几个存储桶。每个存储桶都充满特定范围的元素。存储桶中的元素使用任何其他算法进行排序。最后，收集存储桶中的元素以获取排序后的数组。
-
-Several buckets are created. Each bucket is filled with a specific range of elements. The elements inside the bucket are sorted using any other algorithm. Finally, the elements of the bucket are gathered to get the sorted array.
-
-桶分类的过程可以理解为**分散收集**方法。首先将元素分散到存储桶中，然后对存储桶的元素进行排序。最后，元素按顺序收集。
-
-The process of bucket sort can be understood as **a scatter-gather** approach. The elements are first scattered into buckets then the elements of buckets are sorted. Finally, the elements are gathered in order.
-
-![Bucket Sort Working](https://cdn.programiz.com/sites/tutorial2program/files/Bucket_2.png)
-
-
-
-### 代码实现
-
-1. 假设输入数组为：
-
-   Suppose, the input array is:
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0.1_0.png)
-
-   创建一个大小为10的数组。此数组的每个插槽都用作存储元素的存储桶。
-
-   Create an array of size 10. Each slot of this array is used as a bucket for storing elements.
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0_0.png)
-
-2. 将元素插入数组中的存储桶。根据桶的范围插入元素。如果我们将整数作为输入，则必须将其除以间隔（此处为10）以获取下限值。
-
-   Insert elements into the buckets from the array. The elements are inserted according to the range of the bucket. If we take integer numbers as input, we have to divide it by the interval (10 here) to get the floor value.
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0.2_0.png)
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0.3_0.png)
-
-3. 使用任何稳定的排序算法对每个存储桶的元素进行排序。在这里，我们使用了quicksort（内置函数）。
-
-   The elements of each bucket are sorted using any of the stable sorting algorithms. Here, we have used quicksort (inbuilt function).
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0.4_0.png)
-
-4. 收集每个存储桶中的元素。
-
-   The elements from each bucket are gathered.
-
-   通过遍历存储桶并在每个循环中将单个元素插入原始数组来完成此操作。一旦将存储桶中的元素复制到原始数组中，该元素将被擦除。
-
-   It is done by iterating through the bucket and inserting an individual element into the original array in each cycle. The element from the bucket is erased once it is copied into the original array.
-
-   ![Bucket Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/Bucket-sort-0.5_0.png)
-
-
-
-### 代码实现
-
-
-
-**Pseudocode**
-
-```
-bucketSort()
-  create N buckets each of which can hold a range of values
-  for all the buckets
-    initialize each bucket with 0 values
-  for all the buckets
-    put elements into buckets matching the range
-  for all the buckets 
-    sort elements in each bucket
-  gather elements from each bucket
-end bucketSort
-```
-
-
-
-**Python**
-
-```python
-# Bucket Sort in Python
-
-
-def bucketSort(array):
-    bucket = []
-
-    # Create empty buckets
-    for i in range(len(array)):
-        bucket.append([])
-
-    # Insert elements into their respective buckets
-    for j in array:
-        index_b = int(10 * j)
-        bucket[index_b].append(j)
-
-    # Sort the elements of each bucket
-    for i in range(len(array)):
-        bucket[i] = sorted(bucket[i])
-
-    # Get the sorted elements
-    k = 0
-    for i in range(len(array)):
-        for j in range(len(bucket[i])):
-            array[k] = bucket[i][j]
-            k += 1
-    return array
-
-
-array = [.42, .32, .33, .52, .37, .47, .51]
-print("Sorted Array in descending order is")
-print(bucketSort(array))
-```
-
-
-
-**Java**
-
-```java
-// Bucket sort in Java
-
-import java.util.ArrayList;
-import java.util.Collections;
-
-public class BucketSort {
-  public void bucketSort(float[] arr, int n) {
-    if (n <= 0)
-      return;
-    @SuppressWarnings("unchecked")
-    ArrayList<Float>[] bucket = new ArrayList[n];
-
-    // Create empty buckets
-    for (int i = 0; i < n; i++)
-      bucket[i] = new ArrayList<Float>();
-
-    // Add elements into the buckets
-    for (int i = 0; i < n; i++) {
-      int bucketIndex = (int) arr[i] * n;
-      bucket[bucketIndex].add(arr[i]);
-    }
-
-    // Sort the elements of each bucket
-    for (int i = 0; i < n; i++) {
-      Collections.sort((bucket[i]));
-    }
-
-    // Get the sorted array
-    int index = 0;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0, size = bucket[i].size(); j < size; j++) {
-        arr[index++] = bucket[i].get(j);
+```javascript
+function selectionSort(arr) {
+  const n = arr.length;
+
+  // 第一步：外层每次确定一个「已排序区」的末尾位置 i
+  for (let i = 0; i < n - 1; i++) {
+    // 第二步：先假设未排序区的第一个就是最小的
+    let minIndex = i;
+
+    // 第三步：从 i+1 往后扫, 找出真正最小值的下标
+    for (let j = i + 1; j < n; j++) {
+      if (arr[j] < arr[minIndex]) {
+        minIndex = j;
       }
     }
+
+    // 第四步：如果找到了更小的, 把它换到位置 i
+    if (minIndex !== i) {
+      const temp = arr[i];
+      arr[i] = arr[minIndex];
+      arr[minIndex] = temp;
+    }
   }
 
-  // Driver code
-  public static void main(String[] args) {
-    BucketSort b = new BucketSort();
-    float[] arr = { (float) 0.42, (float) 0.32, (float) 0.33, (float) 0.52, (float) 0.37, (float) 0.47,
-        (float) 0.51 };
-    b.bucketSort(arr, 7);
-
-    for (float i : arr)
-      System.out.print(i + "  ");
-  }
+  return arr;
 }
+
+selectionSort([64, 25, 12, 22, 11]); // [11, 12, 22, 25, 64]
 ```
 
-
-
-**C**
-
-```c
-// Bucket sort in C
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#define NARRAY 7   // Array size
-#define NBUCKET 6  // Number of buckets
-#define INTERVAL 10  // Each bucket capacity
-
-struct Node {
-  int data;
-  struct Node *next;
-};
-
-void BucketSort(int arr[]);
-struct Node *InsertionSort(struct Node *list);
-void print(int arr[]);
-void printBuckets(struct Node *list);
-int getBucketIndex(int value);
-
-// Sorting function
-void BucketSort(int arr[]) {
-  int i, j;
-  struct Node **buckets;
-
-  // Create buckets and allocate memory size
-  buckets = (struct Node **)malloc(sizeof(struct Node *) * NBUCKET);
-
-  // Initialize empty buckets
-  for (i = 0; i < NBUCKET; ++i) {
-    buckets[i] = NULL;
-  }
-
-  // Fill the buckets with respective elements
-  for (i = 0; i < NARRAY; ++i) {
-    struct Node *current;
-    int pos = getBucketIndex(arr[i]);
-    current = (struct Node *)malloc(sizeof(struct Node));
-    current->data = arr[i];
-    current->next = buckets[pos];
-    buckets[pos] = current;
-  }
-
-  // Print the buckets along with their elements
-  for (i = 0; i < NBUCKET; i++) {
-    printf("Bucket[%d]: ", i);
-    printBuckets(buckets[i]);
-    printf("\n");
-  }
-
-  // Sort the elements of each bucket
-  for (i = 0; i < NBUCKET; ++i) {
-    buckets[i] = InsertionSort(buckets[i]);
-  }
-
-  printf("-------------\n");
-  printf("Bucktets after sorting\n");
-  for (i = 0; i < NBUCKET; i++) {
-    printf("Bucket[%d]: ", i);
-    printBuckets(buckets[i]);
-    printf("\n");
-  }
-
-  // Put sorted elements on arr
-  for (j = 0, i = 0; i < NBUCKET; ++i) {
-    struct Node *node;
-    node = buckets[i];
-    while (node) {
-      arr[j++] = node->data;
-      node = node->next;
-    }
-  }
-
-  return;
-}
-
-// Function to sort the elements of each bucket
-struct Node *InsertionSort(struct Node *list) {
-  struct Node *k, *nodeList;
-  if (list == 0 || list->next == 0) {
-    return list;
-  }
-
-  nodeList = list;
-  k = list->next;
-  nodeList->next = 0;
-  while (k != 0) {
-    struct Node *ptr;
-    if (nodeList->data > k->data) {
-      struct Node *tmp;
-      tmp = k;
-      k = k->next;
-      tmp->next = nodeList;
-      nodeList = tmp;
-      continue;
-    }
-
-    for (ptr = nodeList; ptr->next != 0; ptr = ptr->next) {
-      if (ptr->next->data > k->data)
-        break;
-    }
-
-    if (ptr->next != 0) {
-      struct Node *tmp;
-      tmp = k;
-      k = k->next;
-      tmp->next = ptr->next;
-      ptr->next = tmp;
-      continue;
-    } else {
-      ptr->next = k;
-      k = k->next;
-      ptr->next->next = 0;
-      continue;
-    }
-  }
-  return nodeList;
-}
-
-int getBucketIndex(int value) {
-  return value / INTERVAL;
-}
-
-void print(int ar[]) {
-  int i;
-  for (i = 0; i < NARRAY; ++i) {
-    printf("%d ", ar[i]);
-  }
-  printf("\n");
-}
-
-// Print buckets
-void printBuckets(struct Node *list) {
-  struct Node *cur = list;
-  while (cur) {
-    printf("%d ", cur->data);
-    cur = cur->next;
-  }
-}
-
-// Driver code
-int main(void) {
-  int array[NARRAY] = {42, 32, 33, 52, 37, 47, 51};
-
-  printf("Initial array: ");
-  print(array);
-  printf("-------------\n");
-
-  BucketSort(array);
-  printf("-------------\n");
-  printf("Sorted array: ");
-  print(array);
-  return 0;
-}
-```
-
-
+:::warning
+选择排序是 **不稳定** 的。比如 `[5a, 5b, 2]`，第一轮会把 `5a` 和 `2` 交换成 `[2, 5b, 5a]`，两个 5 的相对顺序被打乱了。
+:::
 
 ### 复杂度
 
-**时间复杂度**
+无论数据是否有序，都要完整扫描未排序区找最小值，所以最优、最坏、平均都是 O(n²)。空间复杂度 O(1)。优点是交换次数少（最多 n-1 次），适合「交换成本很高」的场景。
 
-- **最坏情况：** O(n^2^)
+## 插入排序
 
-  当数组中有近距离的元素时，它们很可能放在同一存储桶中。这可能会导致某些存储桶中的存储元素数量比其他存储桶更多。这使得复杂度取决于用于对存储桶元素进行排序的排序算法。
+**结论**：把数组看成「已排序」和「未排序」两部分，每次从未排序里取一个数，往已排序区里找到合适的位置插进去。
 
-  When there are elements of close range in the array, they are likely to be placed in the same bucket. This may result in some buckets having more number of elements than others. It makes the complexity depend on the sorting algorithm used to sort the elements of the bucket.
+> **形象类比**：像打牌时理手牌。左手已经排好的牌是有序的，右手每摸一张新牌，就从右往左比，找到该插的缝隙塞进去，比它大的牌都往右挪一格让位。
 
-  当元素按相反顺序排列时，复杂性将变得更糟。如果使用插入排序对存储桶中的元素进行排序，则时间复杂度变为 O(n^2^)。
+### 思路拆解
 
+1. 第一个元素天然算「已排序」，从第二个元素开始处理。
+2. 取出当前元素 `current`，和它左边已排序区的元素从右往左比。
+3. 只要左边的数比 `current` 大，就把左边的数往右挪一格腾位置。
+4. 直到找到一个不比 `current` 大的位置，把 `current` 放进去。
 
-  The complexity becomes even worse when the elements are in reverse order. If insertion sort is used to sort elements of the bucket, then the time complexity becomes O(n^2^).
+```mermaid
+graph LR
+    A["摸到 3, 手牌 [5 8]"] -->|3比8小, 8右移| B["[5 _ 8]"]
+    B -->|3比5小, 5右移| C["[_ 5 8]"]
+    C -->|插入3| D["[3 5 8]"]
+```
 
-- **最优情况：** `O(n+k)`
+### 代码实现
 
-  当元素在存储桶中均匀分布且每个存储桶中元素数量几乎相等时，会发生这种情况。
+```javascript
+function insertionSort(arr) {
+  const n = arr.length;
 
-  It occurs when the elements are uniformly distributed in the buckets with a nearly equal number of elements in each bucket.
+  // 第一步：从第二个元素开始(下标1), 第一个默认已排序
+  for (let i = 1; i < n; i++) {
+    // 第二步：把当前要插入的牌先「抓在手里」存起来
+    const current = arr[i];
 
-  如果存储桶中的元素已经被排序，那么复杂性就会变得更好。
+    // 第三步：j 指向已排序区的最后一个, 准备从右往左找位置
+    let j = i - 1;
 
-  The complexity becomes even better if the elements inside the buckets are already sorted.
+    // 第四步：只要左边的数比 current 大, 就让它右移一格腾地方
+    while (j >= 0 && arr[j] > current) {
+      arr[j + 1] = arr[j];
+      j--;
+    }
 
-  如果使用插入排序对存储桶中的元素进行排序，则最佳情况下的总体复杂度将是线性的。`O(n+k)`。`O(n)`是制造桶`O(k)`的复杂度，是在最佳情况下使用具有线性时间复杂度的算法对桶的元素进行分类的复杂度。
+    // 第五步：循环停下来的位置就是该插的缝隙, 放进去
+    arr[j + 1] = current;
+  }
 
-  If insertion sort is used to sort elements of a bucket then the overall complexity in the best case will be linear ie. `O(n+k)`. `O(n)` is the complexity for making the buckets and `O(k)` is the complexity for sorting the elements of the bucket using algorithms having linear time complexity at the best case.
+  return arr;
+}
 
-- **平均情况** `O(n)`
+insertionSort([5, 2, 4, 6, 1, 3]); // [1, 2, 3, 4, 5, 6]
+```
 
-  当元素在数组中随机分布时发生。即使元素分布不均匀，存储桶排序也会在线性时间内运行。直到铲斗尺寸的平方和之和在元素总数中呈线性关系时，它才成立。
+:::tip
+插入排序对 **基本有序** 的数组特别快（接近 O(n)），因为内层 `while` 几乎不用挪动。所以很多语言的内置排序在小数组上会切换成插入排序（比如 V8 引擎的 TimSort）。
+:::
 
-  It occurs when the elements are distributed randomly in the array. Even if the elements are not distributed uniformly, bucket sort runs in linear time. It holds true until the sum of the squares of the bucket sizes is linear in the total number of elements.
+### 复杂度
 
+| 情况 | 时间复杂度 | 说明 |
+| :--- | :--- | :--- |
+| 最坏 | O(n²) | 完全逆序, 每张牌都要挪到最左 |
+| 最优 | O(n) | 已有序, 内层 while 不执行 |
+| 平均 | O(n²) | 乱序 |
 
-
-### 应用场景
-
-- 输入在一个范围内均匀分布。
-
-  input is uniformly distributed over a range.
-
-- 有浮点值
-
-  there are floating point values
-
-
+空间复杂度 O(1)，稳定排序。
 
 ## 希尔排序
 
+**结论**：插入排序的加强版。先按一个较大的「间隔」分组做插入排序，再逐步缩小间隔，最后间隔为 1 时就是一次普通插入排序，但此时数组已经基本有序，跑得飞快。
 
+> **形象类比**：理一副打乱的扑克牌时，如果直接一张张插，离得远的牌要挪很多步。希尔排序的办法是先「隔几张比一次」，让大数快速跳到右边、小数快速跳到左边，把牌粗略整理一遍；然后缩小间隔再整理；最后一遍只需微调。
 
-希尔排序是一种算法，该算法首先对彼此远离的元素进行排序，然后依次减小要排序的元素之间的间隔。它是插入排序的通用版本。
+### 思路拆解
 
-Shell sort is an algorithm that first sorts the elements far apart from each other and successively reduces the interval between the elements to be sorted. It is a generalized version of insertion sort.
+插入排序的痛点：如果一个小数在数组最右边，要一步步挪到最左，效率极低。希尔排序用「间隔跳跃」让元素能大跨步移动。
 
-在希尔排序中，将按特定间隔对元素进行排序。元素之间的间隔根据使用的顺序逐渐减小。希尔排序的性能取决于给定输入数组使用的序列类型。
+1. 选一个初始间隔 `gap`，通常取 `n/2`。
+2. 把间隔为 `gap` 的元素看作一组，对每组做插入排序。
+3. 间隔减半（`gap = gap / 2`），重复。
+4. 直到 `gap = 1`，做最后一次插入排序，整体完成。
 
-In shell sort, elements at a specific interval are sorted. The interval between the elements is gradually decreased based on the sequence used. The performance of the shell sort depends on the type of sequence used for a given input array.
-
-一些常用的排序
-
-- Shell's original sequence: `N/2 , N/4 , …, 1`
-- Knuth's increments: `1, 4, 13, …, (3k – 1) / 2`
-- Sedgewick's increments: `1, 8, 23, 77, 281, 1073, 4193, 16577...4j+1+ 3·2j+ 1`
-- Hibbard's increments: `1, 3, 7, 15, 31, 63, 127, 255, 511…`
-- Papernov & Stasevich increment: `1, 3, 5, 9, 17, 33, 65,...`
-- Pratt: `1, 2, 3, 4, 6, 9, 8, 12, 18, 27, 16, 24, 36, 54, 81....`
-
-
-
-### 如何执行
-
-1. 假设我们需要对以下数组进行排序。
-
-   Suppose, we need to sort the following array.
-
-   ![Shell sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.0.png)
-
-2. 我们使用原始希尔序列 `(N/2, N/4, ...1` 作为间隔。
-
-   We are using the shell's original sequence `(N/2, N/4, ...1)` as intervals in our algorithm.
-
-   在第一个循环中，如果数组大小为0 `N = 8`，则对间隔为的元素`N/2 = 4`进行比较并交换（如果它们不按顺序排列）。
-
-   In the first loop, if the array size is `N = 8`, then the elements lying at the interval of `N/2 = 4` are compared and swapped if they are not in order.
-
-   a. 将`0th`与`4th`比较。
-
-   ​	The `0th` element is compared with the `4th` element.
-
-   b. 如果第`0th`元素大于`4th`然后， `4th`首先将元素存储在`temp`变量中，并将`0th`元素（即更大的元素）存储在该`4th`位置中，将其中存储的元素`temp`	存储在该`0th`位置中。
-
-   ​	If the `0th` element is greater than the `4th` one then, the `4th` element is first stored in `temp` variable and the `0th` element is stored in the `4th` 	position and the element stored in `temp` is stored in the `0th` position.
-
-   ![Shell Sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.1.png)
-
-   对于所有其余元素，此过程将继续进行。
-
-   This process goes on for all the remaining elements.
-
-   ![Shell Sort steps](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.2.png)
-
-3. 在第二个循环中，采用的间隔，`N/4 = 8/4 = 2`并再次对位于这些间隔的元素进行排序。
-
-   In the second loop, an interval of `N/4 = 8/4 = 2` is taken and again the elements lying at these intervals are sorted.
-
-   ![Shell Sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.3.png)
-
-   ![Shell Sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.4.png)
-
-4. 其余元素的处理相同。
-
-   The same process goes on for remaining elements.
-
-   ![Shell Sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.5.png)
-
-5. 最后，当间隔`N/8 = 8/8 =1`为时，对间隔为1的数组元素进行排序。现在，该数组已完全排序。
-
-   Finally, when the interval is `N/8 = 8/8 =1` then the array elements lying at the interval of 1 are sorted. The array is now completely sorted.
-
-   ![Shell Sort step](https://cdn.programiz.com/sites/tutorial2program/files/shell-sort-0.6.png)
-
-
+```mermaid
+graph TD
+    A["原始: 8 9 1 7 2 3 5 4   n=8"] --> B["gap=4: 隔4分组各自排"]
+    B --> C["gap=2: 隔2分组各自排"]
+    C --> D["gap=1: 普通插入排序, 此时已基本有序"]
+    D --> E["完成"]
+```
 
 ### 代码实现
 
+```javascript
+function shellSort(arr) {
+  const n = arr.length;
 
+  // 第一步：间隔从 n/2 开始, 每轮减半, 直到 1
+  for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
 
-**Pseudocode**
+    // 第二步：对每个「间隔分组」做插入排序
+    // 这里不是逐组处理, 而是从 gap 开始逐个元素处理, 等价于交替处理各组
+    for (let i = gap; i < n; i++) {
+      // 第三步：把当前元素抓在手里(和插入排序一样)
+      const current = arr[i];
 
-```
-shellSort(array, size)
-  for interval i <- size/2n down to 1
-    for each interval "i" in array
-        sort all the elements at interval "i"
-end shellSort
-```
-
-
-
-**Python**
-
-```python
-# Shell sort in python
-
-
-def shellSort(array, n):
-
-    # Rearrange elements at each n/2, n/4, n/8, ... intervals
-    interval = n // 2
-    while interval > 0:
-        for i in range(interval, n):
-            temp = array[i]
-            j = i
-            while j >= interval and array[j - interval] > temp:
-                array[j] = array[j - interval]
-                j -= interval
-
-            array[j] = temp
-        interval //= 2
-
-
-data = [9, 8, 3, 7, 5, 6, 4, 1]
-size = len(data)
-shellSort(data, size)
-print('Sorted Array in Ascending Order:')
-print(data)
-```
-
-
-
-**Java**
-
-```java
-// Shell sort in Java programming
-
-import java.util.Arrays;
-
-// Shell sort
-class ShellSort {
-
-  // Rearrange elements at each n/2, n/4, n/8, ... intervals
-  void shellSort(int array[], int n) {
-  for (int interval = n / 2; interval > 0; interval /= 2) {
-    for (int i = interval; i < n; i += 1) {
-    int temp = array[i];
-    int j;
-    for (j = i; j >= interval && array[j - interval] > temp; j -= interval) {
-      array[j] = array[j - interval];
-    }
-    array[j] = temp;
-    }
-  }
-  }
-
-  // Driver code
-  public static void main(String args[]) {
-  int[] data = { 9, 8, 3, 7, 5, 6, 4, 1 };
-  int size = data.length;
-  ShellSort ss = new ShellSort();
-  ss.shellSort(data, size);
-  System.out.println("Sorted Array in Ascending Order: ");
-  System.out.println(Arrays.toString(data));
-  }
-}
-```
-
-
-
-**C**
-
-```c
-// Shell Sort in C programming
-
-#include <stdio.h>
-
-// Shell sort
-void shellSort(int array[], int n) {
-  // Rearrange elements at each n/2, n/4, n/8, ... intervals
-  for (int interval = n / 2; interval > 0; interval /= 2) {
-    for (int i = interval; i < n; i += 1) {
-      int temp = array[i];
-      int j;
-      for (j = i; j >= interval && array[j - interval] > temp; j -= interval) {
-        array[j] = array[j - interval];
+      // 第四步：在同组内(每次跨 gap 步)从右往左找位置
+      let j = i - gap;
+      while (j >= 0 && arr[j] > current) {
+        arr[j + gap] = arr[j];
+        j -= gap;
       }
-      array[j] = temp;
+
+      // 第五步：放到该插的位置
+      arr[j + gap] = current;
     }
   }
+
+  return arr;
 }
 
-// Print an array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i) {
-    printf("%d  ", array[i]);
-  }
-  printf("\n");
-}
-
-// Driver code
-int main() {
-  int data[] = {9, 8, 3, 7, 5, 6, 4, 1};
-  int size = sizeof(data) / sizeof(data[0]);
-  shellSort(data, size);
-  printf("Sorted array: \n");
-  printArray(data, size);
-}
+shellSort([8, 9, 1, 7, 2, 3, 5, 4]); // [1, 2, 3, 4, 5, 7, 8, 9]
 ```
 
-
+:::info
+把上面代码里的 `gap` 全替换成 `1`，它就退化成标准插入排序。希尔排序的本质就是「让插入排序先做几遍粗排，减少最后精排时的移动量」。
+:::
 
 ### 复杂度
 
-**时间复杂度**
+希尔排序的复杂度取决于 `gap` 序列的选取，比较难精确分析：
 
-- **最坏情况：**小于或等于 `O(n2)`
-  据Poonen定理确定
+- 最坏情况：O(n²)（用 n/2 减半序列时）
+- 最优情况：O(n log n)
+- 平均情况：约 O(n^1.3)，比纯插入排序快不少
 
-- **最优情况：**`O(n*log n)`
-
-  对数组进行排序后，每个时间间隔（或增量）的比较总数等于数组的大小。
-
-  When the array is already sorted, the total number of comparisons for each interval (or increment) is equal to the size of the array.
-
-- **平均情况：**`O(n*log n)`
-  在 O(n^1.25^)左右
-
-
-
-**空间复杂度**
-
-希尔排序的空间复杂度：`O(1)`
-
-
-
-### 应用场景
-
-- 调用堆栈是开销。uClibc库使用这种排序。
-
-  calling a stack is overhead. uClibc library uses this sort.
-
-- 递归超出限制。bzip2压缩器使用它。
-
-  recursion exceeds a limit. bzip2 compressor uses it.
-
-- 当接近的元素相距很远时，插入排序的效果不佳。壳排序有助于缩短封闭元素之间的距离。因此，将执行的交换次数将更少。
-
-  Insertion sort does not perform well when the close elements are far apart. Shell sort helps in reducing the distance between the close elements. Thus, there will be less number of swapping to be performed.
-
-
+空间复杂度 O(1)，**不稳定**（跨间隔交换会打乱相等元素的相对顺序）。
 
 ## 归并排序
 
-归并排序是一种分治算法。它是最主流的排序算法之一，也是建立对构建递归算法的信心的一种好方法。
+**结论**：典型的分治法。把数组一分为二，分别排好，再把两个有序的子数组「合并」成一个有序数组。
 
-Merge Sort is a kind of Divide and Conquer algorithm in computer programming. It is one of the most popular sorting algorithms and a great way to develop confidence in building recursive algorithms.
+> **形象类比**：像两队已经排好队的人合并成一队。两队各派排头出来比身高，矮的那个先进新队伍，然后那队再出下一个排头继续比，直到两队都走完。难点不在「分」，而在「合并两个有序队列」这一步。
 
-![merge sort example](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-example_0.png)
+### 思路拆解
 
-
-
-### 如何执行
-
-合并排序算法将数组递归地分成两半，直到我们得到具有1个元素的数组的基本情况。
-
-The merge sort algorithm recursively divides the array into halves until we reach the base case of array with 1 element. 
-
-之后，合并功能开始起作用，并将已排序的数组合并为更大的数组，直到合并整个数组。
-
-After that, the merge function comes into play and combines the sorted arrays into larger arrays until the whole array is merged.
-
-```
-MergeSort(A, p, r):
-    if p > r 
-        return
-    q = (p+r)/2
-    mergeSort(A, p, q)
-    mergeSort(A, q+1, r)
-    merge(A, p, q, r)
-```
-
-
-
-![merge sort algorithm visualization](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-in-action---merge-step-simple.png)
-
-![merge two sorted arrays](https://cdn.programiz.com/sites/tutorial2program/files/merge-two-sorted-arrays.png)
-
-
-
-### 归并详解
-
-数组 `A [0..5]` 包含两个排序的子数组 `A [0..3]` 和 `A [4..5]`。让我们看看merge函数如何合并两个数组。
-
-The array `A[0..5]` contains two sorted subarrays `A[0..3]` and `A[4..5]`. Let us see how the merge function will merge the two arrays.
-
-```c
-void merge(int arr[], int p, int q, int r) {
-// Here, p = 0, q = 4, r = 6 (size of array)
+```mermaid
+graph TD
+    A["6 5 12 10 9 1"] --> B["6 5 12"]
+    A --> C["10 9 1"]
+    B --> D["6"]
+    B --> E["5 12"]
+    C --> F["10"]
+    C --> G["9 1"]
+    E --> H["5"]
+    E --> I["12"]
+    G --> J["9"]
+    G --> K["1"]
+    H --> L["合并: 5 12"]
+    I --> L
+    J --> M["合并: 1 9"]
+    K --> M
+    L --> N["合并: 5 6 12"]
+    D --> N
+    M --> O["合并: 1 9 10"]
+    F --> O
+    N --> P["合并: 1 5 6 9 10 12"]
+    O --> P
 ```
 
-![Merging two consecutive subarrays of array](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-1.png)
+分两步：
 
-1. 创建要排序的子数组的重复副本
-
-   Create duplicate copies of sub-arrays to be sorted
-
-
-
-```c
-    // Create L ← A[p..q] and M ← A[q+1..r]
-    int n1 = q - p + 1 = 3 - 0 + 1 = 4;
-    int n2 = r - q = 5 - 3 = 2;
-
-    int L[4], M[2];
-
-    for (int i = 0; i < 4; i++)
-        L[i] = arr[p + i];
-        // L[0,1,2,3] = A[0,1,2,3] = [1,5,10,12]
-
-    for (int j = 0; j < 2; j++)
-        M[j] = arr[q + 1 + j];
-        // M[0,1,2,3] = A[4,5] = [6,9]
-```
-
-![Create copies of subarrays for merging](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-2.png)
-
-2. 维护子数组和主数组的当前索引
-
-   Maintain current index of sub-arrays and main array
-
-
-
-```c
-    int i, j, k;
-    i = 0; 
-    j = 0; 
-    k = p; 
-```
-
-![Maintain indices of copies of sub array and main array](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-3.png)
-
-3. 直到我们到达L或M的尽头，在元素L和M中选择更大的一个并将其放置在A [p..r]的正确位置
-
-   Until we reach the end of either L or M, pick larger among elements L and M and place them in the correct position at A[p..r]
-
-
-
-```c
-    while (i < n1 && j < n2) { 
-        if (L[i] <= M[j]) { 
-            arr[k] = L[i]; i++; 
-        } 
-        else { 
-            arr[k] = M[j]; 
-            j++; 
-        } 
-        k++; 
-    }
-```
-
-![Comparing individual elements of sorted subarrays until we reach end of one](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-4.png)
-
-4. 当我们用完L或M中的元素时，请拾取其余元素并放入A [p..r]
-
-   When we run out of elements in either L or M, pick up the remaining elements and put in A[p..r]
-
-
-
-```c
-    // We exited the earlier loop because j < n2 doesn't hold
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
-```
-
-![Copy the remaining elements from the first array to main subarray](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-5.png)
-
-如果M的大小大于L，则需要此步骤。
-
-This step would have been needed if the size of M was greater than L.
-
-
-
-```c
-    // We exited the earlier loop because i < n1 doesn't hold  
-    while (j < n2)
-    {
-        arr[k] = M[j];
-        j++;
-        k++;
-    }
-}
-```
-
-![Copy remaining elements of second array to main subarray](https://cdn.programiz.com/sites/tutorial2program/files/merge-sort-demo-step-6.png)Copy remaining 
-
-
+1. **分（递归）**：把数组从中间切两半，对每一半递归调用归并排序，直到子数组只剩 1 个元素（天然有序）。
+2. **合（merge）**：用两个指针分别指向左右两个有序数组的头部，每次取较小的放进结果，直到一边取完，再把另一边剩下的整段接上。
 
 ### 代码实现
 
-**Python**
-
-```python
-# MergeSort in Python
-
-
-def mergeSort(array):
-    if len(array) > 1:
-
-        #  r is the point where the array is divided into two subarrays
-        r = len(array)//2
-        L = array[:r]
-        M = array[r:]
-
-        # Sort the two halves
-        mergeSort(L)
-        mergeSort(M)
-
-        i = j = k = 0
-
-        # Until we reach either end of either L or M, pick larger among
-        # elements L and M and place them in the correct position at A[p..r]
-        while i < len(L) and j < len(M):
-            if L[i] < M[j]:
-                array[k] = L[i]
-                i += 1
-            else:
-                array[k] = M[j]
-                j += 1
-            k += 1
-
-        # When we run out of elements in either L or M,
-        # pick up the remaining elements and put in A[p..r]
-        while i < len(L):
-            array[k] = L[i]
-            i += 1
-            k += 1
-
-        while j < len(M):
-            array[k] = M[j]
-            j += 1
-            k += 1
-
-
-# Print the array
-def printList(array):
-    for i in range(len(array)):
-        print(array[i], end=" ")
-    print()
-
-
-# Driver program
-if __name__ == '__main__':
-    array = [6, 5, 12, 10, 9, 1]
-
-    mergeSort(array)
-
-    print("Sorted array is: ")
-    printList(array)
-```
-
-
-
-**Java**
-
-```java
-// Merge sort in Java
-
-class MergeSort {
-
-  // Merge two subarrays L and M into arr
-  void merge(int arr[], int p, int q, int r) {
-
-    // Create L ← A[p..q] and M ← A[q+1..r]
-    int n1 = q - p + 1;
-    int n2 = r - q;
-
-    int L[] = new int[n1];
-    int M[] = new int[n2];
-
-    for (int i = 0; i < n1; i++)
-      L[i] = arr[p + i];
-    for (int j = 0; j < n2; j++)
-      M[j] = arr[q + 1 + j];
-
-    // Maintain current index of sub-arrays and main array
-    int i, j, k;
-    i = 0;
-    j = 0;
-    k = p;
-
-    // Until we reach either end of either L or M, pick larger among
-    // elements L and M and place them in the correct position at A[p..r]
-    while (i < n1 && j < n2) {
-      if (L[i] <= M[j]) {
-        arr[k] = L[i];
-        i++;
-      } else {
-        arr[k] = M[j];
-        j++;
-      }
-      k++;
-    }
-
-    // When we run out of elements in either L or M,
-    // pick up the remaining elements and put in A[p..r]
-    while (i < n1) {
-      arr[k] = L[i];
-      i++;
-      k++;
-    }
-
-    while (j < n2) {
-      arr[k] = M[j];
-      j++;
-      k++;
-    }
+```javascript
+function mergeSort(arr) {
+  // 第一步：递归终止条件 —— 只剩 0 或 1 个元素时, 本身就是有序的
+  if (arr.length <= 1) {
+    return arr;
   }
 
-  // Divide the array into two subarrays, sort them and merge them
-  void mergeSort(int arr[], int l, int r) {
-    if (l < r) {
+  // 第二步：从中间切成左右两半
+  const middle = Math.floor(arr.length / 2);
+  const left = arr.slice(0, middle);
+  const right = arr.slice(middle);
 
-      // m is the point where the array is divided into two subarrays
-      int m = (l + r) / 2;
+  // 第三步：分别递归排好左右两半
+  const sortedLeft = mergeSort(left);
+  const sortedRight = mergeSort(right);
 
-      mergeSort(arr, l, m);
-      mergeSort(arr, m + 1, r);
-
-      // Merge the sorted subarrays
-      merge(arr, l, m, r);
-    }
-  }
-
-  // Print the array
-  static void printArray(int arr[]) {
-    int n = arr.length;
-    for (int i = 0; i < n; ++i)
-      System.out.print(arr[i] + " ");
-    System.out.println();
-  }
-
-  // Driver program
-  public static void main(String args[]) {
-    int arr[] = { 6, 5, 12, 10, 9, 1 };
-
-    MergeSort ob = new MergeSort();
-    ob.mergeSort(arr, 0, arr.length - 1);
-
-    System.out.println("Sorted array:");
-    printArray(arr);
-  }
+  // 第四步：把两个有序数组合并起来
+  return merge(sortedLeft, sortedRight);
 }
-```
 
+// 合并两个有序数组成一个有序数组
+function merge(left, right) {
+  const result = [];
+  let i = 0; // 指向 left 当前位置
+  let j = 0; // 指向 right 当前位置
 
-
-**C**
-
-```c
-// Merge sort in C
-
-#include <stdio.h>
-
-// Merge two subarrays L and M into arr
-void merge(int arr[], int p, int q, int r) {
-
-  // Create L ← A[p..q] and M ← A[q+1..r]
-  int n1 = q - p + 1;
-  int n2 = r - q;
-
-  int L[n1], M[n2];
-
-  for (int i = 0; i < n1; i++)
-    L[i] = arr[p + i];
-  for (int j = 0; j < n2; j++)
-    M[j] = arr[q + 1 + j];
-
-  // Maintain current index of sub-arrays and main array
-  int i, j, k;
-  i = 0;
-  j = 0;
-  k = p;
-
-  // Until we reach either end of either L or M, pick larger among
-  // elements L and M and place them in the correct position at A[p..r]
-  while (i < n1 && j < n2) {
-    if (L[i] <= M[j]) {
-      arr[k] = L[i];
+  // 第一步：两个数组都没走完时, 每次挑较小的放进 result
+  while (i < left.length && j < right.length) {
+    if (left[i] <= right[j]) {
+      result.push(left[i]);
       i++;
     } else {
-      arr[k] = M[j];
+      result.push(right[j]);
       j++;
     }
-    k++;
   }
 
-  // When we run out of elements in either L or M,
-  // pick up the remaining elements and put in A[p..r]
-  while (i < n1) {
-    arr[k] = L[i];
+  // 第二步：有一边走完了, 把另一边剩下的整段接上
+  // (剩下的本身就是有序的, 直接拼接即可)
+  while (i < left.length) {
+    result.push(left[i]);
     i++;
-    k++;
   }
-
-  while (j < n2) {
-    arr[k] = M[j];
+  while (j < right.length) {
+    result.push(right[j]);
     j++;
-    k++;
   }
+
+  return result;
 }
 
-// Divide the array into two subarrays, sort them and merge them
-void mergeSort(int arr[], int l, int r) {
-  if (l < r) {
-
-    // m is the point where the array is divided into two subarrays
-    int m = l + (r - l) / 2;
-
-    mergeSort(arr, l, m);
-    mergeSort(arr, m + 1, r);
-
-    // Merge the sorted subarrays
-    merge(arr, l, m, r);
-  }
-}
-
-// Print the array
-void printArray(int arr[], int size) {
-  for (int i = 0; i < size; i++)
-    printf("%d ", arr[i]);
-  printf("\n");
-}
-
-// Driver program
-int main() {
-  int arr[] = {6, 5, 12, 10, 9, 1};
-  int size = sizeof(arr) / sizeof(arr[0]);
-
-  mergeSort(arr, 0, size - 1);
-
-  printf("Sorted array: \n");
-  printArray(arr, size);
-}
+mergeSort([6, 5, 12, 10, 9, 1]); // [1, 5, 6, 9, 10, 12]
 ```
 
-
+:::tip
+合并时用 `left[i] <= right[j]`（带等号，左边优先）能保证 **稳定性**：相等元素中靠左的先进结果，相对顺序不变。如果写成 `<`，稳定性就丢了。
+:::
 
 ### 复杂度
 
-**时间复杂度**
+| 情况 | 时间复杂度 |
+| :--- | :--- |
+| 最优 | O(n log n) |
+| 最坏 | O(n log n) |
+| 平均 | O(n log n) |
 
-- **最优情况：**`O(n*log n)`
-- **最坏情况：**`O(n*log n)`
-- **平均情况：**`O(n*log n)`
+无论数据如何，分治深度都是 log n 层，每层合并要扫 n 个元素，所以三种情况都稳定在 O(n log n)。代价是需要 O(n) 的额外空间存合并结果。
 
-
-
-**空间复杂度**
-
-归并排序的空间复杂度：`O(n)`
-
-
-
-### 应用场景
-
-- 倒数问题
-
-  Inversion count problem
-
-- 外部排序
-
-  External sorting
-
-- 电子商务应用
-
-  E-commerce applications
-
-
-
-
+**应用场景**：外部排序（数据量大到内存放不下，分块排好再归并）、求逆序对、链表排序（链表归并不需要额外空间）。
 
 ## 快速排序
 
-快速排序是一种基于分而治之方法的算法，其中将数组拆分为子数组，然后递归调用这些子数组以对元素进行排序。
+**结论**：也是分治法。选一个「基准值（pivot）」，把比它小的丢左边、比它大的丢右边，基准就归位了；再对左右两堆递归做同样的事。
 
-Quick sort is an algorithm based on divide and conquer approach in which the array is split into subarrays and these sub-arrays are recursively called to sort the elements.
+> **形象类比**：像分队站排。随便指定一个人当「标杆」，让全班同学按比标杆高/矮分站到两边，标杆自己就站在了正确位置；然后左边一队、右边一队各自再选标杆继续分，直到每队只剩一人。
 
- 
+### 思路拆解
 
-### 如何执行
+```mermaid
+graph TD
+    A["8 7 2 1 0 9 6  选6为基准"] --> B["分区后: 2 1 0 | 6 | 8 9 7"]
+    B --> C["左堆 2 1 0 选0"]
+    B --> D["右堆 8 9 7 选7"]
+    C --> E["递归..."]
+    D --> F["递归..."]
+    E --> G["最终有序"]
+    F --> G
+```
 
-1. 从数组中选择枢轴元素。您可以从数组中选择任何元素作为枢轴元素。在这里，我们将数组的最右边（即最后一个元素）作为枢轴元素。
+核心是 **partition（分区）** 操作。这里用经典的 Lomuto 分区法，取最右元素作基准：
 
-   A pivot element is chosen from the array. You can choose any element from the array as the pivot element. Here, we have taken the rightmost (the last element) of the array as the pivot element.
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-0.1_0.png)
-
-2. 小于枢轴元素的元素放在左侧，大于枢轴元素的元素放在右侧。
-
-   The elements smaller than the pivot element are put on the left and the elements greater than the pivot element are put on the right.
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-0.2_0.png)
-
-​		通过以下步骤来实现上述布置。
-
-​		在除去枢轴元素后剩下的数组中设置两个指针`left`和`right`。若`left`<`pivot`或者`right`>`pivot`，指针移动；若`left`>`pivot`或者`right`<`pivot`，			指针停止移动；当`left`>`pivot`且`right`<`pivot`，两者交换。过程持续至枢轴元素到达正确的位置。
-
-​		The above arrangement is achieved by the following steps.
-
-​			a. 指针固定在枢轴元件上。将枢轴元素与从第一个索引开始的元素进行比较。如果达到大于枢轴元素的元素，则为该元素设置第二个指针。
-
-​			A pointer is fixed at the pivot element. The pivot element is compared with the elements beginning from the first index. If the element greater than 			the pivot element is reached, a second pointer is set for that element.
-
-​			b. 现在，将枢轴元素与其他元素（第三个指针）进行比较。如果到达的元素小于枢轴元素，则将较小的元素交换为较早找到的较大的元素.
-
-​			Now, the pivot element is compared with the other elements (a third pointer). If an element smaller than the pivot element is reached, the smaller 			element is swapped with the greater element found earlier.
-
-![img](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-partition_1.png)
-
-​			c. 该过程一直进行到到达倒数第二个元素为止。最后，将枢轴元素与第二个指针交换.
-
-​				The process goes on until the second last element is reached. Finally, the pivot element is swapped with the second pointer.
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-0.1-1.png)
-
-3. 再次分别为左子部分和右子部分选择了枢轴元素。在这些子部件中，枢轴元件放置在正确的位置。然后，重复步骤2。
-
-   Pivot elements are again chosen for the left and the right sub-parts separately. Within these sub-parts, the pivot elements are placed at their right position. Then, step 2 is repeated.
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-0.3_0.png)
-
-4. 将子部分再次划分为较小的子部分，直到每个子部分由单个元素形成。
-
-   The sub-parts are again divided into smaller sub-parts until each subpart is formed of a single element.
-
-
-
-### 快速排序中的分治思想
-
-- 分解
-
-  将数组分为多个子部分，这些子部分将枢轴作为分割点。小于枢轴的元素放置在枢轴的左侧，大于枢轴的元素放置在右侧。
-
-  The array is divided into subparts taking pivot as the partitioning point. The elements smaller than the pivot are placed to the left of the pivot and the elements greater than the pivot are placed to the right.
-
-- 解决
-
-  左子部分和右子部分再次通过选择枢轴元素进行划分。这可以通过将子部分递归传递到算法中来实现。
-
-  The left and the right subparts are again partitioned using the by selecting pivot elements for them. This can be achieved by recursively passing the subparts into the algorithm.
-
-- 合并
-
-  此步骤在快速排序中不起作用。该数组已在征服步骤的末尾排序。
-
-  This step does not play a significant role in quicksort. The array is already sorted at the end of the conquer step.
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-0.png)
-
-![Quick Sort Steps](https://cdn.programiz.com/sites/tutorial2program/files/quick-sort-1.png)
-
-
+1. 选最右元素 `pivot` 当基准。
+2. 用一个指针 `i` 标记「小于 pivot 区域」的边界。
+3. 遍历其余元素，遇到比 pivot 小的，就把它换到 `i` 标记的位置，`i` 右移一格。
+4. 遍历完，把 pivot 换到 `i` 的位置，此时 pivot 左边全比它小、右边全比它大，pivot 归位。
 
 ### 代码实现
 
-**Pseudocode**
-
-```
-quickSort(array, leftmostIndex, rightmostIndex)
-  if (leftmostIndex < rightmostIndex)
-    pivotIndex <- partition(array,leftmostIndex, rightmostIndex)
-    quickSort(array, leftmostIndex, pivotIndex)
-    quickSort(array, pivotIndex + 1, rightmostIndex)
-
-partition(array, leftmostIndex, rightmostIndex)
-  set rightmostIndex as pivotIndex
-  storeIndex <- leftmostIndex - 1
-  for i <- leftmostIndex + 1 to rightmostIndex
-  if element[i] < pivotElement
-    swap element[i] and element[storeIndex]
-    storeIndex++
-  swap pivotElement and element[storeIndex+1]
-return storeIndex + 1
-```
-
-
-
-**Python**
-
-```python
-# Quick sort in Python
-
-
-# Function to partition the array on the basis of pivot element
-def partition(array, low, high):
-
-    # Select the pivot element
-    pivot = array[high]
-    i = low - 1
-
-    # Put the elements smaller than pivot on the left and greater 
-    #than pivot on the right of pivot
-    for j in range(low, high):
-        if array[j] <= pivot:
-            i = i + 1
-            (array[i], array[j]) = (array[j], array[i])
-
-    (array[i + 1], array[high]) = (array[high], array[i + 1])
-
-    return i + 1
-
-
-def quickSort(array, low, high):
-    if low < high:
-
-        # Select pivot position and put all the elements smaller 
-        # than pivot on left and greater than pivot on right
-        pi = partition(array, low, high)
-
-        # Sort the elements on the left of pivot
-        quickSort(array, low, pi - 1)
-
-        # Sort the elements on the right of pivot
-        quickSort(array, pi + 1, high)
-
-
-data = [8, 7, 2, 1, 0, 9, 6]
-size = len(data)
-quickSort(data, 0, size - 1)
-print('Sorted Array in Ascending Order:')
-print(data)
-```
-
-
-
-**Java**
-
-```java
-// Quick sort in Java
-
-import java.util.Arrays;
-
-class QuickSort {
-
-  // Function to partition the array on the basis of pivot element
-  int partition(int array[], int low, int high) {
-    
-    // Select the pivot element
-    int pivot = array[high];
-    int i = (low - 1);
-
-    // Put the elements smaller than pivot on the left and 
-    // greater than pivot on the right of pivot
-    for (int j = low; j < high; j++) {
-      if (array[j] <= pivot) {
-        i++;
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-    }
-    int temp = array[i + 1];
-    array[i + 1] = array[high];
-    array[high] = temp;
-    return (i + 1);
-  }
-
-  void quickSort(int array[], int low, int high) {
-    if (low < high) {
-
-      // Select pivot position and put all the elements smaller 
-      // than pivot on left and greater than pivot on right
-      int pi = partition(array, low, high);
-      
-      // Sort the elements on the left of pivot
-      quickSort(array, low, pi - 1);
-
-      // Sort the elements on the right of pivot
-      quickSort(array, pi + 1, high);
-    }
-  }
-
-  // Driver code
-  public static void main(String args[]) {
-    int[] data = { 8, 7, 2, 1, 0, 9, 6 };
-    int size = data.length;
-    QuickSort qs = new QuickSort();
-    qs.quickSort(data, 0, size - 1);
-    System.out.println("Sorted Array in Ascending Order: ");
-    System.out.println(Arrays.toString(data));
-  }
-}
-```
-
-
-
-**C**
-
-```c
-// Quick sort in C
-
-#include <stdio.h>
-
-// Function to swap position of elements
-void swap(int *a, int *b) {
-  int t = *a;
-  *a = *b;
-  *b = t;
-}
-
-// Function to partition the array on the basis of pivot element
-int partition(int array[], int low, int high) {
-  
-  // Select the pivot element
-  int pivot = array[high];
-  int i = (low - 1);
-
-  // Put the elements smaller than pivot on the left 
-  // and greater than pivot on the right of pivot
-  for (int j = low; j < high; j++) {
-    if (array[j] <= pivot) {
-      i++;
-      swap(&array[i], &array[j]);
-    }
-  }
-
-  swap(&array[i + 1], &array[high]);
-  return (i + 1);
-}
-
-void quickSort(int array[], int low, int high) {
+```javascript
+function quickSort(arr, low = 0, high = arr.length - 1) {
+  // 第一步：递归终止条件 —— 区间内少于2个元素就不用排了
   if (low < high) {
-    
-    // Select pivot position and put all the elements smaller 
-    // than pivot on left and greater than pivot on right
-    int pi = partition(array, low, high);
-    
-    // Sort the elements on the left of pivot
-    quickSort(array, low, pi - 1);
-    
-    // Sort the elements on the right of pivot
-    quickSort(array, pi + 1, high);
+    // 第二步：分区, 返回基准归位后的下标
+    const pivotIndex = partition(arr, low, high);
+
+    // 第三步：对基准左边的子区间递归排序
+    quickSort(arr, low, pivotIndex - 1);
+
+    // 第四步：对基准右边的子区间递归排序
+    quickSort(arr, pivotIndex + 1, high);
   }
+
+  return arr;
 }
 
-// Function to print eklements of an array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i) {
-    printf("%d  ", array[i]);
+// 把区间 [low, high] 按基准分成「小的在左, 大的在右」
+function partition(arr, low, high) {
+  // 第一步：取最右元素当基准
+  const pivot = arr[high];
+
+  // 第二步：i 是「小于基准区域」的右边界, 初始在区间左侧外
+  let i = low - 1;
+
+  // 第三步：遍历除基准外的元素, 把小于基准的都换到左边
+  for (let j = low; j < high; j++) {
+    if (arr[j] < pivot) {
+      i++;
+      const temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
   }
-  printf("\n");
+
+  // 第四步：把基准换到 i+1 的位置, 让它正好夹在小堆和大堆中间
+  const temp = arr[i + 1];
+  arr[i + 1] = arr[high];
+  arr[high] = temp;
+
+  // 第五步：返回基准的最终下标
+  return i + 1;
 }
 
-// Driver code
-int main() {
-  int data[] = {8, 7, 2, 1, 0, 9, 6};
-  int n = sizeof(data) / sizeof(data[0]);
-  quickSort(data, 0, n - 1);
-  printf("Sorted array in ascending order: \n");
-  printArray(data, n);
-}
+quickSort([8, 7, 2, 1, 0, 9, 6]); // [0, 1, 2, 6, 7, 8, 9]
 ```
 
-
+:::warning
+取「最右元素」当基准在 **数组已有序** 时会退化成 O(n²)（每次分区都极不均衡）。实战中常用「三数取中」或「随机选基准」来避免最坏情况。
+:::
 
 ### 复杂度
 
-**时间复杂度**
+| 情况 | 时间复杂度 | 说明 |
+| :--- | :--- | :--- |
+| 最优 | O(n log n) | 每次基准都接近中位数, 均匀对半分 |
+| 最坏 | O(n²) | 基准每次都是最大/最小值, 分区极不均衡 |
+| 平均 | O(n log n) | 随机数据 |
 
-- **最坏情况**：O(n^2^)
+空间复杂度 O(log n)（递归调用栈），**不稳定**。快速排序常数因子小、缓存友好，是大多数语言内置排序的核心算法之一。
 
-  拾取枢轴元素是最大或最小的元素，它发生。 这种情况导致枢轴元素位于已排序数组的最末端的情况。一个子数组始终为空，另一个子数组包含`n - 1`元素。因此，仅在此子阵列上调用quicksort。 但是，快速排序算法对于分散的数据透视表具有更好的性能。
+## 计数排序
 
-  It occurs when the pivot element picked is either the greatest or the smallest element. This condition leads to the case in which the pivot element lies in an extreme end of the sorted array. One sub-array is always empty and another sub-array contains `n - 1` elements. Thus, quicksort is called only on this sub-array. However, the quick sort algorithm has better performance for scattered pivots.
+**结论**：不比较，靠「数数」。统计每个值出现了多少次，再按值的大小依次输出，适合范围不大的非负整数。
 
-- **最优情况**：`O(n*log n)`
-  
-  当枢轴元素始终是中间元素或靠近中间元素时，会发生这种情况。
-  
-  It occurs when the pivot element is always the middle element or near to the middle element.
+> **形象类比**：像统计班级成绩分布。准备 0 到 100 一排格子，每个人的分数往对应格子里投一颗豆子；最后从 0 分格子开始，几颗豆子就写几个该分数，从头到尾抄一遍就是排好序的成绩单。
 
-- **平均情况**: `O(n*log n)`
-  
-  在不出现上述条件时发生。
-  
-  It occurs when the above conditions do not occur.
+### 思路拆解
 
-**空间复杂度**
+```mermaid
+graph LR
+    A["输入: 4 2 2 8 3 3 1"] --> B["计数: 1→1次 2→2次 3→2次 4→1次 8→1次"]
+    B --> C["按值输出: 1 2 2 3 3 4 8"]
+```
 
-快速排序的空间复杂度：`O(log n)`
+1. 找出最大值 `max`，开一个长度 `max+1` 的计数数组 `count`。
+2. 遍历原数组，`count[值]++`，统计每个值出现的次数。
+3. 对 `count` 求前缀和，`count[i]` 变成「小于等于 i 的元素个数」，也就是值 i 在结果里的末尾位置。
+4. 从后往前遍历原数组，按 `count` 把每个元素放到结果数组的正确位置（从后往前是为了保证稳定性）。
 
+### 代码实现
 
+```javascript
+function countingSort(arr) {
+  if (arr.length === 0) {
+    return arr;
+  }
 
-### 应用场景
+  // 第一步：找最大值, 决定计数数组的长度
+  let max = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      max = arr[i];
+    }
+  }
 
-- 编程语言适合递归
+  // 第二步：建计数数组并统计每个值出现的次数
+  const count = new Array(max + 1).fill(0);
+  for (let i = 0; i < arr.length; i++) {
+    count[arr[i]]++;
+  }
 
-  the programming language is good for recursion
+  // 第三步：求前缀和, count[i] 变成「值 i 在结果中的结束位置」
+  for (let i = 1; i <= max; i++) {
+    count[i] += count[i - 1];
+  }
 
-- 时间复杂度很重要
+  // 第四步：从后往前遍历原数组, 把元素放到结果的正确位置
+  // (从后往前 + 前缀和, 保证相等元素相对顺序不变 → 稳定)
+  const output = new Array(arr.length);
+  for (let i = arr.length - 1; i >= 0; i--) {
+    const value = arr[i];
+    output[count[value] - 1] = value;
+    count[value]--;
+  }
 
-  time complexity matters
+  // 第五步：把结果拷回原数组
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = output[i];
+  }
 
-- 空间复杂度很重要
+  return arr;
+}
 
-  space complexity matters
+countingSort([4, 2, 2, 8, 3, 3, 1]); // [1, 2, 2, 3, 3, 4, 8]
+```
 
+:::warning
+计数排序只适合 **范围有限的整数**。如果数据里有一个 100 万，就得开一个 100 万长的数组，空间爆炸。所以它适合「数据多、但取值范围窄」的场景，比如给一万个人按年龄（0-120）排序。
+:::
 
+### 复杂度
+
+设元素个数为 n、取值范围为 k：
+
+- 时间复杂度：最优、最坏、平均都是 O(n + k)（不依赖数据顺序）
+- 空间复杂度：O(k)
+
+它没有任何元素间的比较，所以能突破 O(n log n) 的下限，是稳定排序。
+
+## 基数排序
+
+**结论**：对多位数，从 **最低位（个位）到最高位** 一位一位地排，每一位用稳定排序（通常是计数排序）。所有位排完，整体就有序了。
+
+> **形象类比**：像图书馆按编号上架。编号有好几位，先按最后一位归类摆好，再按倒数第二位归类，再按更高位……每轮都保留上一轮的顺序，全部归类完，书架就完全有序了。
+
+### 思路拆解
+
+```mermaid
+graph TD
+    A["原始: 121 432 564 23 1 45 788"] --> B["按个位排: 121 1 432 23 564 45 788"]
+    B --> C["按十位排: 1 121 23 432 45 564 788"]
+    C --> D["按百位排: 1 23 45 121 432 564 788"]
+```
+
+为什么从低位排起：低位先排好后，高位排序用稳定排序就能「保留」低位已经排好的相对顺序，最终高位优先、低位次之，整体有序。
+
+1. 找出最大值，确定它有几位（决定要排几轮）。
+2. 从个位（place = 1）开始，按当前位的数字用计数排序排一遍。
+3. place 乘以 10，进到十位、百位……
+4. 最高位排完，整个数组有序。
+
+### 代码实现
+
+```javascript
+function radixSort(arr) {
+  if (arr.length === 0) {
+    return arr;
+  }
+
+  // 第一步：找最大值, 它的位数决定要排几轮
+  let max = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      max = arr[i];
+    }
+  }
+
+  // 第二步：从个位开始, 每轮 place 乘10 进到更高位
+  for (let place = 1; Math.floor(max / place) > 0; place *= 10) {
+    countingSortByDigit(arr, place);
+  }
+
+  return arr;
+}
+
+// 按某一位(place 指定个位/十位/...)做稳定的计数排序
+function countingSortByDigit(arr, place) {
+  const n = arr.length;
+  const output = new Array(n);
+
+  // 第一步：每一位的数字只可能是 0-9, 所以计数数组固定长度 10
+  const count = new Array(10).fill(0);
+
+  // 第二步：取出每个数在当前位上的数字, 统计次数
+  for (let i = 0; i < n; i++) {
+    const digit = Math.floor(arr[i] / place) % 10;
+    count[digit]++;
+  }
+
+  // 第三步：求前缀和, 得到每个数字在结果中的结束位置
+  for (let i = 1; i < 10; i++) {
+    count[i] += count[i - 1];
+  }
+
+  // 第四步：从后往前放, 保证稳定性
+  for (let i = n - 1; i >= 0; i--) {
+    const digit = Math.floor(arr[i] / place) % 10;
+    output[count[digit] - 1] = arr[i];
+    count[digit]--;
+  }
+
+  // 第五步：拷回原数组, 这一位就排好了
+  for (let i = 0; i < n; i++) {
+    arr[i] = output[i];
+  }
+}
+
+radixSort([121, 432, 564, 23, 1, 45, 788]); // [1, 23, 45, 121, 432, 564, 788]
+```
+
+:::info
+基数排序的 **每一轮内部必须用稳定排序**，否则会破坏前面已排好位的顺序。这里用计数排序，因为每一位只有 0-9 十种取值，计数排序又快又稳。
+:::
+
+### 复杂度
+
+设有 n 个数、最大数有 d 位、每位取值范围 k（十进制 k=10）：
+
+- 时间复杂度：O(d(n + k))，d 和 k 通常是小常数，所以接近线性
+- 空间复杂度：O(n + k)
+
+是稳定的非比较排序。适合大量「位数不多」的整数排序，比如手机号、身份证号、定长字符串。
+
+## 桶排序
+
+**结论**：把数据按范围分到若干个「桶」里，每个桶内部各自排序，最后按桶的顺序依次倒出来。适合数据在某个区间内 **均匀分布** 的情况。
+
+> **形象类比**：像整理一大堆零钱。先按面额分到几个盒子里（1 角一盒、5 角一盒、1 元一盒……），每个盒子里的钱不多，单独理顺很快；最后从小面额盒子到大面额盒子依次倒出来，整体就排好了。
+
+### 思路拆解
+
+```mermaid
+graph TD
+    A["输入: 0.42 0.32 0.33 0.52 0.37 0.47 0.51"] --> B["散: 按值分到各桶"]
+    B --> C["桶[3]: 0.32 0.33 0.37"]
+    B --> D["桶[4]: 0.42 0.47"]
+    B --> E["桶[5]: 0.52 0.51"]
+    C --> F["每桶内部各自排序"]
+    D --> F
+    E --> F
+    F --> G["收: 按桶序倒出 0.32 0.33 0.37 0.42 0.47 0.51 0.52"]
+```
+
+这是「分散—收集（scatter-gather）」的思路：
+
+1. 创建若干个空桶。
+2. 遍历数据，按值算出该进哪个桶（散）。
+3. 对每个桶内部单独排序（可用插入排序或语言内置排序）。
+4. 按桶的顺序，把每个桶的元素依次拼回结果（收）。
+
+### 代码实现
+
+```javascript
+// 这里以 [0, 1) 区间的小数为例
+function bucketSort(arr, bucketCount = arr.length) {
+  if (arr.length === 0) {
+    return arr;
+  }
+
+  // 第一步：创建 bucketCount 个空桶
+  const buckets = [];
+  for (let i = 0; i < bucketCount; i++) {
+    buckets.push([]);
+  }
+
+  // 第二步：散 —— 按值把每个元素分到对应的桶
+  // 值 0.42 * 桶数 取整 → 决定落在第几个桶
+  for (let i = 0; i < arr.length; i++) {
+    const index = Math.floor(arr[i] * bucketCount);
+    buckets[index].push(arr[i]);
+  }
+
+  // 第三步：对每个桶内部排序(桶内元素少, 用插入排序很合适)
+  for (let i = 0; i < bucketCount; i++) {
+    insertionSort(buckets[i]);
+  }
+
+  // 第四步：收 —— 按桶顺序把元素依次拼回原数组
+  let k = 0;
+  for (let i = 0; i < bucketCount; i++) {
+    for (let j = 0; j < buckets[i].length; j++) {
+      arr[k] = buckets[i][j];
+      k++;
+    }
+  }
+
+  return arr;
+}
+
+bucketSort([0.42, 0.32, 0.33, 0.52, 0.37, 0.47, 0.51]);
+// [0.32, 0.33, 0.37, 0.42, 0.47, 0.51, 0.52]
+```
+
+:::tip
+桶排序好不好用，全看「分布是否均匀」。如果数据都挤在一个桶里，它就退化成对那个桶做插入排序，变成 O(n²)。所以它的前提是数据 **均匀分布** 在已知区间内。
+:::
+
+### 复杂度
+
+| 情况 | 时间复杂度 | 说明 |
+| :--- | :--- | :--- |
+| 最优 | O(n + k) | 元素均匀分布, 每桶元素很少 |
+| 最坏 | O(n²) | 全挤在一个桶里, 退化成桶内排序 |
+| 平均 | O(n + k) | 随机均匀分布 |
+
+空间复杂度 O(n + k)，稳定性取决于桶内排序算法（用插入排序则稳定）。适合浮点数、均匀分布的数据。
+
+## 一句话口诀
+
+- **冒泡**：相邻比、大的沉，泡泡一路冒到顶。
+- **选择**：每轮选最小，拎出来排到前。
+- **插入**：理扑克牌，往左找缝隙插进去。
+- **希尔**：跳着比的插入排序，先粗排再精排。
+- **归并**：先拆到单个，再两两合并有序队。
+- **快排**：选基准、分两堆，左小右大递归分。
+- **计数**：给每个数记次数，按值抄一遍。
+- **基数**：从个位到高位，一位一位轮着排。
+- **桶排**：分桶各自排，再按桶序倒出来。
 
 ## 参考
 
-1. [Learn Data Structures and Algorithms](https://www.programiz.com/dsa/)
-
+1. [八大基础排序总结 - 掘金](https://juejin.cn/post/6844903583301763085)
+2. [前端该如何准备数据结构和算法？ - 掘金](https://juejin.cn/post/6844903919722692621)
+3. [Learn Data Structures and Algorithms - Programiz](https://www.programiz.com/dsa/)

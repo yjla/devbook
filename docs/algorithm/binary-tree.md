@@ -5,9 +5,11 @@ sidebar_label: 二叉树
 
 # 二叉树
 
-二叉树是每个节点**最多有两个子节点** (左、右) 的树形结构。它是链表的「分叉」版本，也是面试里出现频率最高的数据结构之一。
+**几乎所有二叉树题目，都是「遍历」框架里换一个时机做事。** 二叉树是每个节点最多有两个子节点 (左、右) 的树形结构，是链表的「分叉」版本，也是面试里出现频率最高的数据结构之一。先讲清楚结构，再讲透遍历，剩下的全是变体。
 
-记住一句话就抓住了二叉树的本质：**几乎所有二叉树题目，都是「遍历」框架里换一个时机做事**。先讲清楚结构，再讲透遍历，剩下的全是变体。
+:::tip 形象记忆
+把二叉树想成**一个家族的族谱**：最上面是老祖宗 (根节点)，每个人最多生两个孩子，没有孩子的就是叶子节点。所有「统计家族人数」「找两个人的共同祖先」「按辈分排队」之类的问题，都是沿着族谱走一遍、在合适的时机记一笔。
+:::
 
 ## 基本概念
 
@@ -207,14 +209,18 @@ function traverse(node, res) {
 
 ```js
 function preorder(root) {
+  // 第一步：空树直接返回
   if (root === null) return [];
+  // 第二步：准备结果数组，把根节点压入栈
   const res = [];
   const stack = [root];
 
+  // 第三步：栈不空就一直处理
   while (stack.length > 0) {
+    // 第四步：弹出栈顶并处理 (前序：一弹出就记录)
     const node = stack.pop();
     res.push(node.val);
-    // 先压右、后压左，出栈时才是先左后右
+    // 第五步：先压右、后压左，这样下次弹出的才是左孩子
     if (node.right) stack.push(node.right);
     if (node.left) stack.push(node.left);
   }
@@ -229,18 +235,29 @@ function preorder(root) {
 
 ### 层序遍历 (BFS)
 
-用队列：取出队首节点处理，再把它的左右孩子入队。要分层时，每轮循环先记录当前队列长度，只处理这么多个，就天然切开了每一层：
+用队列：取出队首节点处理，再把它的左右孩子入队。
+
+:::tip 形象记忆
+层序遍历像**排队进游乐场，按队伍一排一排放行**。`size = queue.length` 是「当前这一排有多少人」，只放行这么多个，正好把每一层切开，下一排 (孩子们) 已经在队尾等着了。
+:::
+
+要分层时，每轮循环先记录当前队列长度，只处理这么多个，就天然切开了每一层：
 
 ```js
 function levelOrder(root) {
+  // 第一步：空树返回空数组
   if (root === null) return [];
+  // 第二步：根节点入队
   const res = [];
   const queue = [root];
 
+  // 第三步：队列不空就一层一层处理
   while (queue.length > 0) {
-    const size = queue.length; // 当前层的节点数
+    // 第四步：先记下「这一层有几个节点」，作为本轮放行人数
+    const size = queue.length;
     const level = [];
 
+    // 第五步：只处理这一层的 size 个节点，把它们的孩子排进队尾
     for (let i = 0; i < size; i++) {
       const node = queue.shift();
       level.push(node.val);
@@ -248,7 +265,8 @@ function levelOrder(root) {
       if (node.right) queue.push(node.right);
     }
 
-    res.push(level); // 一层收集完
+    // 第六步：这一层收集完，放进结果
+    res.push(level);
   }
 
   return res;
@@ -268,9 +286,12 @@ function levelOrder(root) {
 ```js
 // 分解思维：当前树的深度 = 左右子树深度的最大值 + 1
 function maxDepth(root) {
+  // 第一步：出口——空树深度为 0
   if (root === null) return 0;
+  // 第二步：信任递归，拿到左右子树各自的深度
   const left = maxDepth(root.left);
   const right = maxDepth(root.right);
+  // 第三步：合并——比更深的孩子再深一层
   return Math.max(left, right) + 1;
 }
 ```
@@ -278,13 +299,17 @@ function maxDepth(root) {
 ```js
 // 遍历思维：遍历到每个节点时，用当前深度更新全局最大值
 function maxDepth(root) {
+  // 第一步：准备一个外部变量存答案
   let res = 0;
 
   function traverse(node, depth) {
+    // 第二步：空节点不处理
     if (node === null) return;
+    // 第三步：走到叶子时，用当前深度刷新最大值
     if (node.left === null && node.right === null) {
-      res = Math.max(res, depth); // 到叶子，结算
+      res = Math.max(res, depth);
     }
+    // 第四步：带着 depth+1 继续往左右走
     traverse(node.left, depth + 1);
     traverse(node.right, depth + 1);
   }
@@ -381,3 +406,7 @@ return Math.max(left, right) + 1;
 - DFS 用栈 (递归就是隐式栈)，BFS 用队列，分层靠「每轮先记录队列长度」。
 - 解题先问自己：能用子问题答案合并吗？能就用**分解思维** (有返回值)，不能就用**遍历思维** (外部变量 + 回溯)。
 - BST 的中序遍历是升序，这条性质单独记牢。
+
+> ## 一句话口诀
+>
+> **二叉树就是族谱走一遍，前中后序只差「处理根」的时机；能靠子树返回值合并就用分治写在后序，靠外部变量积累就用遍历；别展开栈，信任契约只管一个节点。**

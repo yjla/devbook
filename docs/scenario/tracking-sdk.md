@@ -98,11 +98,15 @@ sequenceDiagram
   Note over SDK,S: 卸载后浏览器仍保证发完
 ```
 
+形象例子：把队列里没发的事件想成**结账前购物车里的东西**。用户随时可能关页面走人，就像随时可能放下购物车离店；`visibilitychange` 的 `hidden` 是「人要往门口走了」这个最可靠的信号，趁这一刻用 `sendBeacon` 把车里的东西一次性结掉。
+
 ```js
 document.addEventListener('visibilitychange', () => {
+  // 第一步：只在页面变为 hidden（要走了）这一刻动作
   // hidden 比 unload 可靠：移动端切后台、锁屏都会触发，且只有它能配合 sendBeacon
   if (document.visibilityState === 'hidden') {
-    tracker.flush(true); // true 表示强制用 sendBeacon 同步冲刷
+    // 第二步：强制用 sendBeacon 把队列最后冲刷一次，传 true 表示同步冲刷
+    tracker.flush(true);
   }
 });
 ```
@@ -115,36 +119,44 @@ document.addEventListener('visibilitychange', () => {
 
 ### 批量队列 + 节流
 
-事件先进内存队列，达到容量阈值或定时器到点才统一上报。这样把 N 次请求压成 1 次。
+事件先进内存队列，达到容量阈值或定时器到点才统一上报。这样把 N 次请求压成 1 次。形象例子：像**小区快递柜的快递车**——不是来一个包裹就跑一趟，而是攒够一车（`maxSize`）就发车，或者就算没装满，到点了（`interval`）也照样发，免得零星包裹一直压着不送。
 
 ```js
 class ReportQueue {
   constructor({ maxSize = 10, interval = 5000, onFlush }) {
     this.queue = [];
-    this.maxSize = maxSize; // 攒够这么多条就发
-    this.interval = interval; // 或最多等这么久就发
+    this.maxSize = maxSize; // 攒够这么多条就发（装满一车）
+    this.interval = interval; // 或最多等这么久就发（到点发车）
     this.onFlush = onFlush;
     this.timer = null;
   }
 
   push(event) {
+    // 第一步：包裹先进车
     this.queue.push(event);
-    // 攒满立刻发，否则启动定时器兜底
+
+    // 第二步：装满一车立刻发车
     if (this.queue.length >= this.maxSize) {
       this.flush();
     } else if (!this.timer) {
+      // 第三步：没装满且还没起定时器，就起一个「到点发车」的兜底定时器
       this.timer = setTimeout(() => this.flush(), this.interval);
     }
   }
 
   flush(useBeacon = false) {
+    // 第一步：发车了，先把「到点发车」的定时器清掉，避免重复发
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
     }
+
+    // 第二步：车是空的就不发
     if (this.queue.length === 0) return;
+
+    // 第三步：先把车清空再发，避免发送途中新进来的包裹被这一车重复带走
     const batch = this.queue;
-    this.queue = []; // 先清空再发，避免发送途中新事件被重复带走
+    this.queue = [];
     this.onFlush(batch, useBeacon);
   }
 }
@@ -155,14 +167,17 @@ class ReportQueue {
 上报失败（网络抖动、服务端 5xx）不能直接丢。两道兜底：
 
 1. **失败重试**：失败的批次重新入队，下次合并上报；重试设上限，避免坏数据无限循环。
-2. **本地缓存**：进队列前先落一份到 `localStorage`，上报成功再删。页面崩溃、断网下次进来时，先把上次没发成功的捞出来补发。
+2. **本地缓存**：进队列前先落一份到 `localStorage`，上报成功再删。页面崩溃、断网下次进来时，先把上次没发成功的捞出来补发。形象例子：像**寄信前先在本子上抄一份底稿**，信寄丢了还能照底稿重寄；确认对方收到了，才把底稿划掉。
 
 ```js
 const STORAGE_KEY = '__tracker_buffer__';
 
 function persist(events) {
   try {
+    // 第一步：读出本子上已有的底稿（没有就当空数组）
     const old = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    // 第二步：把这次的新事件追加到底稿后面，整体写回
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...old, ...events]));
   } catch (e) {
     // localStorage 写满或被禁用，静默忽略，绝不抛错影响业务
@@ -171,6 +186,7 @@ function persist(events) {
 
 function clearPersisted() {
   try {
+    // 确认都寄到了，把底稿整本划掉
     localStorage.removeItem(STORAGE_KEY);
   } catch (e) {}
 }
@@ -182,24 +198,29 @@ function clearPersisted() {
 
 ## 曝光埋点：IntersectionObserver
 
-曝光 = 元素**真正进入视口**才算被看见。用滚动事件 + `getBoundingClientRect` 判断既费性能又难写，正解是 `IntersectionObserver`——浏览器原生异步通知元素与视口的交叉状态，零滚动监听。
+曝光 = 元素**真正进入视口**才算被看见。用滚动事件 + `getBoundingClientRect` 判断既费性能又难写，正解是 `IntersectionObserver`——浏览器原生异步通知元素与视口的交叉状态，零滚动监听。形象例子：像**商场橱窗的客流计数器**，顾客真正走到橱窗前（元素露出过半）才算「看过这件商品」，记一笔就行，不用一直盯着每个人在商场里怎么走动。
 
 ```js
+// 第一步：创建观察者，约定「元素露出多少才算曝光」以及曝光后做什么
 const exposeObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
-      // intersectionRatio 达阈值才算曝光，可设 0.5 表示露出一半
+      // 第二步：元素达到阈值（这里是露出 50%）才算真曝光
       if (entry.isIntersecting) {
         const el = entry.target;
+
+        // 第三步：上报这次曝光，参数从元素的 data-track 上读
         tracker.track('expose', JSON.parse(el.dataset.track || '{}'));
-        exposeObserver.unobserve(el); // 曝光只记一次，记完就取消观察
+
+        // 第四步：曝光只记一次，记完就取消观察，省得反复触发
+        exposeObserver.unobserve(el);
       }
     });
   },
   { threshold: 0.5 }, // 元素露出 50% 视为曝光
 );
 
-// 给需要曝光埋点的元素打标记并观察
+// 第五步：给所有需要曝光埋点的元素挂上观察
 document.querySelectorAll('[data-track]').forEach((el) => {
   exposeObserver.observe(el);
 });
@@ -215,30 +236,33 @@ SDK 是「寄生」在业务里的，最高准则是**绝不影响业务**。三
 
 ### 不阻塞主线程
 
-上报、序列化这类活儿用 `requestIdleCallback` 塞进浏览器空闲时段，让位给业务的渲染和交互。
+上报、序列化这类活儿用 `requestIdleCallback` 塞进浏览器空闲时段，让位给业务的渲染和交互。形象例子：像**家政钟点工挑你不在家、没人用厨房的时候来打扫**，不跟主人抢厨房用；但也不能无限期不来，最多 2 秒必到（`timeout`），免得活儿一直拖着。
 
 ```js
 function scheduleReport(fn) {
-  // 浏览器空闲时再上报，不和业务抢主线程
+  // 第一步：浏览器支持 requestIdleCallback，就排到空闲时段执行，不和业务抢主线程
   if ('requestIdleCallback' in window) {
     requestIdleCallback(fn, { timeout: 2000 }); // 2s 内必执行，防饿死
   } else {
-    setTimeout(fn, 0); // 降级
+    // 第二步：不支持就降级用 setTimeout 兜底
+    setTimeout(fn, 0);
   }
 }
 ```
 
 ### 错误隔离
 
-SDK 内部任何异常都不能冒泡到业务。所有对外方法用 `try/catch` 包裹，出错只内部吞掉或上报自身错误，**绝不 throw 给业务**。
+SDK 内部任何异常都不能冒泡到业务。所有对外方法用 `try/catch` 包裹，出错只内部吞掉或上报自身错误，**绝不 throw 给业务**。形象例子：像给一台机器装**保险丝**——SDK 内部哪根线短路了，保险丝自己烧断（吞掉异常），绝不让电流窜出去把整个业务电路（页面）也烧坏。
 
 ```js
 function safe(fn) {
+  // 返回一个「包了保险丝」的新函数
   return (...args) => {
     try {
+      // 第一步：正常执行原函数
       return fn(...args);
     } catch (e) {
-      // SDK 自己的错只记录，绝不影响业务运行
+      // 第二步：出错只在内部记一笔，绝不 throw 给业务
       console.warn('[tracker] internal error', e);
     }
   };
@@ -247,11 +271,12 @@ function safe(fn) {
 
 ### 采样
 
-高频事件（曝光、滚动）全量上报会压垮服务端。按比例采样，只上报一部分。
+高频事件（曝光、滚动）全量上报会压垮服务端。按比例采样，只上报一部分。形象例子：像**食品厂质检不会每包都拆**，而是随机抽一成来检；`Math.random()` 掷出 0 到 1 的随机数，落在 `rate` 以内的才「中签」上报。
 
 ```js
 function shouldSample(rate = 1) {
-  return Math.random() < rate; // rate=0.1 表示只采 10%
+  // 掷一个 0~1 的骰子，小于 rate 才算中签上报；rate=0.1 即约 10% 中签
+  return Math.random() < rate;
 }
 ```
 
@@ -261,12 +286,13 @@ function shouldSample(rate = 1) {
 
 ## 核心 SDK 骨架
 
-把上面的能力组装成一个类。对外只暴露 `init`、`track`、`setUser`、`flush`，内部串起队列、公共属性、错误隔离、保活。
+把上面的能力组装成一个类。对外只暴露 `init`、`track`、`setUser`、`flush`，内部串起队列、公共属性、错误隔离、保活。形象例子：把整个 `Tracker` 想成**一个驻店记账员**——开店时（`init`）先备好账本和昨天没记完的旧账，营业中（`track`）每笔生意都按统一格式记一条、攒成一沓批量交给后台，打烊（页面 `hidden`）前再把手头没交的账冲刷干净。
 
 ```js
 class Tracker {
   constructor() {
-    this.commonProps = {}; // 公共属性
+    // 第一步：备好账本基础信息——公共属性、用户标识、设备 ID、批量队列
+    this.commonProps = {};
     this.userId = null;
     this.deviceId = this.getDeviceId();
     this.queue = new ReportQueue({
@@ -276,18 +302,29 @@ class Tracker {
     });
   }
 
+  // init：开店准备
   init(config = {}) {
-    this.url = config.url; // 上报地址
+    // 第一步：记下上报地址和采样率
+    this.url = config.url;
     this.sampleRate = config.sampleRate ?? 1;
-    this.collectCommonProps(); // 采集设备、屏幕、UA 等
-    this.resend(); // 补发上次崩溃残留的本地缓存
-    this.bindLifecycle(); // 监听 visibilitychange 做卸载冲刷
+
+    // 第二步：采集设备、屏幕、UA 等公共属性，之后每条事件都带上
+    this.collectCommonProps();
+
+    // 第三步：补发上次崩溃残留的本地缓存（昨天没记完的旧账）
+    this.resend();
+
+    // 第四步：监听 visibilitychange，页面要走时做最后冲刷
+    this.bindLifecycle();
     return this;
   }
 
   // 设备 ID：localStorage 兜底，匿名用户也能被唯一标识
   getDeviceId() {
+    // 第一步：先从 localStorage 里找已有的设备 ID
     let id = localStorage.getItem('device_id');
+
+    // 第二步：没有就生成一个（时间戳 + 随机串）并存下来
     if (!id) {
       id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       localStorage.setItem('device_id', id);
@@ -299,8 +336,12 @@ class Tracker {
     this.userId = userId; // 登录后补上业务 ID，串起登录前后链路
   }
 
+  // track：记一笔账（用 safe 包了保险丝，内部出错绝不影响业务）
   track = safe((type, props = {}) => {
-    if (!shouldSample(this.sampleRate)) return; // 采样
+    // 第一步：采样不中签就直接放弃这条
+    if (!shouldSample(this.sampleRate)) return;
+
+    // 第二步：按统一格式拼出一条事件——公共属性 + 业务参数 + 身份 + 时间地点
     const event = {
       type, // pv / click / expose
       ...this.commonProps,
@@ -310,33 +351,41 @@ class Tracker {
       ts: Date.now(),
       url: location.href,
     };
-    persist([event]); // 先落盘兜底
-    scheduleReport(() => this.queue.push(event)); // 空闲时再入队
+
+    // 第三步：先落盘兜底（抄底稿），再趁空闲入队等批量上报
+    persist([event]);
+    scheduleReport(() => this.queue.push(event));
   });
 
+  // report：把一沓事件真正发出去
   report(batch, useBeacon) {
     const data = JSON.stringify(batch);
+
+    // 第一步：卸载场景用 sendBeacon，保证发完；成功即清掉本地底稿
     if (useBeacon && navigator.sendBeacon) {
-      // 卸载场景：sendBeacon 保证发完，成功即清掉本地缓存
       const ok = navigator.sendBeacon(this.url, data);
       if (ok) clearPersisted();
       return;
     }
+
+    // 第二步：正常场景用 fetch + keepalive；成功清底稿，失败重新入队
     fetch(this.url, { method: 'POST', body: data, keepalive: true })
       .then(() => clearPersisted())
-      .catch(() => batch.forEach((e) => this.queue.push(e))); // 失败重新入队
+      .catch(() => batch.forEach((e) => this.queue.push(e)));
   }
 
   flush(useBeacon) {
     this.queue.flush(useBeacon);
   }
 
+  // bindLifecycle：打烊信号——页面变 hidden 就强制冲刷
   bindLifecycle() {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') this.flush(true);
     });
   }
 
+  // resend：开店时把上次没发成功的旧账捞出来补发
   resend() {
     try {
       const buffered = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');

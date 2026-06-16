@@ -5,9 +5,11 @@ sidebar_label: 动态规划
 
 # 动态规划
 
-动态规划 (Dynamic Programming, DP) 是把一个大问题拆成**重叠的子问题**，用一张表记住子问题的答案，避免重复计算。它不是某个具体算法，而是一种「用空间换时间」的解题思路。
+**动态规划 (DP) 就是把大问题拆成重叠的子问题，用一张表记住每个子问题的答案，避免重复计算。** 它不是某个具体算法，而是一种「用空间换时间」的解题思路，本质是「不走回头路，算过的不再算」。
 
-DP 之所以让人头疼，是因为它没有固定模板，难在**想出状态和转移方程**。但解题步骤是固定的，按套路走就能把模糊的题目拆解清楚。
+:::tip 形象记忆
+DP 像**爬一座有很多台阶的塔，每爬到一层就在墙上刻下『到这层一共花了多少力气』**。后面的人 (后续状态) 要算自己花了多少力气，直接看下面几层墙上刻的数字相加就行，不用从地面重新爬一遍。墙上的刻字就是 DP 表。
+:::
 
 ## 什么样的问题能用 DP
 
@@ -45,12 +47,15 @@ graph TD
 
 上图里 `f(3)`、`f(2)` 都被算了不止一次——这就是**重叠子问题**。
 
-**记忆化递归 (自顶向下)**：用数组缓存算过的结果，复杂度直接降到 `O(n)`：
+**记忆化递归 (自顶向下)**：用对象缓存算过的结果，复杂度直接降到 `O(n)`：
 
 ```js
 function fib(n, memo = {}) {
+  // 第一步：base case，最小子问题直接给答案
   if (n < 2) return n;
-  if (memo[n] !== undefined) return memo[n]; // 命中缓存
+  // 第二步：查缓存，算过就直接返回，绝不重算
+  if (memo[n] !== undefined) return memo[n];
+  // 第三步：没算过才递归，算完先存进缓存再返回
   memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
   return memo[n];
 }
@@ -60,10 +65,13 @@ function fib(n, memo = {}) {
 
 ```js
 function fib(n) {
+  // 第一步：处理 base case
   if (n < 2) return n;
+  // 第二步：建表，填好起点
   const dp = new Array(n + 1);
   dp[0] = 0;
-  dp[1] = 1; // base case
+  dp[1] = 1;
+  // 第三步：从小到大递推，每格由前两格相加
   for (let i = 2; i <= n; i++) {
     dp[i] = dp[i - 1] + dp[i - 2]; // 状态转移
   }
@@ -91,16 +99,23 @@ function fib(n) {
 
 给定硬币面额 `coins` 和目标金额 `amount`，求凑出该金额所需的**最少硬币数**。
 
+:::tip 形象记忆
+凑零钱像**收银台找零**：要找出 11 元，你不会盲目试，而是想「先丢一枚 5 元，剩下找 6 元要几枚？再试丢一枚 2 元，剩下找 9 元要几枚？」，每种硬币试一遍，取最省的那种。`dp[i]` 就是「找零 i 元最少几枚硬币」的备忘录。
+:::
+
 - `dp[i]`：凑出金额 `i` 所需的最少硬币数。
 - 转移方程：`dp[i] = min(dp[i], dp[i - coin] + 1)`，遍历每种硬币。
 - base case：`dp[0] = 0` (凑 0 元需要 0 枚)。
 
 ```js
 function coinChange(coins, amount) {
+  // 第一步：建表，初值设为 Infinity 表示「暂时凑不出」
   const dp = new Array(amount + 1).fill(Infinity);
-  dp[0] = 0;
+  dp[0] = 0; // 凑 0 元需要 0 枚
 
+  // 第二步：从 1 元到目标金额，逐个金额求最少硬币数
   for (let i = 1; i <= amount; i++) {
+    // 第三步：每个金额都试遍所有硬币，取最省的
     for (const coin of coins) {
       if (coin <= i) {
         dp[i] = Math.min(dp[i], dp[i - coin] + 1);
@@ -108,13 +123,18 @@ function coinChange(coins, amount) {
     }
   }
 
+  // 第四步：还是 Infinity 说明凑不出，返回 -1
   return dp[amount] === Infinity ? -1 : dp[amount];
 }
 ```
 
 ### 二维 DP：编辑距离
 
-求把字符串 `word1` 变成 `word2` 的最少操作数 (可插入、删除、替换一个字符)。两个字符串各取一段做子问题，天然是二维。
+求把字符串 `word1` 变成 `word2` 的最少操作数 (可插入、删除、替换一个字符)。
+
+:::tip 形象记忆
+编辑距离像**用文档的「修订模式」把一段话改成另一段话**：每改一个字记一次操作。`dp[i][j]` 表示「把前一段的前 i 个字改成后一段的前 j 个字」最少改几次。两个字符串各取一段做子问题，天然是二维表格。
+:::
 
 - `dp[i][j]`：把 `word1` 前 `i` 个字符变成 `word2` 前 `j` 个字符的最少操作数。
 - 转移方程：
@@ -123,19 +143,23 @@ function coinChange(coins, amount) {
 
 ```js
 function minDistance(word1, word2) {
+  // 第一步：取长度，建 (m+1) x (n+1) 的表
   const m = word1.length;
   const n = word2.length;
   const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
 
-  // base case：一方为空串，操作数 = 另一方长度
+  // 第二步：base case——一方为空串，操作数 = 另一方长度
   for (let i = 0; i <= m; i++) dp[i][0] = i;
   for (let j = 0; j <= n; j++) dp[0][j] = j;
 
+  // 第三步：逐格填表，行列从 1 开始
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
+      // 第四步：当前两个字符相同，不用改，照抄左上
       if (word1[i - 1] === word2[j - 1]) {
         dp[i][j] = dp[i - 1][j - 1];
       } else {
+        // 第五步：不同，则在替换/删除/插入里挑最省的 + 1
         dp[i][j] = Math.min(
           dp[i - 1][j - 1], // 替换
           dp[i - 1][j],     // 删除
@@ -159,8 +183,11 @@ function minDistance(word1, word2) {
 
 ```js
 function fib(n) {
+  // 第一步：处理 base case
   if (n < 2) return n;
+  // 第二步：只留两个变量记最近两层
   let prev = 0, curr = 1;
+  // 第三步：每往前一步，两个变量整体向前滚一格
   for (let i = 2; i <= n; i++) {
     [prev, curr] = [curr, prev + curr]; // 滚动覆盖
   }
@@ -176,3 +203,7 @@ function fib(n) {
 - 拿到题先走**五步法**：定义 dp 含义 → 转移方程 → base case → 遍历顺序 → 举例验证，其中**定义 dp 含义最关键**。
 - 自顶向下 (记忆化递归) 和自底向上 (DP 数组) 是同一思路两种写法，能互转。
 - 当状态只依赖最近几个时，用**滚动数组**把空间优化到 `O(1)`。
+
+> ## 一句话口诀
+>
+> **大问题拆成小问题，墙上刻下算过的答案别重算；先定 dp 含义再写转移方程，只看最近几层就用滚动数组省空间。**
