@@ -52,7 +52,3 @@ function flatten(arr, depth = Infinity) {
 :::tip
 工程里直接用原生 `arr.flat(Infinity)` 即可。手写题问的是「不用 `flat` 怎么实现」，递归 + `reduce` 是最好记的答案。
 :::
-
-## 一句话口诀
-
-> **扁平化**：`reduce` 遍历，是数组就递归拍平再 `concat`，否则直接收。

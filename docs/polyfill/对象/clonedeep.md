@@ -152,7 +152,3 @@ const cloned = structuredClone(obj);
 :::tip
 答题时可以先点出 `structuredClone` 这个标准答案，再手写实现，既体现工程认知又展示底层能力。
 :::
-
-## 一句话口诀
-
-> **深拷贝靠递归一层层重画，靠 `WeakMap` 记账切断循环引用，靠 `instanceof` 判断给特殊类型 (Date/RegExp/Map/Set) 单独开小灶**。

@@ -105,9 +105,3 @@ function patchProps(el, oldProps, newProps) {
 
 这正是「列表渲染必须加 `key`、且别拿数组 `index` 当 `key`」的根本原因——用 `index` 当 key，插入/删除后 index 全变，等于没加。
 :::
-
-## 一句话口诀
-
-> **虚拟 DOM** = 用 JS 对象描述 DOM，先在 JS 里算差异再最小化更新真实 DOM。
-> **diff 三策略**：只比同层、tag 不同直接换、tag 相同比 props 再递归比 children。
-> **key** 是节点身份证，让框架认出「移动」而非「重建」，所以列表必加 key、别用 index。

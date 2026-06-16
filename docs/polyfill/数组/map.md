@@ -40,7 +40,3 @@ Array.prototype.myMap = function (fn, thisArg) {
 :::tip
 `map` 也能用 `reduce` 表达：`arr.reduce((acc, cur, i) => [...acc, fn(cur, i)], [])`——本质是「无条件收变换后的值」。详见 [reduce](./reduce.md)。
 :::
-
-## 一句话口诀
-
-> **map = 遍历 + 收集返回值成等长新数组**，回调拿 `(值, 下标, 原数组)`，记得跳稀疏空位。

@@ -145,7 +145,3 @@ function App() {
 1. [useRef – React](https://react.dev/reference/react/useRef)
 2. [forwardRef – React](https://react.dev/reference/react/forwardRef)
 3. [useImperativeHandle – React](https://react.dev/reference/react/useImperativeHandle)
-
-## 一句话口诀
-
-> `useRef` 是不触发渲染的可变容器，存定时器 id 或 DOM；`forwardRef` 把 ref 转发进子组件 (React 19 后可当普通 prop)；`useImperativeHandle` 让子组件只暴露指定方法、不裸露 DOM。

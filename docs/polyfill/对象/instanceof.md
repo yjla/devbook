@@ -48,7 +48,3 @@ console.log(myInstanceof([], Array)); // true，数组的链上有 Array.prototy
 console.log(myInstanceof([], Object)); // true，再往上还有 Object.prototype
 console.log(myInstanceof(1, Number)); // false，基本类型不在原型链上
 ```
-
-## 一句话口诀
-
-> **instanceof 是「查链」**——顺着原型链往上爬找目标的 `prototype`，撞到就 `true`，爬到尽头 `null` 都没有就 `false`。

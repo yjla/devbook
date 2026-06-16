@@ -185,7 +185,3 @@ const selectIds = createSelector(
 1. [React Redux 官方文档](https://cn.react-redux.js.org/)
 2. [Hooks - React Redux](https://cn.react-redux.js.org/api/hooks)
 3. [Reselect - GitHub](https://github.com/reduxjs/reselect)
-
-## 一句话口诀
-
-> **Provider 用 Context 把 store 透传全树，connect / useSelector 负责订阅并把 state、dispatch 注入组件；store 一变就重跑 selector 做浅比较，结果变了才 re-render——优化的核心就是「selector 只选最小数据、别返回现做的新对象」。**

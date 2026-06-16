@@ -48,7 +48,3 @@ pipe(add1, double)(5); // 先 add1 再 double：add1(5)=6 → double=12
 :::info
 Redux 的 `applyMiddleware` 内部就是用 `compose` 把多个中间件串成一条处理链的。
 :::
-
-## 一句话口诀
-
-> **compose / pipe**：`reduceRight` 从右到左、`reduce` 从左到右，把函数串成流水线，前者输出喂给后者。

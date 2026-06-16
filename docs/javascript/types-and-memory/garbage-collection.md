@@ -59,10 +59,6 @@ flowchart LR
 
 只要对象**仍然可达**,GC 就不会回收——这正是内存泄漏的根源。常见场景见 [内存管理](./memory-management):意外的全局变量、被遗忘的定时器、不合理的闭包、游离的 DOM 引用。
 
-## 一句话口诀
-
-> **GC 看可达性**:从根能到达的留下、到不了的回收。主流是**标记清除** (解决循环引用);V8 **分代**——新生代 Scavenge 复制、老生代标记整理,并用增量 / 并发标记减少卡顿。
-
 ## 参考
 
 - [内存管理 - JavaScript | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Memory_Management)

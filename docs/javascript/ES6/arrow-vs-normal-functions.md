@@ -79,7 +79,3 @@ new Foo(); // TypeError: Foo is not a constructor
 :::warning
 别把对象的方法写成箭头函数 (`this` 会指向外层而非对象),也别给 `prototype` 上的方法用箭头函数。这是箭头函数最常见的误用。`this` 规则详见 [this 指向](../execution/this-binding)。
 :::
-
-## 一句话口诀
-
-> **箭头函数无自己的 `this`/`arguments`/`prototype`,不能 `new`、不能当 Generator**;`this` 在定义时按词法捕获外层。要动态 `this` 用普通函数,要固定 `this` 或图简洁用箭头。

@@ -123,7 +123,3 @@ graph LR
 
 1. [Redux 常见问题 - 官方文档](https://cn.redux.js.org/faq/)
 2. [Redux vs Context - 官方](https://cn.redux.js.org/faq/general#when-should-i-use-redux)
-
-## 一句话口诀
-
-> **Context 管传递、Redux 管管理；reducer 纯 + state 不可变换来可预测、可测试、可时间旅行；异步交给中间件；时间旅行的本质是「初始 state + action 列表」重算，而非存一堆快照。**

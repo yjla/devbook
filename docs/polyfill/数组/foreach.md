@@ -33,7 +33,3 @@ Array.prototype.myForEach = function (fn, thisArg) {
 :::warning
 `forEach` **无法中断遍历**：`break` 用不了，`return` 只结束当前这一次回调、不影响后续。需要提前退出就改用 `for` / `for...of`，或语义上更贴切的 `some`（找到就停）/ `every`（不满足就停）。
 :::
-
-## 一句话口诀
-
-> **forEach = 只遍历不收集**（返回 `undefined`），和 `map` 就差「要不要返回值」，且**不能 break / return 中断**。

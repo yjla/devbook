@@ -85,7 +85,3 @@ const getData = () => run(getDataGen);
 ## 与事件循环的关系
 
 `await` 之后的代码会被包进 `.then` 回调,作为**微任务**在当前同步代码跑完后执行。所以 async 函数里 `await` 前是同步、`await` 后是微任务,这正是 [事件循环](./event-loop) 输出题的高频考点。
-
-## 一句话口诀
-
-> **async/await = Generator (能暂停) + 自动执行器 (自动 `next` 驱动) + 返回 Promise**。`await` 即 `yield`,执行器等 Promise 完成后把结果 `next` 回去;出错用 `throw` 回去让 `try/catch` 接住。

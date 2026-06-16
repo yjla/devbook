@@ -101,7 +101,3 @@ graph TD
   P2 --> P3[原则三 纯函数 reducer<br/>返回新 state 不改旧的]
   P3 --> R[可预测 / 可调试 / 可回放]
 ```
-
-## 一句话口诀
-
-> **单一 store 存状态，dispatch 派 action，纯函数 reducer 返回新 state，view 订阅自动刷新——单向闭环，状态只读，绝不原地修改。**

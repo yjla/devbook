@@ -98,8 +98,3 @@ useEffect(() => {
 
 1. [Queueing a Series of State Updates – React](https://react.dev/learn/queueing-a-series-of-state-updates)
 2. [Automatic batching – React 18 升级说明](https://react.dev/blog/2022/03/29/react-v18#new-feature-automatic-batching)
-
-## 一句话口诀
-
-> `setState` 不改当前快照、只排队，整次事件合并成一次渲染。
-> React 18 自动批处理覆盖定时器/Promise；想拿新值用函数式更新或 `useEffect([dep])`，想立即同步用 `flushSync`。

@@ -169,7 +169,3 @@ function User({ id }) {
 1. [Redux Toolkit 官方文档](https://cn.redux-toolkit.js.org/)
 2. [createSlice - RTK](https://cn.redux-toolkit.js.org/api/createSlice)
 3. [RTK Query 概述](https://cn.redux-toolkit.js.org/rtk-query/overview)
-
-## 一句话口诀
-
-> **RTK 是 Redux 官方标准写法：configureStore 一行配好 store + thunk + DevTools，createSlice 自动生成 action 和 reducer 并靠 Immer 让你「直接改」state，createAsyncThunk 标准化异步的 pending/fulfilled/rejected，RTK Query 一站式搞定请求与缓存。**
