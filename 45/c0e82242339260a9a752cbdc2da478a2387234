@@ -1,0 +1,38 @@
+docs/javascript/types-and-memory/memory-management.md
+  s_5cbfb4395e345e::t_39198190a52715 9
+  s_5cbfb4395e345e::t_9a70cd81f83b29 120
+  s_5cbfb4395e345e::t_867c861ce77fa0 67
+docs/javascript/browser/rendering-process.md
+  s_5cbfb4395e345e::t_9afcbbec429dae 46
+  s_5cbfb4395e345e::t_5027556b245efe 9
+docs/css/视觉与渲染/重排与重绘.md
+  s_5cbfb4395e345e::t_400aa726678d79 140
+docs/javascript/async/async-await.md
+  s_5cbfb4395e345e::t_c9177da36aa70a 87
+docs/javascript/browser/_category_.json
+  s_5cbfb4395e345e::t_11c3625fa06f6b 1
+docs/javascript/async/generator.md
+  s_5cbfb4395e345e::t_75b9d5031b5c26 116
+  s_5cbfb4395e345e::t_413f39b7044ecf 180
+  s_5cbfb4395e345e::t_56a7f493f79115 23
+docs/javascript/ES6/arrow-vs-normal-functions.md
+  s_5cbfb4395e345e::t_9bd40039e67208 80
+docs/javascript/types-and-memory/garbage-collection.md
+  s_5cbfb4395e345e::t_8c7f42dd7398c3 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "45c0e82242339260a9a752cbdc2da478a2387234",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
