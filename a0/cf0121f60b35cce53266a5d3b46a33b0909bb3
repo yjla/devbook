@@ -1,0 +1,20 @@
+docs/scenario/concurrency-scheduler.md
+  s_b54c1aa84b97bd::t_01f04d0688d967 91-93,98-100,103,106-109,113-115,117-127,133-135
+  s_b54c1aa84b97bd::t_b9f4bb70c94e2d 166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.10-trip",
+  "base_commit_sha": "a0cf0121f60b35cce53266a5d3b46a33b0909bb3",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
