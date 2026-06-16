@@ -1,0 +1,19 @@
+docs/scenario/event-emitter.md
+  s_b54c1aa84b97bd::t_558cad7515bfa0 21-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "e43e2652ca919ebf4184312a3037f61d31dfc3fc",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
