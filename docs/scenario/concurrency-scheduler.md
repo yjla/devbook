@@ -26,7 +26,7 @@ flowchart LR
 任务开工前就定死在一个数组里，跑起来不再增减。单个任务失败不中断其余，结果按原顺序返回（对应 `Promise.allSettled` 语义）。
 
 ```js
-async function asyncPool(tasks, limit) {
+async function asyncSchedule(tasks, limit) {
   // 第一步：准备好放结果的数组，和一个所有 worker 共用的「下一张号」计数器
   const results = new Array(tasks.length);
   let nextIndex = 0;
@@ -73,7 +73,7 @@ const tasks = [
   () => sleep(400, 'd'),
 ];
 
-asyncPool(tasks, 2).then(console.log);
+asyncSchedule(tasks, 2).then(console.log);
 // 任意时刻最多 2 个任务执行，按原顺序返回：
 // [
 //   { status: 'fulfilled', value: 'a' },
@@ -86,7 +86,7 @@ asyncPool(tasks, 2).then(console.log);
 
 ## 动态加任务
 
-`asyncPool` 按 `nextIndex++` **下标**取任务，前提是 `tasks` 开工前就定死了，跑起来不能再加。
+`asyncSchedule` 按 `nextIndex++` **下标**取任务，前提是 `tasks` 开工前就定死了，跑起来不能再加。
 
 思路是**看队列 + 完成即叫号**：任务先丢进一个队列，用一个 `run()` 方法统一派活——只要「还有空窗口」且「队列里有人排队」就取一个出来办；**每个任务办完后，自己把窗口腾出来再喊一声 `run()` 叫下一位**。这样不管是新加任务、还是有任务办完，都只要调一次 `run()`，空位自然被填上。
 
