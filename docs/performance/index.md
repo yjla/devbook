@@ -15,8 +15,8 @@
 ## 性能监控
 
 1. [什么是 RAIL 模型？](https://web.dev/rail/)
-2. [常见的性能指标有哪些？](./性能指标)
-3. [性能监控的手段有哪些？](./性能监控)
+2. [常见的性能指标有哪些？](./web-vitals)
+3. [性能监控的手段有哪些？](./lighthouse)
 4. [如何进行性能预算？](https://web.dev/use-lighthouse-for-performance-budgets/)
 5. [Performance API 的时间精度？](https://developer.mozilla.org/zh-CN/docs/Web/API/Performance_API#domhighrestimestamp)
 6. [什么是长耗时任务？](https://developer.mozilla.org/zh-CN/docs/Web/API/Long_Tasks_API)
@@ -27,13 +27,6 @@
 
 
 ### Performance
-
-
-
-### 埋点
-
-1. 埋点有哪些作用？
-2. 
 
 
 
@@ -49,11 +42,11 @@
 
 1. [常见的性能优化手段？](./性能优化)
 2. [如何改进 FCP？](https://web.dev/fcp/#fcp-4)
-3. [什么是 DNS 预解析？](./DNS预解析)
+3. 什么是 DNS 预解析？
 4. [有哪些延迟加载的策略？](https://developer.mozilla.org/zh-CN/docs/Web/Performance/Lazy_loading)
 6. [字体会在什么时候被请求？](https://developer.mozilla.org/zh-CN/docs/Web/Performance/Lazy_loading#fonts)
 7. [如何充分利用浏览器空闲时间？](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestIdleCallback)
-8. [什么是服务端渲染？](./服务端渲染)
+8. [什么是服务端渲染？](./server-side-rendering)
 9. [服务端渲染所返回的页面是否可交互？](https://web.dev/tti/#tti)
 10. [如何渲染十万条数据？](https://juejin.cn/post/7031923575044964389)
 
