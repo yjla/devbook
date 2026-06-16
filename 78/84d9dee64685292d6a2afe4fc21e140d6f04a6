@@ -1,0 +1,33 @@
+docs/performance/index.md
+  s_5cbfb4395e345e::t_76fb51555dcf86 45
+  s_5cbfb4395e345e::t_317494a00227a3 49
+  s_5cbfb4395e345e::t_70bcc6378b97ec 18-19
+docs/performance/react-native-optimization.md
+  s_5cbfb4395e345e::t_004c8a08357a28 2-113
+docs/performance/lighthouse.md
+  s_5cbfb4395e345e::t_88311632259627 1-92
+docs/performance/server-side-rendering.md
+  s_5cbfb4395e345e::t_a13ddce17f632f 1-82
+docs/javascript/browser/browser-processes-and-threads.md
+  s_5cbfb4395e345e::t_cb46008e82e2c0 73
+docs/performance/jank-causes-and-solutions.md
+  s_5cbfb4395e345e::t_1bef8590af5e7e 1-112
+docs/performance/web-vitals.md
+  s_5cbfb4395e345e::t_3cc7a0326cdf7d 1-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "7884d9dee64685292d6a2afe4fc21e140d6f04a6",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
