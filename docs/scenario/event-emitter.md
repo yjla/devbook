@@ -22,11 +22,11 @@ class EventEmitter {
   events = new Map();
 
   // 第二步：实现订阅。没有这个事件就先建一个空数组，再把回调推进去
-  on(name, fn) {
+  on(name, callback) {
     if (!this.events.has(name)) {
       this.events.set(name, []);
     }
-    this.events.get(name).push(fn);
+    this.events.get(name).push(callback);
     return this; // 返回 this 支持链式调用
   }
 
@@ -35,25 +35,25 @@ class EventEmitter {
     const callbacks = this.events.get(name) || [];
     // 先复制一份再遍历：避免回调里 off 掉自己导致原数组边遍历边变短、漏执行
     const copy = [...callbacks];
-    copy.forEach((fn) => fn(...args));
+    copy.forEach((callback) => callback(...args));
     return this;
   }
 
   // 第四步：实现退订。把目标回调从数组里过滤掉
-  off(name, fn) {
+  off(name, callback) {
     if (!this.events.has(name)) {
       return this;
     }
-    const filtered = this.events.get(name).filter((f) => f !== fn);
+    const filtered = this.events.get(name).filter((cb) => cb !== callback);
     this.events.set(name, filtered);
     return this;
   }
 
   // 第五步：实现只订阅一次。包一层 wrapper，执行完原回调后立刻把自己解绑
-  once(name, fn) {
+  once(name, callback) {
     const wrapper = (...args) => {
-      fn(...args);
-      this.off(name, wrapper); // 注意解绑的是 wrapper，不是 fn
+      callback(...args);
+      this.off(name, wrapper); // 注意解绑的是 wrapper，不是 callback
     };
     this.on(name, wrapper);
     return this;
@@ -64,7 +64,7 @@ class EventEmitter {
 :::warning
 两个易错点：
 
-1. `once` 要解绑的是 **包装函数 `wrapper`** ，不是原始 `fn` ——因为真正加进数组的是 `wrapper` 。
+1. `once` 要解绑的是 **包装函数 `wrapper`** ，不是原始 `callback` ——因为真正加进数组的是 `wrapper` 。
 2. `emit` 时先 **复制一份回调数组再遍历** ，否则 `once` 在遍历途中改动数组会漏掉后面的回调。
    :::
 
