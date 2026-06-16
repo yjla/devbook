@@ -179,7 +179,3 @@ function useQuery(url, params) {
 :::info
 `useSyncExternalStore`（React 18+）专为「订阅组件外部的可变数据源」设计，能保证并发渲染下所有组件读到**一致的快照**，避免手动 `useState` + 事件监听可能出现的状态撕裂。这套「全局缓存 + 按 key 订阅 + 写时通知」正是 React Query、SWR 缓存层的核心骨架。
 :::
-
-## 一句话口诀
-
-> **缓存防「以后」（存已完成的数据）、去重防「此刻」（存进行中的 Promise）；重试靠递归减次数、超时靠 `Promise.race` 赛跑。Hook 只做一件事：订阅组件外的全局缓存，同一 key 共享数据、一处更新全员重渲染。**

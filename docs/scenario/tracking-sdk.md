@@ -404,7 +404,3 @@ tracker.track('pv'); // 页面浏览
 tracker.setUser('u_1001'); // 登录后
 tracker.track('click', { button: 'buy', sku: 'A123' }); // 关键点击
 ```
-
-## 一句话口诀
-
-> **埋点 SDK = 采集（代码/可视化/全埋点 + IntersectionObserver 曝光）→ 队列（批量 + 定时 + 本地缓存兜底）→ 上报（运行用 fetch、走人用 sendBeacon、兜底用 gif）；全程错误隔离、空闲执行、关键事件全采，做到对业务零侵入、零负担、零丢失。**
