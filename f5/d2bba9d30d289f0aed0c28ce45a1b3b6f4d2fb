@@ -1,0 +1,23 @@
+docs/html/defer-vs-async.md
+  s_5cbfb4395e345e::t_6e2aa29e2257e7 3,6
+docs/html/inline-vs-block.md
+  s_5cbfb4395e345e::t_6f4aaee69e754b 3,6
+docs/html/src-vs-href.md
+  s_5cbfb4395e345e::t_394ab5d2d06bb9 3,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "f5d2bba9d30d289f0aed0c28ce45a1b3b6f4d2fb",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
