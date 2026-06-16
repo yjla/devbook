@@ -1,0 +1,24 @@
+docs/React/React.js/_category_.json
+  s_5cbfb4395e345e::t_86d6d3c95afdf5 1-2,5
+  s_5cbfb4395e345e::t_11ff993cebf680 3
+  s_5cbfb4395e345e::t_89ed8c65e970a9 4
+docs/React/React_Native/_category_.json
+  s_5cbfb4395e345e::t_1f86e0985335ba 4
+  s_5cbfb4395e345e::t_2177622f4c97fe 1-3,5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "c8e929d574e8f3317c822f4b498e7dff680ec8b1",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
