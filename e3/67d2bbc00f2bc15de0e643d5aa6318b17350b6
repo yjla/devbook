@@ -1,0 +1,19 @@
+English-Interview-Prep.md
+  s_5cbfb4395e345e::t_0ef557e8652b2b 1-225
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "e367d2bbc00f2bc15de0e643d5aa6318b17350b6",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
