@@ -1,0 +1,25 @@
+docs/scenario/onion-middleware.md
+  s_b54c1aa84b97bd::t_9f7e6bbf698123 20
+  s_b54c1aa84b97bd::t_efa999cb9f385d 42,45-62,67,71,74,78-80
+  s_b54c1aa84b97bd::t_c9cbbc388fbe60 110,114
+  s_b54c1aa84b97bd::t_22948f32d085bd 97-100
+  s_b54c1aa84b97bd::t_5a05b9d33ab4c4 24,27-37,39,43,68-69
+  s_b54c1aa84b97bd::t_ddbc95a0f36999 22
+  s_b54c1aa84b97bd::t_7f742bc9b62dd3 38,40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "b19dd7ab90ef945ba6d7d9fd876f88b7d3f85e27",
+  "prompts": {},
+  "sessions": {
+    "s_b54c1aa84b97bd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6081d6b4-e094-4b62-803d-cd9647f1f2a9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
