@@ -18,8 +18,10 @@ sidebar_label: 2 发布订阅
 
 ```js
 class EventEmitter {
-  // 第一步：用一张 Map 当「事件中心」，结构是 事件名 → 回调数组
-  events = new Map();
+  // 第一步：构造函数里建一张 Map 当「事件中心」，结构是 事件名 → 回调数组
+  constructor() {
+    this.events = new Map();
+  }
 
   // 第二步：实现订阅。没有这个事件就先建一个空数组，再把回调推进去
   on(name, callback) {
