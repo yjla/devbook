@@ -1,9 +1,9 @@
 ---
 sidebar_position: 3
-sidebar_label: 3 src 与 href
+sidebar_label: 3 资源嵌入与引用
 ---
 
-# `src` 与 `href`
+# 资源嵌入与引用：src 与 href
 
 一句话区分：**`src` 是把外部资源「嵌进来」，`href` 是和外部资源「建立引用」**。一个是把东西塞进当前元素、成为页面的一部分，一个只是指个路、表明关系。
 

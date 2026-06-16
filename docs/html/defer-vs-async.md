@@ -1,9 +1,9 @@
 ---
 sidebar_position: 4
-sidebar_label: 4 defer 与 async
+sidebar_label: 4 脚本加载时机
 ---
 
-# `defer` 与 `async`
+# 脚本加载时机：defer 与 async
 
 这俩是 `<script>` 的两个属性，都用来**让脚本异步下载、不阻塞 HTML 解析**。区别在「下载完什么时候执行」。
 
