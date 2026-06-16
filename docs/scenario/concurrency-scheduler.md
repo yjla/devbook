@@ -29,13 +29,16 @@ flowchart LR
 async function asyncSchedule(tasks, limit) {
   // 第一步：准备好放结果的数组，和一个所有 worker 共用的「下一张号」计数器
   const results = new Array(tasks.length);
-  let nextIndex = 0;
+  let index = 0;
 
   // 第二步：定义单个 worker——不断撕号、办业务，直到号撕光
   async function worker() {
-    while (nextIndex < tasks.length) {
-      // nextIndex++ 是同步操作，撕号的瞬间就把号锁死，保证结果按原下标写回
-      const current = nextIndex++;
+    while (index < tasks.length) {
+      // 先记下当前要办的号
+      const current = index;
+      // 立刻把计数器推进，把这个号锁死。必须在 await 之前做：
+      // 一旦 await 让出线程，别的 worker 进来才不会重复领到同一个号
+      index++;
       try {
         const value = await tasks[current]();
         results[current] = { status: 'fulfilled', value };
@@ -57,7 +60,7 @@ async function asyncSchedule(tasks, limit) {
 ```
 
 :::info
-关键在 `nextIndex++` 是同步操作：多个 worker 共享同一个计数器，谁先空闲谁取下一个，天然实现「完成即补位」，不需要手动管理任务池。每个任务用 `try/catch` 兜住，单个失败只记一笔 `rejected`，不会拖垮整批。
+关键在 `index++` 是同步操作，且必须放在 `await` 之前：多个 worker 共享同一个计数器，谁先空闲谁在让出线程前就把号锁死，天然实现「完成即补位」、不会重复领号，也不需要手动管理任务池。每个任务用 `try/catch` 兜住，单个失败只记一笔 `rejected`，不会拖垮整批。
 :::
 
 验证：
