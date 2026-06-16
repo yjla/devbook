@@ -64,6 +64,27 @@ flowchart TD
 
 实践上是**批量 + 定时**组合：队列攒到阈值就发，或者超时就发，二者谁先到走谁。关键事件走实时通道单独发。
 
+:::warning 为什么不干脆全量实时上报？
+直觉上「每条立即发」最不容易丢，但**全量实时既不可取、也并不能真正保证不丢**：
+
+- **性能与成本扛不住**：曝光、滚动每秒能产生几十上百条，逐条发请求会拖垮页面、耗尽移动端电量、压垮服务端。业界 SDK（神策、GA、Amplitude）默认都批量，原因就在这。
+- **实时本身也会丢**：用户关页面 / 杀进程的**那一瞬间**，正在「飞」的那条请求照样发不出去——实时只是把「攒着可能丢一批」换成「丢在途的那一条」，没有根除丢失。
+
+关键在于：**实时性和可靠性是两个正交的维度，别用「实时」去解「丢失」**。
+
+- **可靠性**靠**持久化落盘 + 补发**：每条事件入队前先写本地存储，发成功才删；进程被杀、断电、断网，下次启动把残留捞出来补发（见下文 [失败重试 + 本地缓存兜底](#失败重试--本地缓存兜底)）。这才是「不丢」的真正保证。
+- **实时性**靠**分级**：支付、下单这类关键转化事件走实时单独通道 + 落盘双保险；曝光、滚动这类高频事件批量上报、容忍极小概率丢失（反正它们本就采样）。
+:::
+
+:::info 那「用户直接关浏览器 / 杀掉 App 进程」到底怎么兜底？
+分两层，缺一不可：
+
+1. **抓住「要走了」的信号做最后冲刷**：浏览器用 `visibilitychange` 的 `hidden` + `sendBeacon`（卸载后浏览器替你发完），RN 用 `AppState` 切 `background` 时 flush。**正常关闭、切后台、跳转都能覆盖。**
+2. **极端情况（强杀进程、断电、瞬间断网）连冲刷都来不及**——这时唯一能救的就是**落盘**：事件早在产生时就写进了 `localStorage` / `AsyncStorage` / `MMKV`，下次启动 `resend()` 自动补发。
+
+所以答案不是「改成实时」，而是「**信号冲刷兜正常场景 + 落盘补发兜极端场景**」。实时通道只是给关键事件再加一道保险，不是用来替代落盘的。
+:::
+
 ### 用什么发
 
 ```mermaid
@@ -404,3 +425,268 @@ tracker.track('pv'); // 页面浏览
 tracker.setUser('u_1001'); // 登录后
 tracker.track('click', { button: 'buy', sku: 'A123' }); // 关键点击
 ```
+
+## 跨端通用方案：核心不变，换适配层
+
+上面整套是浏览器实现，但它**绑死了一堆浏览器 API**——`localStorage`、`document`、`visibilitychange`、`sendBeacon`、`IntersectionObserver`。这些在 React Native、Node 里统统不存在。
+
+如果每个端重写一套 SDK，逻辑（队列、批量、采样、重试、落盘、错误隔离）会重复三遍。正确做法：**把「端相关」的部分隔离到一个适配层，核心 SDK 只依赖一个抽象接口**。各端只实现这个接口，核心代码一行不改。
+
+```mermaid
+flowchart TD
+  Core[核心 SDK<br/>队列 / 批量 / 采样 / 重试 / 错误隔离]
+  Core --> A{平台适配器}
+  A --> W[浏览器<br/>localStorage / sendBeacon / IO]
+  A --> R[React Native<br/>AsyncStorage / fetch / AppState]
+  A --> N[Node SSR<br/>日志文件 / AsyncLocalStorage]
+```
+
+形象例子：核心 SDK 像**一台通用的发动机**，适配器像**针对不同路面换的轮胎**——公路、雪地、越野换轮胎就行，发动机不用重造。
+
+随端变化的只有四件事，抽成一个适配器接口：
+
+```js
+// 平台适配器：核心 SDK 只认这个接口，不碰任何具体平台 API
+const adapter = {
+  storage, // 本地缓存读写：{ get(key), set(key, val), remove(key) }
+  send, // 把数据发出去：send(url, data, { useBeacon })
+  onExit, // 注册「要走了」的回调：onExit(cb)，触发时机由各端决定
+  getCommonProps, // 采集端相关公共属性：设备、OS、屏幕、版本
+};
+```
+
+四件事在三端的对应实现：
+
+| 能力 | 浏览器 | React Native | Node SSR |
+|------|--------|--------------|----------|
+| 本地缓存 | `localStorage` | `AsyncStorage` / `MMKV` | 内存队列 + 日志文件 |
+| 发送 | `sendBeacon` / `fetch` / gif | `fetch` | 写日志文件 → Kafka |
+| 退出信号 | `visibilitychange` hidden | `AppState` 切 background | 响应结束 / `SIGTERM` |
+| 公共属性 | `navigator` / `screen` | `Platform` / DeviceInfo | request 的 header / cookie |
+| PV 来源 | `history` / `location` | 路由库监听 | 每个请求即一次 |
+| 曝光 | `IntersectionObserver` | `FlatList` 可见性回调 | 无（服务端没有视口） |
+
+下面只讲 RN 和 Node 这两端**与浏览器不同**的部分，相同的逻辑（队列、采样、重试）直接复用核心 SDK。
+
+## React Native 埋点
+
+RN 没有 DOM、没有 `window` 生命周期、没有 `localStorage`，但 `fetch` 是有的。逐个替换四件事即可。
+
+### 退出信号：用 AppState 代替 visibilitychange
+
+浏览器靠 `visibilitychange` 的 `hidden` 抓「页面要走了」。RN 的等价信号是 **`AppState`**——应用切到后台（`background` / `inactive`）就是「用户要走了」，趁这一刻冲刷队列。
+
+```js
+import { AppState } from 'react-native';
+
+AppState.addEventListener('change', (next) => {
+  // App 切后台 / 被锁屏，等价于网页的 hidden：要走了，最后冲刷一次
+  if (next === 'background' || next === 'inactive') {
+    tracker.flush();
+  }
+});
+```
+
+:::warning
+RN 没有 `sendBeacon`——切后台后系统可能很快冻结 JS 线程甚至断网，`fetch` 不保证发完。所以 RN 比浏览器**更依赖落盘兜底**：每条事件先写 `AsyncStorage`，下次启动 `resend()` 补发。「切后台时 flush」是尽力而为，「落盘 + 启动补发」才是可靠保证。
+:::
+
+### 本地缓存：AsyncStorage 是异步的
+
+浏览器 `localStorage` 是同步的，`persist([event])` 一行就落盘。RN 的 `AsyncStorage` 是**异步**的，读写都返回 Promise：
+
+```js
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const storage = {
+  async get(key) {
+    const raw = await AsyncStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  },
+  async set(key, val) {
+    await AsyncStorage.setItem(key, JSON.stringify(val));
+  },
+  async remove(key) {
+    await AsyncStorage.removeItem(key);
+  },
+};
+```
+
+:::tip
+对落盘频繁、又想要同步读写的场景，用 **MMKV**（`react-native-mmkv`）替代 `AsyncStorage`：它基于 mmap，读写是同步的、快一个数量级，用法和 `localStorage` 一样直观，能少改不少异步逻辑。
+:::
+
+### PV：监听路由库，而不是 location
+
+RN 没有 URL。页面浏览靠**路由库**（React Navigation）的状态变化触发：
+
+```js
+import { NavigationContainer } from '@react-navigation/native';
+
+<NavigationContainer
+  ref={navigationRef}
+  // 第一步：每次路由栈变化，说明发生了页面切换
+  onStateChange={() => {
+    // 第二步：取当前激活的路由名，作为 PV 的页面标识
+    const route = navigationRef.getCurrentRoute();
+    tracker.track('pv', { screen: route?.name });
+  }}
+>
+  {/* ... */}
+</NavigationContainer>;
+```
+
+### 曝光：FlatList 的可见性回调代替 IntersectionObserver
+
+RN 没有 `IntersectionObserver`，但长列表 `FlatList` / `SectionList` 自带可见性检测 `onViewableItemsChanged`，作用完全对应——元素露出到阈值就回调：
+
+```js
+import { useRef } from 'react';
+
+// 第一步：阈值配置——露出 50% 算曝光（对应 IO 的 threshold: 0.5）
+const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 }).current;
+
+// 第二步：可见项变化时，对新进入视口的 item 上报曝光
+const onViewableItemsChanged = useRef(({ viewableItems }) => {
+  viewableItems.forEach(({ item }) => {
+    tracker.track('expose', { id: item.id });
+  });
+}).current;
+
+<FlatList
+  data={items}
+  viewabilityConfig={viewabilityConfig}
+  onViewableItemsChanged={onViewableItemsChanged}
+  renderItem={renderItem}
+/>;
+```
+
+:::warning
+`onViewableItemsChanged` 和 `viewabilityConfig` 必须用 `useRef` 固定成**稳定引用**，每次渲染传新函数 RN 会直接报错 `Changing onViewableItemsChanged on the fly is not supported`。
+:::
+
+### 点击：RN 没有事件冒泡，全埋点要靠包装
+
+浏览器全埋点靠 `document` 上的事件委托接住冒泡。RN 的触摸事件**不冒泡到统一顶层**，做不了全局委托。两条路：
+
+- **代码埋点**：在 `onPress` 里手动 `track`，最直接。
+- **无埋点**：封装一个 `<Trackable>` 高阶组件包裹 `Pressable`，或在初始化时 **monkey-patch `Pressable`/`TouchableOpacity` 的 `onPress`**，统一拦截后自动上报。这是 RN 全埋点的通用实现思路。
+
+```js
+// 一个最小的 Trackable 包装：拦截 onPress，先埋点再放行原逻辑
+function Trackable({ event, params, children, onPress }) {
+  const handlePress = (e) => {
+    tracker.track('click', { event, ...params }); // 先记一笔
+    onPress?.(e); // 再执行业务原本的 onPress
+  };
+  return <Pressable onPress={handlePress}>{children}</Pressable>;
+}
+```
+
+## Node 服务端（SSR）埋点
+
+服务端埋点和前端是**两套思路**。先想清楚为什么要在服务端埋：
+
+- **抓得到前端抓不到的人**：JS 没加载完、被禁用、爬虫/SEO 访问——这些客户端埋点全漏，服务端只要请求到达就记得到。
+- **首屏 PV 更准**：SSR 在服务端直接记 PV，不用等客户端 hydration，避免「页面还没活起来用户就走了」漏掉的访问。
+- **拿得到客户端看不到的数据**：真实后端耗时、SSR 渲染错误、IP/地理位置。
+- **更难伪造**：客户端上报可被篡改，服务端基于真实请求记录可信度更高。
+
+形象例子：服务端埋点像**商场大门口的客流闸机**——不管你手机有没有电、装没装店家 App，只要跨进大门（请求到服务器）就记一笔；客户端埋点像**店员观察你在店里摸了哪些商品**，更细，但要你手机正常工作才记得到。两者互补，不是替代。
+
+### 最大的坑：进程是多用户共享的，不能用单例存用户态
+
+浏览器一个页面就一个用户，`this.userId` 这种单例天经地义。**Node 一个进程同时服务成千上万个请求**，如果把用户身份挂在模块级单例上，请求之间会互相覆盖——**数据串号**，把 A 的行为记成 B 的。
+
+解法：身份必须是**请求级**的。Node 用 `AsyncLocalStorage` 给每个请求开一份独立上下文，贯穿整条异步调用链：
+
+```js
+import { AsyncLocalStorage } from 'node:async_hooks';
+
+const als = new AsyncLocalStorage();
+
+// 中间件：每个请求进来，开一份只属于它自己的上下文
+app.use((req, res, next) => {
+  const ctx = {
+    deviceId: req.cookies.device_id || genId(), // 从 cookie 取设备标识
+    userId: req.session?.userId || null, // 从会话取登录态
+    ua: req.headers['user-agent'],
+    ip: req.ip,
+  };
+  // 在这份上下文里执行后续逻辑，链路上任意位置都能取回「本请求」的身份
+  als.run(ctx, () => next());
+});
+
+function track(type, props = {}) {
+  const ctx = als.getStore() || {}; // 取的是「当前请求」的身份，绝不串号
+  writeLog({
+    type,
+    ...props,
+    device_id: ctx.deviceId,
+    user_id: ctx.userId,
+    ts: Date.now(),
+  });
+}
+```
+
+### 上报：不发网络请求，而是写日志文件
+
+服务端没有 `sendBeacon`/gif。最稳的做法不是从服务端再发一次 HTTP，而是**写本地日志文件，由采集 agent 收走**：
+
+```mermaid
+flowchart LR
+  R[每个请求] --> T[track 写一行日志]
+  T --> L[本地日志文件]
+  L -->|Filebeat / Flume 采集| K[Kafka]
+  K --> DW[数仓 / 实时计算]
+```
+
+为什么写文件而不是直连 Kafka：**解耦且不丢**。写本地文件几乎不耗时、不阻塞响应；下游 Kafka 挂了，日志还躺在磁盘上，采集 agent 恢复后继续收，数据不丢。用成熟日志库（如 `pino`）还自带高性能和背压处理：
+
+```js
+import pino from 'pino';
+
+// 输出到文件，交给 Filebeat 之类的 agent 去采集
+const logger = pino(pino.destination('/var/log/app/track.log'));
+
+function writeLog(event) {
+  logger.info(event); // 一行一条 JSON，不阻塞请求
+}
+```
+
+### 不阻塞响应 + 优雅退出兜底
+
+两条服务端独有的纪律：
+
+1. **埋点绝不拖慢响应**。埋点是旁路，`track` 要么同步写本地文件（极快），要么 fire-and-forget 丢进内存队列异步刷，**绝不 `await` 一个网络上报**让用户多等。
+2. **进程退出前冲刷**。浏览器靠 `hidden`，服务端的「要走了」是进程收到 `SIGTERM`（部署、重启、缩容）。退出前必须把内存里没落盘的日志冲刷干净：
+
+```js
+process.on('SIGTERM', async () => {
+  await flushAll(); // 优雅关闭：把缓冲里的日志写完再退，避免丢最后一批
+  process.exit(0);
+});
+```
+
+### SSR 同构：服务端种 ID，客户端接力
+
+SSR 的精髓是「一份代码两端跑」，埋点也可以**同构**：同一个 `track()` API，适配器在服务端写日志、在客户端发 beacon。
+
+一个 SSR 特有的关键动作：**服务端在首屏就把 `device_id` 种进 cookie 并注入 HTML，客户端 SDK 初始化时复用它**，保证 hydration 前后是同一个人，行为链路不断：
+
+```js
+// 服务端渲染时
+res.cookie('device_id', ctx.deviceId); // 1. 种进 cookie，下次请求带回来
+html = html.replace(
+  '</head>',
+  // 2. 注入到 HTML，客户端 SDK init 时读 window.__TRACK__ 复用同一个 ID
+  `<script>window.__TRACK__=${JSON.stringify({ deviceId: ctx.deviceId })}</script></head>`,
+);
+
+// 3. 首屏 PV 直接由服务端记，不等客户端 JS——这正是 SSR 埋点比纯前端准的地方
+track('pv', { screen: req.path, render: 'ssr' });
+```
+
+:::info
+这样首屏 PV 由服务端兜底，后续的点击、曝光、加载完成后的交互再由客户端 SDK 接力上报。服务端负责「**有没有人来、来的是谁**」，客户端负责「**来了之后做了什么**」，靠同一个 `device_id` 串成完整链路。
+:::
