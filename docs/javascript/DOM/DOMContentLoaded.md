@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
 - **`defer` 脚本**：在 `DOMContentLoaded` **之前**按顺序执行完，所以它也会让 `DOMContentLoaded` 等自己。
 
 :::info
-`async` 脚本是例外：它和 `DOMContentLoaded` **互不等待**——脚本可能在事件前执行，也可能在后，取决于谁先下载完。脚本加载时机详见 [`defer` 与 `async`](../../html/defer-vs-async.md)。
+`async` 脚本是例外：它和 `DOMContentLoaded` **互不等待**——脚本可能在事件前执行，也可能在后，取决于谁先下载完。详见 [脚本加载时机](../../html/script-loading.md)。
 :::
 
 ## 对比
