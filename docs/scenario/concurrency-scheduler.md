@@ -88,54 +88,51 @@ asyncPool(tasks, 2).then(console.log);
 
 `asyncPool` 按 `nextIndex++` **下标**取任务，前提是 `tasks` 开工前就定死了，跑起来不能再加。
 
-改成**看队列**——worker 每次从队头 `shift()` 一个，队列随时能 `push()` 新任务进去，就支持「边跑边加」。形象例子：还是那个银行大厅，只不过现在**号票筒可以随时往里塞新号**，窗口办完手上的回头一看筒里还有号就接着办，办到筒空了才关窗。
+改成**看队列 + 完成即叫号**：任务先丢进一个队列，用一个 `run()` 方法统一派活——只要「还有空窗口」且「队列里有人排队」就取一个出来办；**每个任务办完后，自己把窗口腾出来再喊一声 `run()` 叫下一位**。这样不管是新加任务、还是有任务办完，都只要调一次 `run()`，空位自然被填上。
+
+形象例子：还是那个银行大厅，号票筒可以随时塞新号。和上一版不同的是，**窗口不再是「一直转的循环」**，而是每个客户办完业务，顺手按一下桌上「叫下一位」的铃（就是 `run()`），下一个号就被叫进空出来的窗口。
 
 ```js
 class TaskPool {
-  queue = []; // 待执行的 job（已包好各自的 resolve/reject）
-  running = 0; // 当前开着的窗口数
-
   constructor(limit) {
-    this.limit = limit; // 最多开几个窗口
+    this.limit = limit; // 最多同时开几个窗口
+    this.queue = []; // 排队中的任务（还没轮到）
+    this.running = 0; // 正在办理的窗口数
   }
 
-  // add：加一个任务，返回这个任务专属的 Promise——谁加谁 await 自己的结果
+  // add：加一个任务，返回它专属的 Promise——谁加谁 await 自己的结果
   add(task) {
     return new Promise((resolve, reject) => {
-      // 第一步：把 task 连同它自己的 resolve/reject 包成一个 job 塞进号票筒
-      const job = async () => {
-        try {
-          const value = await task();
-          resolve(value); // 结果透传给上面返回的那个 Promise
-        } catch (e) {
-          reject(e); // 失败只通知「加这个任务的人」，不影响别人
-        }
-      };
-      this.queue.push(job);
-
-      // 第二步：塞完号就喊一声「有空窗口快来办」
-      this.schedule();
+      // 第一步：把任务连同它自己的 resolve/reject 一起排进队列
+      this.queue.push({ task, resolve, reject });
+      // 第二步：塞完就叫一次号，看看有没有空窗口能马上办
+      this.run();
     });
   }
 
-  // schedule：只要还有空窗口、筒里还有号，就再开一个窗口去办
-  schedule() {
+  // run：派活的唯一入口——有空窗口且有人排队，就取出来执行
+  run() {
+    // 第三步：还有空位 且 还有人排队，就开窗办理
     while (this.running < this.limit && this.queue.length > 0) {
-      this.running++;
-      this.worker();
-    }
-  }
+      this.running++; // 占用一个窗口
+      const { task, resolve, reject } = this.queue.shift(); // 叫队头那个号
 
-  // worker：一个窗口的工作循环——不停从队头取号办，直到筒空才关窗
-  async worker() {
-    while (this.queue.length > 0) {
-      const job = this.queue.shift();
-      await job(); // job 内部已 try/catch，结果各自透传，绝不抛到这里
+      // 第四步：执行任务，结果透传给「加它的人」拿到的那个 Promise
+      Promise.resolve(task())
+        .then(resolve, reject) // 成功失败都只通知本任务，不影响别人
+        .finally(() => {
+          // 第五步：办完了，腾出窗口，顺手再叫一次号——这就是「完成即补位」
+          this.running--;
+          this.run();
+        });
     }
-    this.running--; // 筒空了，这个窗口关闭，腾出一个名额
   }
 }
 ```
+
+:::tip 为什么这版更好懂
+旧写法里「窗口」是一个 `while` 死循环不停取号，开关窗（`running++/--`）还分在两个方法里。这版把「窗口」拆没了：**派活只有 `run()` 一处，补位就是任务自己在 `finally` 里喊一次 `run()`**。`run()` 里的 `while` 只负责「一次把空窗口填满」，谁也不用常驻循环。
+:::
 
 用起来，任何时刻都能继续加，哪怕前面的还没跑完。`add` 返回该任务专属的 Promise，谁加谁拿自己的结果：
 
@@ -166,7 +163,7 @@ const results = await Promise.all([
 ```
 
 :::info
-worker 见队列空就 `running--` 关窗；之后再 `add()`，`schedule()` 发现 `running < limit` 又会重新开窗。所以池子能「空了又满、满了又空」地长期运转，适合任务陆续到达的场景——流式上传、滚动加载、消息消费。
+任务办完在 `finally` 里 `running--` 腾出名额并再调 `run()`；之后即使队列暂时空了也没关系，下次 `add()` 又会调 `run()` 重新派活。所以池子能「空了又满、满了又空」地长期运转，适合任务陆续到达的场景——流式上传、滚动加载、消息消费。
 :::
 
 :::tip
