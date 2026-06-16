@@ -1,0 +1,21 @@
+docs/javascript/DOM/DOMContentLoaded.md
+  s_5cbfb4395e345e::t_65520137b912e5 43
+docs/javascript/浏览器原理/浏览器渲染流程.md
+  s_5cbfb4395e345e::t_6544cb67f732f3 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "ee05acbd8579b2f926bee8308ca48795a78cc8a9",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
