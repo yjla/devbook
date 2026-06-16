@@ -151,8 +151,59 @@ function SearchBox() {
 }
 ```
 
-:::tip
-如果要防抖的是一个 **值** （而不是回调），可以写一个 `useDebounce(value, delay)` ：把值放进 `useState` ，在 `useEffect` 里用清理函数清掉上一轮定时器，连续 `delay` 不变才更新。原理同上。
+## 防抖一个值：useDebounce
+
+前面 `useDebounceFn` 防抖的是 **一个函数（回调）**；还有一种更常用的是防抖 **一个值**——输入框照常实时更新，但「真正拿去用的那个值」慢半拍，等你停手才追上。
+
+形象例子：输入框是你的手，`useDebounce` 返回的值是 **你影子里的手**，你停下来它才跟上；你一直动，它就一直等。
+
+```jsx
+import { useState, useEffect } from 'react';
+
+// 防抖一个值：value 连续变化时不立刻同步，停下 delay 后才更新
+function useDebounce(value, delay) {
+  // 第一步：用 state 存「防抖后的值」，初始和传入值一致
+  const [debounced, setDebounced] = useState(value);
+
+  // 第二步：每当 value 变化，起一个定时器，delay 后才把新值写进 state
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+
+    // 第三步：下次 value 又变（或组件卸载）前，先清掉上一个定时器 —— 这就是「重新计时」
+    // 连续输入时定时器一直被清掉重起，直到停手满 delay 才真正 setDebounced
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  // 第四步：返回防抖后的值，只有「安静」够久它才更新
+  return debounced;
+}
+```
+
+用法：输入框绑实时的 `keyword`，把 `debouncedKeyword` 拿去触发请求：
+
+```jsx
+function SearchBox() {
+  const [keyword, setKeyword] = useState('');
+  const debouncedKeyword = useDebounce(keyword, 300); // 停手 300ms 才变
+
+  // keyword 实时跟随输入；debouncedKeyword 只在停顿后更新，用它发请求
+  useEffect(() => {
+    if (debouncedKeyword) {
+      fetch(`/api/search?q=${debouncedKeyword}`);
+    }
+  }, [debouncedKeyword]);
+
+  return (
+    <input value={keyword} onChange={(e) => setKeyword(e.target.value)} />
+  );
+}
+```
+
+:::tip useDebounceFn vs useDebounce 怎么选
+- **`useDebounceFn`（防抖函数）**：你手里是个 **回调**，想让它少执行几次 —— `onChange={(e) => onSearch(e.target.value)}`。
+- **`useDebounce`（防抖值）**：你手里是个 **state 值**，想让某段「依赖它的逻辑」慢半拍触发 —— 配 `useEffect` 监听防抖后的值最顺手。
+
+两者内核是同一套「重新计时」，只是一个包函数、一个包值。
 :::
 
 ## 一句话口诀
