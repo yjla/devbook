@@ -1,8 +1,3 @@
----
-sidebar_position: 0
-sidebar_label: 概览
----
-
 # React Native
 
 React Native 让你用 React 写出渲染到原生组件的移动应用——不是套壳 WebView，而是 JS 驱动真正的 `UIView` / `android.view`。本章按运行链路拆成六个主题:
