@@ -1,0 +1,21 @@
+docs/javascript/异步编程/generator.md
+  s_5cbfb4395e345e::t_c6771f52331078 1-22,24-183,185-201
+  s_5cbfb4395e345e::t_02da586794b381 23
+  s_5cbfb4395e345e::t_249fae509a494b 184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "ef78018c94068b35769ca4417979851716a3e905",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
