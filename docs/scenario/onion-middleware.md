@@ -17,42 +17,67 @@ graph LR
 
 所以两个中间件的执行顺序是：`1 进 → 2 进 → 2 出 → 1 出` ——前置代码按注册顺序、后置代码按相反顺序，对称地包裹起来。
 
-## 核心：compose
+## 核心：洋葱就是「函数套娃」
 
-实现洋葱模型的关键是一个 `compose` 函数，把中间件数组组合成一条可串行 `await` 的链。核心技巧： **把「调用下一个中间件」这件事包成 `next` 函数，传给当前中间件** 。
+别急着看实现，先想清楚这套机制要**生成什么**。
+
+三个中间件 `mw1、mw2、mw3` ，洋葱模型的执行，本质就是把它们**一层套一层地嵌套调用**——每一层的 `next` ，就是「调用下一层」这个动作被包成的函数：
 
 ```js
-function compose(middlewares) {
-  // 第一步：返回一个接收 ctx 的执行器，调用它就开始跑整条链
-  return function (ctx) {
-    // 第二步：记录执行到第几个，用来防止同一个 next 被重复调用
-    let index = -1;
+mw1(ctx, () =>
+  mw2(ctx, () =>
+    mw3(ctx, () =>
+      Promise.resolve(),
+    ),
+  ),
+);
+```
 
-    // 第三步：定义 dispatch(i)，意思是「执行第 i 个中间件」
-    function dispatch(i) {
-      // 第四步：守卫——同一个中间件里 next() 调了两次，i 不会前进，直接报错
-      if (i <= index) {
-        return Promise.reject(new Error('next() called multiple times'));
-      }
-      index = i;
+看懂这串嵌套，洋葱模型就懂了一大半： `mw1` 调它的 `next()` 就钻进 `mw2` ，`mw2` 调 `next()` 就钻进 `mw3` ，`mw3` 调 `next()` 发现没有下一层了，用一个空 `Promise.resolve()` 收尾。`next()` **之后**的代码自然要等内层整串跑完才执行——这就是「先进后出」。
 
-      // 第五步：取出第 i 个中间件，没有了说明链到底，返回 resolved Promise
-      const fn = middlewares[i];
+要做的，就是**不管注册了几个中间件，都自动生成上面这串嵌套**。
+
+记忆类比： **俄罗斯套娃** 。每个中间件是一个娃，从大到小套好；你打开最外层那个 (`dispatch(0)`)，里面是次大的，一路打开到最小的实心娃 (`Promise.resolve()`) 收底，再一个个合上——打开是「前置」，合上是「后置」。
+
+把它写成一个类，正好贴着真实的 Koa 来记： **`use()` 注册中间件，`run()` 跑整条链** 。核心还是那个递归的 `dispatch(i)` ，含义就一句话：「执行第 `i` 个中间件，把『执行第 `i+1` 个』当作它的 `next` 传进去」。
+
+```js
+class Onion {
+  // 第一步：构造函数里准备一个数组，存所有注册进来的中间件
+  constructor() {
+    this.middlewares = [];
+  }
+
+  // 第二步：use 注册中间件，和 Koa 的 app.use() 一样；返回 this 支持链式
+  use(fn) {
+    this.middlewares.push(fn);
+    return this;
+  }
+
+  // 第三步：run 跑整条链，从最外层的娃开始打开
+  run(ctx) {
+    // 第四步：dispatch(i) —— 执行第 i 个中间件
+    const dispatch = (i) => {
+      // 第五步：取第 i 个中间件，取不到说明套到底了，返回空 Promise 收尾（最里层的实心娃）
+      const fn = this.middlewares[i];
       if (!fn) {
         return Promise.resolve();
       }
 
-      // 第六步（关键）：把 dispatch(i + 1) 包成 next 传进去
-      // 当前中间件里调 next()，就等于「执行下一个中间件」
-      // 用 Promise.resolve 包裹，保证返回值一定是 Promise，可被 await
+      // 第六步（关键）：把「执行下一个」包成 next 传进去——这就是套娃的「套」
+      // 当前中间件里调 next()，等于执行 dispatch(i + 1)，钻进下一层
+      // 用 Promise.resolve 包一层，保证同步中间件也返回 Promise，外层能 await
       return Promise.resolve(fn(ctx, () => dispatch(i + 1)));
-    }
+    };
 
-    // 第七步：从第一个中间件开始
     return dispatch(0);
-  };
+  }
 }
 ```
+
+:::tip
+`dispatch` 写成 **箭头函数** ，才能直接用外层 `run` 的 `this`（拿到 `this.middlewares`）和闭包里的 `ctx` ；写成普通函数 `this` 就丢了。把 `dispatch` 在脑子里展开一次，就回到了上面那串手写套娃——它俩是同一个东西，递归只是把「套娃」自动化了。
+:::
 
 ## 跑一遍看顺序
 
@@ -69,7 +94,10 @@ const mw2 = async (ctx, next) => {
   console.log('2 出');
 };
 
-compose([mw1, mw2])({});
+const app = new Onion();
+app.use(mw1).use(mw2); // 像 Koa 一样注册
+app.run({}); // 跑整条链
+
 // 输出：1 进 → 2 进 → 2 出 → 1 出
 ```
 
@@ -79,9 +107,9 @@ compose([mw1, mw2])({});
 两个易漏点：
 
 1. `Promise.resolve(fn(...))` **必须包裹** ——中间件可能是同步函数，包一层才能保证 `next()` 始终返回 Promise，外层 `await next()` 才不出错。
-2. `index` **守卫** —— `next` 在同一个中间件里被调用两次会让控制流错乱，用 `i <= index` 检测并抛错。
+2. 工业版（`koa-compose`）还会加一个 `index` **守卫** ——记录执行到第几个，`next` 在同一个中间件里被调用两次时抛错，防止控制流错乱。理解原理时可以先忽略，知道有这回事即可。
    :::
 
 :::info
-洋葱模型的价值在于 **后置逻辑** ：像「记录请求耗时」「统一错误捕获」「响应后置处理」这类需求，写在 `await next()` 之后，天然能包裹住内层所有中间件。Koa 的 `koa-compose` 正是这段代码的工业版。
+洋葱模型的价值在于 **后置逻辑** ：像「记录请求耗时」「统一错误捕获」「响应后置处理」这类需求，写在 `await next()` 之后，天然能包裹住内层所有中间件。Koa 的 `app.use()` + `koa-compose` 正是这套机制的工业版。
 :::
