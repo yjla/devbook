@@ -1,0 +1,13 @@
+docs/javascript/prototype/inheritance.md
+  ai_agent 1-5,8-116,118-126,128-130,132,134,136,138-142,144-147,149-151,153,155,157-164,166,170,172
+docs/javascript/prototype/prototype-chain.md
+  ai_agent 1-127
+docs/javascript/prototype/class.md
+  ai_agent 1-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "6aef5b5d769352dd798140d4dcdf7378b7c56550",
+  "prompts": {}
+}
