@@ -1,0 +1,19 @@
+docs/performance/性能优化.md
+  s_5cbfb4395e345e::t_62ac98f8d4aaef 3,5-11,13,15,17-77,79-125,127-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "640cbd4bd8f49b5fb8518cb9ba15351051942bbb",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
