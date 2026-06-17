@@ -1,0 +1,56 @@
+docs/javascript/execution/event-loop.md
+  s_2fe10192351f7f::t_0ba7e48bcb0417 1-5
+docs/performance/_category_.json
+  s_2fe10192351f7f::t_f5c48e56d5467d 1
+CLAUDE.md
+  s_2fe10192351f7f::t_a859a8a18a7f41 23
+docs/performance/优化策略.md
+  s_2fe10192351f7f::t_d8ca1028b37918 33
+  s_2fe10192351f7f::t_c3e13eb2651185 76
+docs/browser/memory-management.md
+  s_2fe10192351f7f::t_d8ca1028b37918 120
+docs/browser/_category_.json
+  s_2fe10192351f7f::t_ca4807ea4f1be7 1
+docs/browser/rendering-process.md
+  s_2fe10192351f7f::t_d8ca1028b37918 45,90
+docs/javascript/objects/_category_.json
+  s_2fe10192351f7f::t_d9749b80d4e4ab 1
+docs/browser/browser-architecture.md
+  s_2fe10192351f7f::t_d8ca1028b37918 73
+docusaurus.config.ts
+  s_2fe10192351f7f::t_0b4e67861b9f8a 96-97
+docs/javascript/execution/_category_.json
+  s_2fe10192351f7f::t_d9749b80d4e4ab 1
+docs/javascript/execution/scope.md
+  s_2fe10192351f7f::t_d9749b80d4e4ab 99
+docs/css/视觉与渲染/重排与重绘.md
+  s_2fe10192351f7f::t_677021a58c1935 140
+docs/performance/jank-causes-and-solutions.md
+  s_2fe10192351f7f::t_d8ca1028b37918 48,52,56
+docs/javascript/objects/prototype-chain.md
+  s_2fe10192351f7f::t_0ba7e48bcb0417 3
+docs/javascript/execution/generator.md
+  s_2fe10192351f7f::t_0ba7e48bcb0417 2
+docs/javascript/modules.md
+  s_2fe10192351f7f::t_0ba7e48bcb0417 2-3
+docs/javascript/execution/async-await.md
+  s_2fe10192351f7f::t_0ba7e48bcb0417 2
+sidebars.ts
+  s_2fe10192351f7f::t_11304a3c163bb2 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "9218800e416b008dd6a31f886987bc328867bf3d",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
