@@ -1,0 +1,19 @@
+docs/React/React.js/重新渲染机制.md
+  s_4c55fa64e7d7c9::t_0a9c98092bf355 2-3,6,8,10-14,16-23,25-29,33-45,47,50-66,69-71,73-74,76,79-89,93-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "c58b49dc23bd1cd7222074b6b5e10ee45bf53b44",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
