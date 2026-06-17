@@ -1,0 +1,26 @@
+docs/html/embed-and-reference.md
+  s_2fe10192351f7f::t_9a107cf8b25ddf 24
+  s_2fe10192351f7f::t_55e5d2b8e6d56f 10
+docs/html/script-loading.md
+  s_2fe10192351f7f::t_60c6e07eb5259f 18
+  s_2fe10192351f7f::t_ef7e2d820b48e7 8
+  s_2fe10192351f7f::t_d154b128103e08 34
+docusaurus.config.ts
+  s_2fe10192351f7f::t_8399f58d6d33d6 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "9cd8840241d7996f662e334bd214b35c4af4e7bd",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
