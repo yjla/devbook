@@ -1,0 +1,22 @@
+docs/algorithm/hot100-sa-solutions.md
+  s_5cbfb4395e345e::t_3822e1894cfbbc 14-2469
+  s_5cbfb4395e345e::t_447a01f142f55f 1-13
+docs/algorithm/hot100-priority.md
+  s_5cbfb4395e345e::t_979afafdc3ae3c 10-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "8345330e8de711af64801b4a2e33a55f01a6abfa",
+  "prompts": {},
+  "sessions": {
+    "s_5cbfb4395e345e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "41878de0-2394-4fa7-9dc9-9f51a00eb591",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
