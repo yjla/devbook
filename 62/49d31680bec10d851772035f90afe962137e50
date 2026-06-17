@@ -1,0 +1,20 @@
+docs/React/React_Native/架构与运行原理.md
+  s_4c55fa64e7d7c9::t_bad1e74c534402 82,85-87
+  s_4c55fa64e7d7c9::t_ccbdf3d6d07f6e 73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "6249d31680bec10d851772035f90afe962137e50",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
