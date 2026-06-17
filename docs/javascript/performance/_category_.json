@@ -1,1 +1,1 @@
-{ "label": "5 性能", "position": 5 }
+{ "label": "5 性能", "position": 5, "link": { "type": "doc", "id": "javascript/performance/index" } }
