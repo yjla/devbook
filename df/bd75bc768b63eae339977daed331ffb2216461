@@ -1,0 +1,29 @@
+docs/javascript/browser/性能优化.md
+  s_4c55fa64e7d7c9::t_b04af0260c1c34 48
+  s_4c55fa64e7d7c9::t_a49c127aff81f3 36
+  s_4c55fa64e7d7c9::t_3fe5559a2e4690 79
+docusaurus.config.ts
+  s_4c55fa64e7d7c9::t_75eee007399981 96
+docs/React/React_Native/性能优化.md
+  s_4c55fa64e7d7c9::t_a9effbffaf272b 6-27,29,31,35-36,39,43-63,67-70,73-74,77-80,82-84,88-98,101,104-128,130-132,135,140-144
+docs/javascript/browser/jank-causes-and-solutions.md
+  s_4c55fa64e7d7c9::t_59ac00f97ad25b 48
+  s_4c55fa64e7d7c9::t_91b92c498cc19f 56
+  s_4c55fa64e7d7c9::t_998660a17d9576 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "dfbd75bc768b63eae339977daed331ffb2216461",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
