@@ -1,9 +1,9 @@
 ---
 sidebar_position: 0
-sidebar_label: 高频刷题清单
+sidebar_label: 概览
 ---
 
-# 高频刷题清单（CodeTop 频率分档）
+# 概览
 
 这是一份**按 CodeTop 真实面试频率分档**的刷题清单，用于安排刷题优先级。分档依据是每题在 CodeTop 上被考的累计次数 (频度)，不是 Hot100 官方顺序、也不是主观判断。
 
