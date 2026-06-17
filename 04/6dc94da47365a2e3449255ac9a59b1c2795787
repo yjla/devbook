@@ -1,0 +1,23 @@
+docs/javascript/performance/优化策略.md
+  s_92647b16ee0b0e::t_41f13247834afe 8
+docs/javascript/performance/index.md
+  s_92647b16ee0b0e::t_d592d1d32df968 1-31
+docs/javascript/performance/_category_.json
+  s_92647b16ee0b0e::t_391192325970bb 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "046dc94da47365a2e3449255ac9a59b1c2795787",
+  "prompts": {},
+  "sessions": {
+    "s_92647b16ee0b0e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "624b745b-9c21-4f5f-a68a-25e7de957ba1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
