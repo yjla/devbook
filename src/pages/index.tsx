@@ -14,7 +14,7 @@ const categories = [
     title: 'Web 前端',
     description: '从语言基础到框架原理，建立系统性的前端工程认知。',
     topics: ['HTML / CSS', 'JavaScript', 'Vue / React'],
-    link: '/html/html-structure',
+    link: '/html/structure',
   },
   {
     title: 'Node.js',
