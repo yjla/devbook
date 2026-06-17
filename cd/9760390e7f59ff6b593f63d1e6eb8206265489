@@ -1,0 +1,29 @@
+docs/React/React_Native/JS引擎.md
+  s_92647b16ee0b0e::t_09d36c270690a2 1-72
+docs/React/React_Native/index.md
+  s_92647b16ee0b0e::t_7f94119ed586d7 3,7-11
+docs/React/React_Native/渲染原理.md
+  s_92647b16ee0b0e::t_8f24a3fb654bcd 3
+docs/React/React_Native/通信机制.md
+  s_92647b16ee0b0e::t_f4dc8323104ef7 3
+docs/React/React_Native/架构与运行原理.md
+  s_92647b16ee0b0e::t_617b5f431a5f12 63,85-86,88
+docs/React/React_Native/性能优化.md
+  s_92647b16ee0b0e::t_37bfe885cbbd23 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "cd9760390e7f59ff6b593f63d1e6eb8206265489",
+  "prompts": {},
+  "sessions": {
+    "s_92647b16ee0b0e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "624b745b-9c21-4f5f-a68a-25e7de957ba1",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
