@@ -45,15 +45,15 @@ flowchart LR
 
 ### 1. 长任务 → 时间分片
 
-把一个大任务切成小片,每片只占一小段时间,片间用 `requestIdleCallback` 让出主线程,给渲染和交互留机会。详见 [时间分片](../scenario/time-slicing.md)。
+把一个大任务切成小片,每片只占一小段时间,片间用 `requestIdleCallback` 让出主线程,给渲染和交互留机会。详见 [时间分片](../../scenario/time-slicing.md)。
 
 ### 2. 大列表 → 虚拟列表
 
-只渲染**可视区域**的那几十个节点,滚动时回收复用,DOM 数量恒定。十万条数据也只挂几十个节点。详见 [虚拟列表](../scenario/virtual-list.md)。
+只渲染**可视区域**的那几十个节点,滚动时回收复用,DOM 数量恒定。十万条数据也只挂几十个节点。详见 [虚拟列表](../../scenario/virtual-list.md)。
 
 ### 3. 高频事件 → 防抖 / 节流
 
-`scroll`、`resize`、`input` 每秒触发几十上百次,回调里若有重活就会卡。**防抖**让它停下来才执行一次,**节流**让它固定频率执行。详见 [防抖与节流](../scenario/debounce-throttle.md)。
+`scroll`、`resize`、`input` 每秒触发几十上百次,回调里若有重活就会卡。**防抖**让它停下来才执行一次,**节流**让它固定频率执行。详见 [防抖与节流](../../scenario/debounce-throttle.md)。
 
 ### 4. 纯计算 → Web Worker
 
