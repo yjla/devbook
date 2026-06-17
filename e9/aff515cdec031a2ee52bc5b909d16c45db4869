@@ -1,0 +1,19 @@
+docs/React/React_Native/index.md
+  s_4c55fa64e7d7c9::t_5bb75952518689 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "e9aff515cdec031a2ee52bc5b909d16c45db4869",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
