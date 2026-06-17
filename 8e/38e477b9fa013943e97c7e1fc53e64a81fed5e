@@ -1,0 +1,28 @@
+docs/algorithm/greedy.md
+  s_2fe10192351f7f::t_48b03f19a3811e 1-149
+docs/algorithm/sorting.md
+  s_2fe10192351f7f::t_17adccbdc67b00 8,40,43,45,47,52-59,62,64-67,72-76,78-79,81-82,88-91,93-94,96-102,106-112,115,118-119,124-128,130,134,241,243,245,247-251,253,258
+src/pages/index.tsx
+  s_2fe10192351f7f::t_3c24ac5b267dcd 17
+docs/algorithm/dynamic-programming.md
+  s_2fe10192351f7f::t_cc1f535b2e82ed 2-3
+docs/algorithm/hot100-priority.md
+  s_2fe10192351f7f::t_c66bd4daf41f86 158
+  s_2fe10192351f7f::t_599d7b4d86ad4d 14,19,144,147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "8e38e477b9fa013943e97c7e1fc53e64a81fed5e",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
