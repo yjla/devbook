@@ -1,4 +1,5 @@
 ---
+sidebar_position: 2
 sidebar_label: 垃圾回收机制
 ---
 

@@ -1,8 +1,8 @@
 ---
-sidebar_label: localStorage、sessionStorage 与 Cookie
+sidebar_label: 客户端存储
 ---
 
-# `localStorage`、`sessionStorage` 与 Cookie
+# 客户端存储
 
 三者都把数据存在浏览器端，但定位完全不同：**Cookie 是为「让服务端识别身份」而生，Web Storage（`localStorage` / `sessionStorage`）才是为「前端存数据」而设计**。最关键的差异有两点——**容量**和**是否随请求自动发给服务器**。
 

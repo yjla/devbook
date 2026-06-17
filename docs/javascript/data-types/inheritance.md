@@ -1,6 +1,6 @@
 ---
 sidebar_label: 继承
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # 继承

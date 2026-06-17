@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 sidebar_label: 内存管理
 ---
 
@@ -117,7 +118,7 @@ function outer() {
 const fn = outer(); // 只要 fn 还在,huge 就被闭包拴住,回收不了
 ```
 
-闭包本身不是泄漏,**长期持有不再需要的大对象**才是。用完把 `fn = null` 断开即可。闭包的原理见 [闭包](../execution/closure.md)。
+闭包本身不是泄漏,**长期持有不再需要的大对象**才是。用完把 `fn = null` 断开即可。闭包的原理见 [作用域与闭包](../syntax/scope.md)。
 
 ### 用 DevTools 排查
 

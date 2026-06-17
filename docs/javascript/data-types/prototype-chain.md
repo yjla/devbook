@@ -1,6 +1,6 @@
 ---
 sidebar_label: 原型与原型链
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # 原型与原型链

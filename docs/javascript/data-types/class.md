@@ -1,6 +1,6 @@
 ---
 sidebar_label: Class 与 extends
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Class 与 extends

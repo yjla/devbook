@@ -91,7 +91,7 @@ const config: Config = {
           items: [
             {label: 'HTML', to: '/html/html-structure'},
             {label: 'CSS', to: '/css/基础/选择器与优先级'},
-            {label: 'JavaScript', to: '/javascript/'},
+            {label: 'JavaScript', to: '/javascript/data-types/number-precision'},
             {label: 'React', to: '/React/React.js/'},
           ],
         },
