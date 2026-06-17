@@ -1,6 +1,6 @@
 ---
-sidebar_position: 3
-sidebar_label: 模块化 (CommonJS vs ESM)
+sidebar_position: 4
+sidebar_label: 4 模块化
 ---
 
 # CommonJS 与 ES Module

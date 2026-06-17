@@ -20,6 +20,7 @@
 - 遇到不熟悉的工具、名词、事件，先用 WebSearch 搜索，再作答或写入文档，不要凭印象猜测
 - 重命名目录或文件时，必须同步更新所有引用该路径的链接（包括 `_category_.json`、frontmatter、markdown 内链、`docusaurus.config.ts`、`sidebars.ts`）
 - 每次完成操作后，自动执行 git commit，提交本次变更
+- 本项目（devbook）已配置 `bypassPermissions`（`.claude/settings.local.json`），文档操作（编辑、git、构建等）无需逐条手动确认；破坏性操作仍需先与用户确认
 
 ## 目录结构
 

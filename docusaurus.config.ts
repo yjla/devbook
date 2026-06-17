@@ -93,6 +93,8 @@ const config: Config = {
             {label: 'CSS', to: '/css/基础/选择器与优先级'},
             {label: 'JavaScript', to: '/javascript/data-types/number-precision'},
             {label: 'React', to: '/React/React.js/'},
+            {label: '浏览器', to: '/browser/browser-architecture'},
+            {label: '性能', to: '/performance/'},
           ],
         },
         {
