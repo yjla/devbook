@@ -1,0 +1,20 @@
+docs/javascript/data-types/number-precision.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 34,112
+  s_4c55fa64e7d7c9::t_ddb35f44eb643e 3,6,8,10-11,13,15,17,19-23,25,27-29,31,33,35-101,105-111,113,115-119,121-123,127-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "61d32c7debbe6767273a8824b9cd68bd4c71e49f",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
