@@ -1,0 +1,42 @@
+docs/algorithm/graph.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/hot100-priority.md
+  s_4c55fa64e7d7c9::t_b317dfb48b4cbc 2-3
+docs/algorithm/hash.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/backtracking.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/binary-tree.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/hot100-sa-solutions.md
+  s_4c55fa64e7d7c9::t_d8c612cb4a3450 2
+docs/algorithm/dynamic-programming.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/two-pointers.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/stack.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+  s_4c55fa64e7d7c9::t_44167bc366f131 1,4-253
+docs/algorithm/binary-search.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/linked-list.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+docs/algorithm/sorting.md
+  s_4c55fa64e7d7c9::t_64821a2d76da22 2-3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "dc0af38e4d8379cc88c6bd3b4a63df2046b50fc9",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
