@@ -1,0 +1,60 @@
+docs/javascript/performance/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+docs/javascript/data-types/prototype-chain.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 3
+docs/javascript/data-types/number-precision.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 1-4,35
+docs/javascript/syntax/this-binding.md
+  s_4c55fa64e7d7c9::t_7d230a4ce2b0f3 1-5
+  s_4c55fa64e7d7c9::t_dfb890517ce225 30-97,99,101-102,104-106
+docs/javascript/memory/memory-management.md
+  s_4c55fa64e7d7c9::t_4292efa97a1732 121
+  s_4c55fa64e7d7c9::t_55e4e76496899f 2
+docs/javascript/data-types/class.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 3
+docs/javascript/memory/garbage-collection.md
+  s_4c55fa64e7d7c9::t_5115bca2b24f5c 2
+docs/javascript/data-types/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+docs/javascript/async/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+docs/javascript/data-types/inheritance.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 3
+docs/javascript/syntax/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+docs/javascript/syntax/scope.md
+  s_4c55fa64e7d7c9::t_a2c4badee900a4 2-3,6,8-40,44,55,57,59,67,69-70,80,82,90,99,101-106
+docs/javascript/browser/client-storage.md
+  s_4c55fa64e7d7c9::t_e8573a9bb4789c 2,5
+docs/javascript/browser/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+docs/javascript/browser/event-delegation.md
+  s_4c55fa64e7d7c9::t_7ebed0c1886051 1,5-15
+docusaurus.config.ts
+  s_4c55fa64e7d7c9::t_f98bc3e75de7de 94
+docs/javascript/performance/性能优化.md
+  s_4c55fa64e7d7c9::t_a563d3244f08d2 1-4
+  s_4c55fa64e7d7c9::t_6c9840ad995592 52
+docs/javascript/browser/browser-architecture.md
+  s_4c55fa64e7d7c9::t_30aba6b270c3d7 1-4,7-105,107,109-111,116
+docs/javascript/syntax/modules.md
+  s_4c55fa64e7d7c9::t_1eae83598e7271 2
+docs/javascript/memory/_category_.json
+  s_4c55fa64e7d7c9::t_7167bbb80a88bb 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "e5218f6524e7b3e64c18d9394bf80d4270702cb7",
+  "prompts": {},
+  "sessions": {
+    "s_4c55fa64e7d7c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cc33263b-da9c-49b0-a3c4-abe3fcf68fc5",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
