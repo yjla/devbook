@@ -56,16 +56,6 @@ sidebar_label: 2 文档流与元素类型
 
 `<img>`、`<input>`、`<button>` 天生就是行内块的行为。普通元素也能用 `display: inline-block` 手动变成这种模式——早年做水平排列的导航栏常用它。
 
-## 三者对比
-
-| | 块级 block | 行内 inline | 行内块 inline-block |
-|---|---|---|---|
-| 是否独占一行 | 是 | 否 | 否 |
-| 能否设宽高 | 能 | **不能** | 能 |
-| 垂直 margin/padding | 生效 | **不撑开其他元素** | 生效 |
-| 默认宽度 | 撑满父级 | 由内容决定 | 由内容决定 |
-| 典型标签 | `div` `p` `h1` | `span` `a` `strong` | `img` `input` `button` |
-
 :::info
 这三种行为由 CSS 的 `display` 属性决定，可以互相转换：`display: block` / `inline` / `inline-block`。所谓「`<div>` 是块级、`<span>` 是行内」，只是浏览器默认样式表给它们设了对应的 `display` 值，并非标签写死的特性。
 :::
@@ -73,14 +63,3 @@ sidebar_label: 2 文档流与元素类型
 :::tip
 `<img>` 是个特例：它在文档流里**像行内元素一样参与排列**（不独占行），却**能设置宽高**——因为它属于「替换元素」（replaced element），内容由外部图片资源决定，浏览器需要让你控制它的显示尺寸。`<input>`、`<video>` 同理。
 :::
-
-## 行内元素的空白间隙
-
-把多个 `inline-block` 元素排在一起，它们之间会莫名多出几像素缝隙：
-
-```html
-<span class="box"></span>
-<span class="box"></span>
-```
-
-原因是 HTML 源码里标签之间的**换行和空格被当成了一个空白字符**渲染出来——行内元素会保留这种空白。常见解法：把标签写在同一行不留空格、给父元素设 `font-size: 0`、或干脆改用 flex 布局（flex 子项不受这种空白影响）。
