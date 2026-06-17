@@ -93,7 +93,6 @@ const config: Config = {
             {label: 'CSS', to: '/css/基础/选择器与优先级'},
             {label: 'JavaScript', to: '/javascript/'},
             {label: 'React', to: '/React/React.js/'},
-            {label: '性能优化', to: '/javascript/browser/性能优化'},
           ],
         },
         {

@@ -1,6 +1,6 @@
 ---
-sidebar_position: 6
-sidebar_label: 链表
+sidebar_position: 4
+sidebar_label: 4 链表
 ---
 
 # 链表

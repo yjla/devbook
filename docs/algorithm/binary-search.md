@@ -1,6 +1,6 @@
 ---
-sidebar_position: 5
-sidebar_label: 二分查找
+sidebar_position: 8
+sidebar_label: 8 二分查找
 ---
 
 # 二分查找

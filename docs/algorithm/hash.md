@@ -1,6 +1,6 @@
 ---
-sidebar_position: 8
-sidebar_label: 哈希
+sidebar_position: 2
+sidebar_label: 2 哈希
 ---
 
 # 哈希

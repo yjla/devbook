@@ -1,6 +1,6 @@
 ---
-sidebar_position: 2
-sidebar_label: 二叉树
+sidebar_position: 5
+sidebar_label: 5 二叉树
 ---
 
 # 二叉树

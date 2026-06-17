@@ -1,6 +1,6 @@
 ---
-sidebar_position: 9
-sidebar_label: 排序
+sidebar_position: 7
+sidebar_label: 7 排序
 ---
 
 # 排序

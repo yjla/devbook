@@ -1,6 +1,6 @@
 ---
-sidebar_position: 1
-sidebar_label: 双指针
+sidebar_position: 9
+sidebar_label: 9 双指针
 ---
 
 # 双指针
