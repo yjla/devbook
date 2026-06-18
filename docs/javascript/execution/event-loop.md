@@ -5,31 +5,114 @@ sidebar_label: 事件循环
 
 # 事件循环
 
-JavaScript 是一门单线程的非阻塞的脚本语言，想要实现非阻塞，就需要通过事件循环（Event Loop）机制。事件循环，简单来说就是先执行一个宏任务 (Marco Task)，再执行所有微任务（Micro Task），再执行一个宏任务，接着执行所有微任务，如次循环往复的过程就是事件循环。宏任务和微任务都属于异步任务，而执行一个宏任务后再执行所有微任务就被称为一次循环。具体来说，当拿到一个脚本后（`<script>` 整体代码可以看作是一个宏任务），JavaScript 引擎会一行行地执行其中的代码。如果碰到同步任务，就立即执行；如果碰到宏任务，就将其加入宏任务队列；如果碰到微任务，就将其加入微任务队列。当所有同步任务执行完毕（即 `<script>` 整体代码这个宏任务完成）后，JavaScript 引擎就会去检查微任务队列中是否有可以执行的微任务，并执行所有满足执行条件的微任务。当所有满足执行条件的微任务后，JavaScript 引擎才会去判断宏任务队列中的是否有满足执行条件的宏任务，并取出一个满足条件的宏任务执行。这就意味着在微任务处理过程中如果有新加入的微任务，也需要等这些新加入的满足执行条件的微任务都执行完毕后才去检查宏任务。
+**JavaScript 是单线程的,事件循环 (Event Loop) 是它在单线程上「不阻塞」地处理异步的调度机制。** 核心规则一句话:**执行完一段同步代码,先清空所有微任务,再取一个宏任务执行,如此往复**。
 
+:::tip 形象记忆
+事件循环像 **银行柜台**:柜员 (单线程主线程) 一次只服务一位客户 (同步代码一行行执行)。遇到要等的业务 (异步,如打电话核实),柜员不干等,而是把它交给后台 (其他线程) 去办,自己接着服务下一位。后台办完的业务回来排队;但队伍分两种——「VIP 加急」(微任务) 和「普通号」(宏任务)。柜员每服务完一位普通客户,**都要先把所有 VIP 加急清空**,才叫下一个普通号。
+:::
 
+## 为什么需要事件循环
 
-## 单线程与非阻塞
+JavaScript 引擎本身**单线程**:同一时刻只有一个调用栈,只能执行一件事。这是历史选择——最初为操作 DOM 而生,多线程同时改 DOM 会引发竞态,索性单线程。
 
-JavaScript 引擎本身是单线程的，无法并行执行代码。像 `setTimeout`、AJAX 请求这类异步操作，本质上是**交给浏览器的其他线程**去做（定时器线程、网络线程等），完成后把回调塞进事件队列。JavaScript 引擎执行完当前所有同步代码后，再从队列里取回调执行——这套「主线程不等待、由队列驱动回调」的机制就是非阻塞的由来，而调度这个队列的正是事件循环。
+但单线程有个致命问题:碰到耗时操作 (网络请求、定时、读文件) 如果**原地等待**,整个页面就卡死了,连按钮都点不动。
 
-## 微任务
+解决办法是**非阻塞**:耗时操作不在主线程上等,而是**交给宿主环境 (浏览器 / Node) 的其他线程**去做 (定时器线程、网络线程、I/O 线程),主线程立刻往下走。等那些操作完成,把对应的**回调函数**放进队列,主线程闲下来后再回来执行。
 
-- `Promise.then()` 的回调
-- `new MutaionObserver()` 的回调
-- `process.nextTick()` 的回调；
+「主线程不等待、由队列驱动回调」——调度这个队列的机制,就是事件循环。
 
+## 运行时全貌
 
+理解事件循环,先认清几个角色:
 
-## 宏任务
+- **调用栈 (Call Stack)**:JS 引擎执行代码的地方,函数调用入栈、返回出栈。单线程意味着只有这一个栈。
+- **宿主环境 / 其他线程**:浏览器或 Node 提供的能力 (`setTimeout`、`fetch`、文件 I/O 等),真正的等待发生在这里,不占用主线程。
+- **任务队列**:异步操作完成后,回调被放进队列排队,分**宏任务队列**和**微任务队列**两种。
+- **事件循环**:一个永不停歇的循环,负责在调用栈空了之后,按规则从队列里取回调压回栈上执行。
 
-- `<script>` 整体代码
-- `setTimeout()`、`setInterval()` 的回调
-- UI 事件
-- Node.js 中的 I/O
-- `setImmediate()` 的回调
+```mermaid
+graph TB
+    subgraph 引擎["JS 引擎 (单线程)"]
+        Stack["调用栈 Call Stack"]
+    end
+    subgraph 宿主["宿主环境 (浏览器 / Node)"]
+        WebAPI["其他线程<br/>定时器 / 网络 / I/O"]
+    end
+    MicroQ["微任务队列 Microtask Queue"]
+    MacroQ["宏任务队列 Macrotask Queue"]
+    Loop(["事件循环 Event Loop"])
 
+    Stack -- "调用 setTimeout/fetch 等" --> WebAPI
+    WebAPI -- "完成后回调入队" --> MacroQ
+    Stack -- "Promise.then 等" --> MicroQ
+    MicroQ -- "栈空时优先全部取出" --> Loop
+    MacroQ -- "微任务清空后取一个" --> Loop
+    Loop -- "压栈执行" --> Stack
+```
 
+## 宏任务与微任务
+
+异步回调分两类,**区别只在「什么时候被取出执行」**:宏任务一次取一个,微任务一次性清空。
+
+| | 宏任务 (Macrotask) | 微任务 (Microtask) |
+|---|---|---|
+| 取出方式 | **每轮循环取一个** | **每轮把队列全部清空** |
+| 浏览器常见来源 | 整体 `<script>`、`setTimeout` / `setInterval`、UI 事件、`MessageChannel` | `Promise.then/catch/finally`、`await` 之后的代码、`queueMicrotask`、`MutationObserver` |
+| Node 额外来源 | `setImmediate`、I/O 回调 | `process.nextTick` (优先级最高,见下文) |
+
+:::info 微任务是用来「插队」的
+微任务的设计目的,是让一段异步逻辑能**在「下一个宏任务 / 下一次渲染」之前就跑完**,保证状态的连续性。比如一连串 `Promise.then`,你希望它们紧挨着执行完,而不是中间插进一个 `setTimeout` 或一帧渲染。所以微任务的优先级高于宏任务,且会「一插到底」清空整个队列。
+:::
+
+## 一轮循环的完整步骤
+
+把「一次事件循环」拆开看,引擎重复做这几件事:
+
+```mermaid
+graph TD
+    A["执行一个宏任务<br/>(首轮就是整体 script)<br/>同步代码跑到调用栈清空"] --> B["清空整个微任务队列<br/>(含执行中新产生的微任务)"]
+    B --> C{"浏览器需要渲染?"}
+    C -- 是 --> D["执行渲染 (rAF → 样式 → 布局 → 绘制)"]
+    C -- 否 --> E["从宏任务队列取下一个宏任务"]
+    D --> E
+    E --> A
+```
+
+三条铁律,做题和理解都靠它:
+
+1. **整体 `<script>` 本身就是第一个宏任务**。所以「先执行同步代码」其实就是「执行第一个宏任务」。
+2. **每个宏任务结束后,必须把微任务队列清空再继续**。清空过程中新产生的微任务也要执行掉,直到队列为空。
+3. **`await x` 等价于把后续代码包进 `x` 的 `.then` 微任务里**。`await` 之前是同步执行,`await` 之后的部分被挂成微任务。
+
+## 一个最小示例走一遍
+
+```js
+console.log(1);
+
+setTimeout(() => console.log(2));        // 宏任务
+
+Promise.resolve().then(() => console.log(3)); // 微任务
+
+console.log(4);
+```
+
+执行顺序 `1 → 4 → 3 → 2`,逐步拆解:
+
+1. 整体 script 作为第一个宏任务开始执行,同步打印 `1`。
+2. `setTimeout` 把回调交给定时器线程,到点后回调进**宏任务队列**。
+3. `Promise.then` 的回调进**微任务队列**。
+4. 同步打印 `4`,script 这个宏任务执行完毕,调用栈清空。
+5. 清空微任务队列:执行 `3`。
+6. 取下一个宏任务:执行 `2`。
+
+记住这个骨架,后面的复杂题不过是往里加「微任务里再生微任务」「await 拆分」等变化。
+
+## Node 与浏览器的差异
+
+事件循环的「微任务优先于宏任务」在两端一致,但 Node 有两点不同:
+
+- **`process.nextTick` 有独立队列,且优先级最高**。每个阶段结束后,Node 先清空 `nextTick` 队列,再清空 Promise 微任务队列,然后才进入下一阶段。
+- **宏任务分多个阶段 (phases)**。Node 的事件循环按 `timers (setTimeout/setInterval)` → `poll (I/O)` → `check (setImmediate)` 等阶段轮转,而非浏览器那样笼统的一个宏任务队列。所以 `setImmediate` 和 `setTimeout(fn, 0)` 的先后会因场景而异 (见下方第 4 题)。
 
 ## 输出题
 
@@ -226,13 +309,10 @@ for (let i = 0; i < 3; i++) {
 想用 `var` 达到 `let` 的效果，可用 IIFE 把 `i` 传进去形成独立作用域：`(function(j){ setTimeout(() => console.log(j), 300); })(i)`。
 :::
 
-
-
 ## 参考
 
 1. [并发模型与事件循环 - JavaScript | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/EventLoop)
 2. [详解JavaScript中的Event Loop（事件循环）机制 - 知乎](https://zhuanlan.zhihu.com/p/33058983)
 3. [JavaScipt 中的事件循环(event loop)，以及微任务 和宏任务的概念 - daisy,gogogo - 博客园](https://www.cnblogs.com/daisygogogo/p/10116694.html)
 4. [详解 JavaScript 中的 Event Loop —— 掘金](https://juejin.cn/post/6844904169967452174)
-5. [2分钟了解 JavaScript Event Loop | 面试必备](https://www.bilibili.com/video/BV1kf4y1U7Ln)
-6. [Q：你了解异步编程、进程、单线程、多线程吗？ - 掘金](https://juejin.cn/post/6844903517073702926#heading-1)
+5. [The Node.js Event Loop - Node.js 官方文档](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick)
