@@ -21,6 +21,7 @@
 - 重命名目录或文件时，必须同步更新所有引用该路径的链接（包括 `_category_.json`、frontmatter、markdown 内链、`docusaurus.config.ts`、`sidebars.ts`）
 - 每次完成操作后，自动执行 git commit，提交本次变更
 - 本项目（devbook）已配置 `bypassPermissions`（`.claude/settings.local.json`），文档操作（编辑、git、构建等）无需逐条手动确认；破坏性操作仍需先与用户确认
+- 本项目已在 `.claude/settings.local.json` 的 `enabledPlugins` 里关闭所有插件（`superpowers`、`frontend-design`、`context7`、`typescript-lsp` 均设为 `false`），覆盖 `~/dev` 的项目级启用配置；改动插件启用状态需重启 claude 才生效
 
 ## 目录结构
 
