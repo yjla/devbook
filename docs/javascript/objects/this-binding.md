@@ -1,9 +1,9 @@
 ---
 sidebar_position: 2
-sidebar_label: this 指向
+sidebar_label: this 关键词
 ---
 
-# this 指向
+# this 关键词
 
 **`this` 指向谁，不看函数在哪里定义，只看函数怎么被调用。** 它是在函数调用的那一刻才确定的绑定，指向「调用现场」的环境对象。同一个函数，换个方式调用，`this` 就变了。箭头函数是唯一的例外——它没有自己的 `this`。
 
