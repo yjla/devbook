@@ -1,0 +1,19 @@
+docs/javascript/objects/this-binding.md
+  s_2fe10192351f7f::t_4fbadde7b60154 3,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "ed2e3937aba7001c0a24b905c8d5cf2fa98f95fa",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
