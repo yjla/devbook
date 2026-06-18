@@ -1,0 +1,19 @@
+docs/React/React.js/Fiber.md
+  s_2fe10192351f7f::t_dd21ce3b021505 1-5,8-113,115,117,119-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "1d6cedf65c6fc59a9bc872ce52d33f57ce67155e",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
