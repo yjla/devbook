@@ -1,0 +1,20 @@
+docs/javascript/execution/event-loop.md
+  s_2fe10192351f7f::t_8835139af8c78c 8,10-24,26,28-31,33-43,45-51,53,55,57-61,63-65,67,69,71-79,81-87,89-94,96-99,101-106,108,110,112,114-115,318
+  s_2fe10192351f7f::t_0ba7e48bcb0417 52,88,95,100,107,109,111,113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "0113d15f3aba226624089aea0bc208512791581c",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
