@@ -1,0 +1,21 @@
+docs/javascript/objects/prototype-chain.md
+  s_2fe10192351f7f::t_a9b76f1c59b1de 3
+docs/javascript/objects/this-binding.md
+  s_2fe10192351f7f::t_a9b76f1c59b1de 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "686027f86911ebeda309ee97872de6515373a9f2",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
