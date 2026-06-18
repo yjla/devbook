@@ -3,33 +3,137 @@ sidebar_position: 2
 sidebar_label: this 指向
 ---
 
-# this指向
+# this 指向
 
-`this` 通常被用于函数内部，是在函数被调用时建立的一个绑定，指向函数在调用位置（call-site）被调用时的环境对象
+**`this` 指向谁，不看函数在哪里定义，只看函数怎么被调用。** 它是在函数调用的那一刻才确定的绑定，指向「调用现场」的环境对象。同一个函数，换个方式调用，`this` 就变了。箭头函数是唯一的例外——它没有自己的 `this`。
 
-- 默认绑定：函数在调用位置被直接的，毫无修饰的调用。这时，`this` 指向全局对象，严格模式下为 `undefined`
-- 隐式绑定：函数在调用位置被一个对象所引用。这时，`this` 指向这个对象。需要注意的是，隐式绑定可能会出现丢失现象，即退回到默认绑定。
-- 显示绑定：使用 `call()`，`apply()`，`bind()` 这几种方法改变 `this` 的指向
-- `new` 绑定：函数在调用位置作为构造函数使用。这时，`this` 指向构造出来的实例对象
+:::tip 形象记忆
+`this` 像口语里的「这位」。会议室里喊一句「请这位发言」，到底指谁，取决于**你喊话时手指着谁**（调用现场），而不是这句话写在剧本的第几页（定义位置）。所以光看函数定义判断不了 `this`，得看它被谁、以什么方式叫起来。
+:::
 
+## 四种绑定规则
 
+判断 `this` 指向，就是判断函数用了下面哪种调用方式。
 
-## call、apply、bind的区别
+### 默认绑定：独立调用
 
-- `call` 和 `apply` 的区别只在传入的参数不同。` call` 接受的是参数序列，而 `apply` 接收的是一个包含多个参数的数组。
-- `bind` 接受的也是参数序列，和 `call` 的区别是，该方法返回一个新的函数，不会立即调用。
+函数被「光秃秃」地直接调用 `fn()`，前面没有任何对象修饰。这时 `this` 指向全局对象（浏览器里是 `window`），严格模式下是 `undefined`。
 
+```js
+function show() {
+  console.log(this);
+}
 
+show(); // 非严格模式: window；严格模式: undefined
+```
+
+### 隐式绑定：作为对象方法调用
+
+函数被某个对象「点出来」调用 `obj.fn()`，`this` 就指向**点号前面那个对象**。
+
+```js
+const obj = {
+  name: "obj",
+  show() {
+    console.log(this.name);
+  },
+};
+
+obj.show(); // 'obj'——谁调用就指向谁
+```
+
+:::warning 隐式绑定丢失
+只要函数被「摘下来」单独调用，隐式绑定就丢了，退回默认绑定。最常见的两种场景：赋值给变量、当作回调传出去。
+:::
+
+```js
+const obj = {
+  name: "obj",
+  show() {
+    console.log(this.name);
+  },
+};
+
+const fn = obj.show; // 摘下来了
+fn(); // undefined——独立调用，this 指向全局
+
+setTimeout(obj.show, 100); // 也是把函数摘出来传给 setTimeout，this 丢失
+```
+
+### 显式绑定：call / apply / bind
+
+用 `call`、`apply`、`bind` **强行指定** `this` 指向哪个对象。
+
+```js
+function show() {
+  console.log(this.name);
+}
+
+const me = { name: "me" };
+
+show.call(me); // 'me'——强制 this = me
+show.apply(me); // 'me'
+const bound = show.bind(me);
+bound(); // 'me'——bind 返回绑死 this 的新函数
+```
+
+### new 绑定：作为构造函数
+
+函数被 `new` 调用时，引擎会新建一个空对象，把 `this` 指向它，最后返回这个对象。
+
+```js
+function Person(name) {
+  this.name = name; // this 指向 new 出来的新实例
+}
+
+const p = new Person("Tom");
+p.name; // 'Tom'
+```
 
 ## 优先级
 
-`new` 绑定 > 显示绑定 > 隐式绑定 > 默认绑定
+四种规则同时具备资格时，按 `new` > 显式 > 隐式 > 默认 的顺序裁决。实际判断时反过来从高往低问一遍即可：
 
+```mermaid
+graph TD
+    A["函数怎么被调用?"] --> B{"用了 new?"}
+    B -- 是 --> N["this = 新建的实例"]
+    B -- 否 --> C{"用了 call/apply/bind?"}
+    C -- 是 --> D["this = 指定的对象"]
+    C -- 否 --> E{"作为 obj.fn() 调用?"}
+    E -- 是 --> F["this = 点号前的对象"]
+    E -- 否 --> G["独立调用: this = 全局 / undefined"]
+```
 
+## call、apply、bind 的区别
+
+三者都用来显式指定 `this`，区别在「是否立即执行」和「怎么传参」：
+
+| 方法 | 是否立即执行 | 传参方式 |
+|------|:---:|------|
+| `call` | 立即 | 参数列表：`fn.call(obj, a, b)` |
+| `apply` | 立即 | 数组：`fn.apply(obj, [a, b])` |
+| `bind` | 否，返回新函数 | 参数列表，且可分多次传 |
+
+```js
+function sum(a, b) {
+  return this.base + a + b;
+}
+const ctx = { base: 100 };
+
+sum.call(ctx, 1, 2); // 103——参数一个个传
+sum.apply(ctx, [1, 2]); // 103——参数装数组里传
+const add = sum.bind(ctx, 1); // 不执行，先绑好 this 和第一个参数
+add(2); // 103——剩下的参数后面补
+```
+
+:::tip 形象记忆
+`apply` 的 **a** 对应 **array**（数组传参），`call` 一个个用逗号（**c**omma）传；`bind` 是「**绑**好待用」，先把 `this` 系上、不开火，等你需要时再调。
+:::
 
 ## 箭头函数 vs 普通函数
 
-最核心的区别一句话:**箭头函数没有自己的 `this`**,它捕获定义时所在作用域的 `this`;其余差异 (没有 `arguments`、不能 `new`、没有 `prototype`) 都由此衍生或相关。
+最核心的区别一句话：**箭头函数没有自己的 `this`**，它捕获定义时所在作用域的 `this`；其余差异 (没有 `arguments`、不能 `new`、没有 `prototype`) 都由此衍生或相关。
 
 | 维度 | 普通函数 | 箭头函数 |
 |------|----------|----------|
@@ -206,8 +310,6 @@ o.foo(); // 3
 :::warning
 关键点：赋值表达式的值是被赋的那个值 (函数引用)，不是 `p.foo`。所以这是独立调用，不是 `p.foo()`。
 :::
-
-
 
 ## 参考
 
