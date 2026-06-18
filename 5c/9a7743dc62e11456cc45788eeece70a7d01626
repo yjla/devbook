@@ -1,0 +1,21 @@
+docs/React/React.js/重新渲染机制.md
+  s_2fe10192351f7f::t_114b3234cb54aa 34
+docs/React/React.js/useState-原理.md
+  s_2fe10192351f7f::t_1ca2edb67a2ce7 3,6,8,10-18,21-25,29-33,36-43,45-58,62-65,68,70,72-73,75-87,90-93,96-104,107-125,131,134,137,139,142-143,146,148-151,153-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "5c9a7743dc62e11456cc45788eeece70a7d01626",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
