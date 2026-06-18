@@ -11,6 +11,39 @@ sidebar_label: this 关键词
 `this` 像口语里的「这位」。会议室里喊一句「请这位发言」，到底指谁，取决于**你喊话时手指着谁**（调用现场），而不是这句话写在剧本的第几页（定义位置）。所以光看函数定义判断不了 `this`，得看它被谁、以什么方式叫起来。
 :::
 
+## 为什么会有 `this`
+
+`this` 是为了让 **一个函数能服务于多个对象**——它是一个「隐式传入的参数」，指向当前正在使用这个函数的对象。
+
+设想没有 `this`：一个 `greet` 函数想用到对象自己的 `name`，只能把对象显式传进去。
+
+```js
+// 没有 this：每次都得手动把对象传进来
+function greet(person) {
+  return "hi, " + person.name;
+}
+
+const tom = { name: "Tom" };
+greet(tom); // 'hi, Tom'
+```
+
+更麻烦的是，如果想让方法挂在对象上、还能被很多对象复用，就没法写了——方法体里写死哪个对象都不对。`this` 就是来填这个空的：方法体里用 `this.name`，到底是谁的 `name`，留到 **调用时** 由「谁在调用」决定。
+
+```js
+// 有 this：同一个方法，谁调用就用谁的数据
+function greet() {
+  return "hi, " + this.name;
+}
+
+const tom = { name: "Tom", greet };
+const jerry = { name: "Jerry", greet };
+
+tom.greet(); // 'hi, Tom'——this 是 tom
+jerry.greet(); // 'hi, Jerry'——this 是 jerry
+```
+
+这正是原型方法能被所有实例共享的基础：`Person.prototype.greet` 只写一份，每个实例调用时 `this` 自动指向自己。**`this` 把「函数逻辑」和「操作的数据」解耦开**，代价是它的指向不固定、要按调用方式来判断——这才有了下面四种绑定规则。
+
 ## 四种绑定规则
 
 判断 `this` 指向，就是判断函数用了下面哪种调用方式。
