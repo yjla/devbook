@@ -1,0 +1,22 @@
+docs/javascript/objects/this-binding.md
+  s_2fe10192351f7f::t_916971dd67e64a 6,8,10-14,16,18,20-28,30-61,63,65-91,95-122,124-128,130-132,136,319
+docs/javascript/objects/prototype-chain.md
+  s_2fe10192351f7f::t_b3d32abd7068a3 10-13
+  s_2fe10192351f7f::t_da32aa61a735ca 138-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "85ca9bfb52086b41d2be1fd6f90c6224c4357a07",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
