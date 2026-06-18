@@ -1,0 +1,21 @@
+docs/css/基础/伪类与伪元素.md
+  s_2fe10192351f7f::t_590dbc5595e081 70-80
+docs/css/布局/弹性布局.md
+  s_2fe10192351f7f::t_59cf60d633478e 3,6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "353ef85677b4d15e7fb3f5ad58299604afee8957",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
