@@ -1,0 +1,19 @@
+CLAUDE.md
+  s_2fe10192351f7f::t_aa1c162e4590df 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.17-trip",
+  "base_commit_sha": "cf625baa6d752960295170e9135e3906ab1db131",
+  "prompts": {},
+  "sessions": {
+    "s_2fe10192351f7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "911edd12-5a13-45eb-99ef-e40a99896fa6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "yijianglu <yijianglu@trip.com>"
+    }
+  }
+}
